@@ -1,0 +1,33 @@
+import React from 'react'
+import clsx from 'clsx'
+import {useSearchParams , useNavigate ,createSearchParams ,  useLocation} from 'react-router-dom'
+const Pagiitem = ({children}) => {
+  
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [params] = useSearchParams()
+  const handlePagination = () => {
+    let param = []
+    for (let i of params.entries()) param.push(i)
+    const queries = {}
+    for(let i of param) queries[i[0]] = i[1]
+    if (Number(children)) queries.page = children
+    navigate({
+      pathname: location.pathname,
+      search: createSearchParams(queries).toString()
+    })
+    console.log(queries);
+  }
+  return (
+    <button className={clsx('p-4 w-10 h-10 flex cursor-pointer items-center justify-center' , !Number
+    (children) && 'items-end' , Number(children) && 'hover:rounded-full hover:bg-gray-300' , +params.get('page') === +children && 'rounded-full bg-gray-300', !+params.get('page') && children === 1 &&'rounded-full bg-gray-300')}
+    onClick={handlePagination}
+    type='button'
+    disabled={!Number(children)}
+    >
+        {children}
+    </button>
+  )
+}
+
+export default Pagiitem

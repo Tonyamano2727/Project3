@@ -1,0 +1,240 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+button.slick-next {
+  right: 30px;
+  z-index: 10;
+}
+button.slick-prev {
+  left: 15px;
+  z-index: 30;
+}
+.slick-dots div {
+  display: flex; flex-direction: column; position: absolute; left: 0; top: -100px;
+}
+button.slick-next::before {
+  content: "\276F";
+  color: rgba(0, 0, 0, 0.64);
+  background-color: rgba(210, 210, 215, 0.6);
+  border-radius: 50%;
+  width: 37px;
+  height: 37px;
+  font-weight: 700;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+button.slick-prev::before {
+  color: rgba(0, 0, 0, 0.64);
+  content: "\276E";
+  background-color: rgba(210, 210, 215, 0.6);
+  border-radius: 50%;
+  width: 37px;
+  font-weight: 700;
+  height: 37px;
+  font-size: 20px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.my-masonry-grid {
+  display: -webkit-box; /* Not needed if autoprefixing */
+  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: flex;
+  margin-left: -30px; /* gutter size offset */
+  width: auto;
+}
+.my-masonry-grid_column {
+  padding-left: 30px; /* gutter size */
+  background-clip: padding-box;
+}
+
+
+
+
+.textnameadmin{
+  font-family: ClashGrotesk Variable, serif; 
+}
+
+
+/* Style your items */
+.my-masonry-grid_column > div {
+  /* change div to reference your elements you put in <Masonry> */
+  
+  margin-bottom: 30px;
+}
+.inputsearcadmin{
+  width: full;
+  border-radius: 200px;
+}
+.bg-box{
+  background-color: #0000004d;
+}
+
+
+
+@keyframes zoomInOut {
+  0% {
+    transform: scale(1); /* Kích thước ban đầu */
+  }
+  50% {
+    transform: scale(1.2); /* Zoom vào */
+  }
+  100% {
+    transform: scale(1); /* Zoom ra về lại ban đầu */
+  }
+}
+
+.animate-zoom {
+  animation: zoomInOut 2s ease-in-out infinite; /* Lặp lại vô hạn */
+}
+@keyframes zoomInOut {
+  0% {
+    transform: scale(1); /* Kích thước ban đầu */
+  }
+  50% {
+    transform: scale(1.2); /* Zoom vào */
+  }
+  100% {
+    transform: scale(1); /* Zoom ra về lại ban đầu */
+  }
+}
+
+.animate-zoom {
+  animation: zoomInOut 2s ease-in-out infinite; /* Lặp lại vô hạn */
+}
+
+
+@keyframes roll {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animatie-roll {
+  animation: roll 3s linear infinite;
+}
+
+
+.marquee-block {
+  position: absolute;
+  width: 200%;
+  height: auto;
+  animation: marquee 10s linear infinite;
+}
+
+.animation-image {
+  width: 100%; /* Mỗi ảnh chiếm toàn bộ chiều rộng màn hình */
+  height: auto;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%); 
+  }
+}
+
+
+.animate-zoom-background {
+  animation: zoomInOut 5s ease-in-out infinite;
+}
+@keyframes zoomInOut {
+  0% {
+    transform: scale(1); 
+  }
+  50% {
+    transform: scale(1.2); /* Zoom vào */
+  }
+  100% {
+    transform: scale(1); /* Zoom ra về lại ban đầu */
+  }
+}
+
+.animate-zoom-background {
+  animation: zoomInOut 5s ease-in-out infinite; 
+}
+
+
+@keyframes bounceUpDown {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-20px); } /* Adjust the value to control the height */
+  100% { transform: translateY(0); }
+}
+
+.animate-bounce-up-down {
+  animation: bounceUpDown 3s infinite;
+}
+
+.fromchangepasword{
+  font-family: Helvetica Neue, serif;
+}
+.from {
+  animation: moveDown 1s ease-in-out; 
+}
+
+@keyframes moveDown {
+  0% {
+      transform: translateY(-100%);
+  }
+  100% {
+      transform: translateY(0); 
+  }
+}
+
+.fromanimationchangepass {
+  animation: moveDown 1s ease-out; 
+}
+
+@keyframes moveDown {
+  0% {
+      transform: translateY(-100%);
+  }
+  100% {
+      transform: translateY(0); 
+  }
+}
+
+/* Custom styles for the snackbar root */
+.my-snackbar-root {
+  font-family: Arial, sans-serif; /* Font style */
+  margin: 10px; /* Margin around notifications */
+  border-radius: 8px; /* Rounded corners */
+  padding: 10px; /* Padding inside the notification */
+  color: black; /* Text color */
+}
+
+
+.my-snackbar-success {
+  background: linear-gradient(to top, #c01212, #284f8a);
+  color: #aa6464; 
+}
+
+.my-snackbar-error {
+  background: linear-gradient(to top, #f9dada, #f5c6cb); 
+  color: #721c24;
+}
+
+
+.my-snackbar-info {
+  background: linear-gradient(to top, #d1ecf1, #bee5eb); 
+  color: #0c5460;
+}
+
+
+.my-snackbar-warning {
+  background: linear-gradient(to top, #fff3cd, #ffeeba); 
+  color: #856404;
+}
+

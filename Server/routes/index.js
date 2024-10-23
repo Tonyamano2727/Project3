@@ -1,0 +1,40 @@
+const userRouter = require('./user')
+const productsRouter = require('./products')
+const productCategoryRouter = require('./productCategory')
+const productBlogCategoryRouter = require('./blogCategory')
+const Blog = require('./blog')
+const Brand = require('./brand')
+const Employee = require("./employee")
+const Coupon = require('./coupon')
+const Order = require('./order')
+const Counsel = require('./counsel')
+const Service = require('./service')
+const Booking = require('./booking')
+const Salary = require('./salary')
+const Supervisor = require('./supervisor')
+const insertdata = require('./insertdata')
+const {notFound , errHandler} = require('../middlewares/errHandler')
+
+const initRoutes = (app) => {
+    app.use('/api/user', userRouter)
+    app.use('/api/employee', Employee)
+    app.use('/api/products', productsRouter)
+    app.use('/api/productCategory', productCategoryRouter)
+    app.use('/api/productBlogCategory', productBlogCategoryRouter)
+    app.use('/api/blog', Blog)
+    app.use('/api/booking', Booking)
+    app.use('/api/salary', Salary)
+    app.use('/api/counsel', Counsel)
+    app.use('/api/supervisor', Supervisor)
+    app.use('/api/service', Service)
+    app.use('/api/brand', Brand)
+    app.use('/api/coupon', Coupon)
+    app.use('/api/order', Order)
+    app.use('/api/insert', insertdata)
+
+    app.use(notFound)
+    app.use(errHandler)
+}
+
+
+module.exports = initRoutes
