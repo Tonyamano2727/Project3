@@ -6,6 +6,7 @@ import { useSnackbar } from "notistack";
 import { apiUpdateServices } from "../../apis"; // Đảm bảo import đúng API
 
 const UpdateServices = ({ category, editService, setEditService }) => {
+  const [isFocusDescription, setIsFocusDescription] = useState(null);
   const [thumbImage, setThumbImage] = useState(null);
   const [otherImages, setOtherImages] = useState([]);
   const [payload, setPayload] = useState({
@@ -135,7 +136,8 @@ const UpdateServices = ({ category, editService, setEditService }) => {
             name="description"
             changevalue={(e) => setPayload((prev) => ({ ...prev, description: e }))}
             label="Service Description"
-            value={payload.description} // Đảm bảo lấy giá trị mô tả hiện tại
+            value={payload.description} 
+            setisfousdescription={setIsFocusDescription}
           />
 
           {/* Thumbnail and Images Section */}

@@ -6,6 +6,7 @@ import { useSnackbar } from "notistack";
 import { apiCreateServices } from "../../apis";
 
 const Createdservices = ({ category }) => {
+  const [isFocusDescription, setIsFocusDescription] = useState(null);
   const [thumbImage, setThumbImage] = useState(null);
   const [otherImages, setOtherImages] = useState([]);
   const [payload, setPayload] = useState({
@@ -49,11 +50,25 @@ const Createdservices = ({ category }) => {
   };
 
   const handleCreateService = async (data) => {
-    const finalPayload = { ...data, ...payload };
-    // Handle form submission logic here...
+    // Create a FormData object for file uploads
+    const formData = new FormData();
+
+    // Append regular form fields
+    formData.append("title", data.title);
+    formData.append("description", payload.description); // Ensure description is a string
+    formData.append("price", data.price);
+    formData.append("category", data.category);
+
+    // Append files (thumbImage and otherImages)
+    if (thumbImage) formData.append("thumb", thumbImage); // Ensure `thumbImage` is the actual file or base64
+    if (otherImages.length > 0) {
+      otherImages.forEach((image, index) => {
+        formData.append(`images[${index}]`, image);
+      });
+    }
 
     try {
-      const response = await apiCreateServices(finalPayload);
+      const response = await apiCreateServices(formData);
       if (response.success) {
         enqueueSnackbar("Service created successfully", { variant: "success" });
         reset();
@@ -101,6 +116,7 @@ const Createdservices = ({ category }) => {
             register={register}
             errors={errors}
             id="category"
+            value={category}
             validate={{
               required: "This field is required",
             }}
@@ -109,17 +125,18 @@ const Createdservices = ({ category }) => {
 
           <Markdoweditor
             name="description"
-            changevalue={(e) => setPayload((prev) => ({ ...prev, description: e }))}
+            changevalue={(content) =>
+              setPayload((prev) => ({ ...prev, description: content }))
+            }
             label="Service Description"
+            setisfousdescription={setIsFocusDescription}
           />
 
-          {/* Thumbnail and Images Section */}
           <div className="flex items-center justify-around mb-5">
             <div className="flex flex-col justify-center items-center">
               <label
                 htmlFor="thumbImage"
-                className="mt-2  bg-white px-4 py-2 rounded-lg cursor-pointer"
-              >
+                className="mt-2  bg-white px-4 py-2 rounded-lg cursor-pointer">
                 Thumb Image
               </label>
               <input
@@ -138,8 +155,7 @@ const Createdservices = ({ category }) => {
                   />
                   <button
                     onClick={handleDeleteThumb}
-                    className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1"
-                  >
+                    className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
                     X
                   </button>
                 </div>
@@ -149,8 +165,7 @@ const Createdservices = ({ category }) => {
             <div className="flex flex-col justify-center items-center">
               <label
                 htmlFor="otherImages"
-                className="mt-2 bg-white px-4 py-2 rounded-lg cursor-pointer"
-              >
+                className="mt-2 bg-white px-4 py-2 rounded-lg cursor-pointer">
                 Other Images
               </label>
               <input
@@ -172,8 +187,7 @@ const Createdservices = ({ category }) => {
                       />
                       <button
                         onClick={() => handleDeleteOtherImage(index)}
-                        className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1"
-                      >
+                        className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
                         X
                       </button>
                     </div>
@@ -183,7 +197,9 @@ const Createdservices = ({ category }) => {
             </div>
           </div>
 
-          <Button type="submit" fw>Create Service</Button>
+          <Button type="submit" fw>
+            Create Service
+          </Button>
         </form>
       </div>
     </div>

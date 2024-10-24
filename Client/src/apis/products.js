@@ -14,7 +14,7 @@ export const apiGetProduct = (pid) =>
 
 export const apiCreateProduct = (data) =>
   axios({
-    url: "/products/",
+    url: "/products/createdmanyproducts",
     method: "post",
     data,
   });

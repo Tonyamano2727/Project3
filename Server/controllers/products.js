@@ -32,6 +32,52 @@ const createproducts = asyncHandler(async (req, res) => {
   });
 });
 
+const createmanyproducts = asyncHandler(async (req, res) => {
+  const productsData = req.body.products; // Nhận mảng sản phẩm từ form data
+
+  if (!Array.isArray(productsData) || productsData.length === 0) {
+    return res.status(400).json({
+      success: false,
+      mes: "Thiếu dữ liệu: Không có sản phẩm nào được gửi",
+    });
+  }
+
+  const newProducts = [];
+
+  for (let i = 0; i < productsData.length; i++) {
+    const productData = productsData[i];
+    const { title, price, description, brand, category, color } = productData;
+
+    if (!(title && price && description && brand && category && color)) {
+      return res.status(400).json({
+        success: false,
+        mes: "Thiếu thông tin ở một hoặc nhiều sản phẩm",
+      });
+    }
+
+    // Xử lý các tệp thumb và images cho từng sản phẩm
+    const thumb = req.files[`thumb${i}`]?.[0]?.path; // thumb của sản phẩm i
+    const images = req.files[`images${i}[]`]?.map((el) => el.path); // images của sản phẩm i
+
+    productData.slug = slugify(title);
+    if (thumb) productData.thumb = thumb;
+    if (images) productData.images = images;
+
+    // Tạo sản phẩm
+    const newProduct = await Product.create(productData);
+    if (newProduct) {
+      newProducts.push(newProduct);
+    }
+  }
+
+  return res.status(200).json({
+    success: newProducts.length > 0,
+    mes: newProducts.length > 0 ? "Đã tạo các sản phẩm thành công" : "Không thể tạo sản phẩm",
+    products: newProducts,
+  });
+});
+
+
 const getproduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
   const product = await Product.findById(pid);
@@ -136,7 +182,6 @@ const updateProduct = asyncHandler(async (req, res) => {
 const deleteProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
 
-  
   const usersWithProductInCart = await User.find({ "cart.product": pid });
 
   if (usersWithProductInCart.length > 0) {
@@ -225,4 +270,5 @@ module.exports = {
   deleteProduct,
   ratings,
   uploadImagesProduct,
+  createmanyproducts,
 };
