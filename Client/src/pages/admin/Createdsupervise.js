@@ -51,8 +51,8 @@ const Createdsupervise = () => {
   };
 
   return (
-    <div className="w-[85%] bg-gradient-to-r from-[#d3b491] to-[#e07c93] p-10 rounded-2xl border mt-5">
-      <h2 className="text-lg font-semibold mb-4 text-center uppercase text-white fon">
+    <div className="w-[85%] p-10 rounded-2xl border bg-white mt-5">
+      <h2 className="text-lg font-semibold mb-4 text-center uppercase text-black ">
         Create Supervisor
       </h2>
       <form onSubmit={handleSubmit(onSubmit)}>
