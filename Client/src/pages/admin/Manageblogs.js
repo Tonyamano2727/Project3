@@ -72,17 +72,18 @@ const Manageblogs = () => {
       icon: "warning",
       showCancelButton: true,
     });
-
+  
     if (result.isConfirmed) {
       const response = await apiDeleteBlog(blogId);
       if (response.success) {
-        enqueueSnackbar(response.message, { variant: "success" });
-        fetchBlogs(Object.fromEntries([...params])); // Gọi lại hàm fetchBlogs sau khi xóa
+        enqueueSnackbar(String(response.message || "Blog deleted successfully."), { variant: "success" });
+        fetchBlogs(Object.fromEntries([...params])); 
       } else {
-        enqueueSnackbar(response.message, { variant: "error" });
+        enqueueSnackbar(String(response.message || "Failed to delete blog."), { variant: "error" });
       }
     }
   };
+  
 
   const changeValue = (value) => {
     setSort(value);

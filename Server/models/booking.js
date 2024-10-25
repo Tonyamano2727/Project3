@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Service = require('../models/service');
 const Employee = require("../models/employee");
+const HotDistrict = require("../models/hotdistric"); // Import model hotDistrict
 
 const BookingSchema = new mongoose.Schema(
   {
@@ -19,7 +20,11 @@ const BookingSchema = new mongoose.Schema(
         ref: 'Employee',
       },
       name: String,
-    }],   
+    }],
+    hotDistrict: { // Thêm trường hotDistrict
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'HotDistrict',
+    },
     category: {
       type: String,
     },
@@ -85,14 +90,31 @@ BookingSchema.pre("save", async function (next) {
   try {
     const service = await Service.findById(this.service);
     
-    if (service) {
-      this.category = service.category; 
-      this.price = service.price; 
-      this.totalPrice = service.price * this.quantity; 
-    } else {
-      throw new Error('Dịch vụ không tồn tại');
+    if (!service) {
+      return next(new Error('Dịch vụ không tồn tại'));
     }
-    
+
+    this.category = service.category; 
+    this.price = service.price; 
+
+    // Kiểm tra xem quận có nằm trong danh sách hot không
+    if (this.hotDistrict) {
+      const hotDistrict = await HotDistrict.findById(this.hotDistrict);
+      if (hotDistrict) {
+        this.totalPrice = this.price * this.quantity * 1.1; // Tăng 10% nếu là quận hot
+      } else {
+        this.totalPrice = this.price * this.quantity; // Không phải quận hot
+      }
+    } else {
+      this.totalPrice = this.price * this.quantity; // Không có quận hot
+    }
+
+    // Log giá trị để kiểm tra
+    console.log('Service Price:', this.price);
+    console.log('Quantity:', this.quantity);
+    console.log('Is Hot District:', !!this.hotDistrict);
+    console.log('Total Price before save:', this.totalPrice);
+
     next();
   } catch (error) {
     next(error);

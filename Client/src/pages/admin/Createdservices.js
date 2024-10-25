@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { InputForm, Button, Markdoweditor } from "../../components";
 import { useForm } from "react-hook-form";
-import { getBase64 } from "../../ultils/helper";
 import { useSnackbar } from "notistack";
 import { apiCreateServices } from "../../apis";
 
@@ -19,14 +18,12 @@ const Createdservices = ({ category }) => {
     formState: { errors },
     reset,
     handleSubmit,
-    watch,
   } = useForm();
 
-  const handleThumbFileChange = async (e) => {
+  const handleThumbFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const base64 = await getBase64(file);
-      setThumbImage(base64);
+      setThumbImage(file); // Lưu file thay vì base64
     }
   };
 
@@ -34,14 +31,9 @@ const Createdservices = ({ category }) => {
     setThumbImage(null);
   };
 
-  const handleOtherFilesChange = async (e) => {
+  const handleOtherFilesChange = (e) => {
     const files = Array.from(e.target.files);
-    const imagesPreview = [];
-    for (let file of files) {
-      const base64 = await getBase64(file);
-      imagesPreview.push(base64);
-    }
-    setOtherImages(imagesPreview);
+    setOtherImages(files); // Lưu file thay vì base64
   };
 
   const handleDeleteOtherImage = (index) => {
@@ -50,27 +42,33 @@ const Createdservices = ({ category }) => {
   };
 
   const handleCreateService = async (data) => {
-    // Create a FormData object for file uploads
+    // Kiểm tra nếu không có hình ảnh nào
+    if (!thumbImage && otherImages.length === 0) {
+      enqueueSnackbar("Bạn cần cung cấp ít nhất một hình ảnh để tạo dịch vụ.", { variant: "error" });
+      return;
+    }
+
+    // Tạo một FormData object cho upload file
     const formData = new FormData();
 
     // Append regular form fields
     formData.append("title", data.title);
-    formData.append("description", payload.description); // Ensure description is a string
+    formData.append("description", payload.description); // Đảm bảo description là một chuỗi
     formData.append("price", data.price);
     formData.append("category", data.category);
 
-    // Append files (thumbImage and otherImages)
-    if (thumbImage) formData.append("thumb", thumbImage); // Ensure `thumbImage` is the actual file or base64
+    // Append files (thumbImage và otherImages)
+    if (thumbImage) formData.append("thumb", thumbImage); // Thêm file thực tế
     if (otherImages.length > 0) {
-      otherImages.forEach((image, index) => {
-        formData.append(`images[${index}]`, image);
+      otherImages.forEach((image) => {
+        formData.append("images", image); // Thêm file thực tế
       });
     }
 
     try {
       const response = await apiCreateServices(formData);
       if (response.success) {
-        enqueueSnackbar("Service created successfully", { variant: "success" });
+        enqueueSnackbar("Dịch vụ đã được tạo thành công", { variant: "success" });
         reset();
         setThumbImage(null);
         setOtherImages([]);
@@ -78,10 +76,8 @@ const Createdservices = ({ category }) => {
         enqueueSnackbar(response.data.mes, { variant: "error" });
       }
     } catch (error) {
-      console.error("Error creating service:", error);
-      enqueueSnackbar("An error occurred while creating the service.", {
-        variant: "error",
-      });
+      console.error("Lỗi khi tạo dịch vụ:", error);
+      enqueueSnackbar("Đã xảy ra lỗi khi tạo dịch vụ.", { variant: "error" });
     }
   };
 
@@ -136,7 +132,7 @@ const Createdservices = ({ category }) => {
             <div className="flex flex-col justify-center items-center">
               <label
                 htmlFor="thumbImage"
-                className="mt-2  bg-white px-4 py-2 rounded-lg cursor-pointer">
+                className="mt-2 bg-white px-4 py-2 rounded-lg cursor-pointer">
                 Thumb Image
               </label>
               <input
@@ -149,7 +145,7 @@ const Createdservices = ({ category }) => {
               {thumbImage && (
                 <div className="relative">
                   <img
-                    src={thumbImage}
+                    src={URL.createObjectURL(thumbImage)} // Sử dụng URL.createObjectURL để hiển thị hình ảnh
                     alt="Thumb Preview"
                     className="mt-2 h-20 w-20 object-cover"
                   />
@@ -181,7 +177,7 @@ const Createdservices = ({ category }) => {
                   {otherImages.map((image, index) => (
                     <div key={index} className="relative">
                       <img
-                        src={image}
+                        src={URL.createObjectURL(image)} // Sử dụng URL.createObjectURL để hiển thị hình ảnh
                         alt={`Other Image ${index}`}
                         className="h-20 w-20 object-cover"
                       />

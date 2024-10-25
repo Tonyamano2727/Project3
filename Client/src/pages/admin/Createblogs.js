@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { apiCreateBlogs , apiGetServices} from "../../apis";
-import axios from "axios";
+import { apiCreateBlogs, apiGetServices } from "../../apis";
 import { Button } from "../../components";
 
 const CreateBlogs = () => {
@@ -12,6 +11,9 @@ const CreateBlogs = () => {
   const [images, setImages] = useState([]);
   const [thumbImage, setThumbImage] = useState(null);
   const [otherImages, setOtherImages] = useState([]);
+  const [validationErrors, setValidationErrors] = useState(Array(7).fill("")); // Array for description validation messages
+  const [thumbError, setThumbError] = useState(""); // Error message for thumbnail
+  const [imagesError, setImagesError] = useState(""); // Error message for images
 
   const hygieneLabels = [
     "Personal Hygiene",
@@ -27,17 +29,41 @@ const CreateBlogs = () => {
   const handleThumbFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file type and size
+      if (!file.type.startsWith("image/")) {
+        setThumbError("Thumbnail must be an image file.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        setThumbError("Thumbnail image size must be less than 5MB.");
+        return;
+      }
       setThumb(file);
       setThumbImage(URL.createObjectURL(file));
+      setThumbError(""); // Clear error if valid
     }
   };
 
   // Handle other images file change
   const handleOtherFilesChange = (e) => {
     const files = Array.from(e.target.files);
+    const updatedErrors = []; // Reset error messages
+
+    files.forEach((file) => {
+      // Validate file type and size for each file
+      if (!file.type.startsWith("image/")) {
+        updatedErrors.push("All files must be image files.");
+      } else if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        updatedErrors.push("Each image size must be less than 5MB.");
+      } else {
+        updatedErrors.push(""); // Clear error if valid
+      }
+    });
+
     setImages(files);
     const previewImages = files.map((file) => URL.createObjectURL(file));
     setOtherImages(previewImages);
+    setImagesError(""); // Clear images error when selecting files
   };
 
   // Handle description change
@@ -45,12 +71,17 @@ const CreateBlogs = () => {
     const updatedDescriptions = [...description];
     updatedDescriptions[index] = value;
     setDescription(updatedDescriptions);
+    // Clear validation error when the user starts typing
+    const updatedErrors = [...validationErrors];
+    updatedErrors[index] = value.length < 80 ? "Must be at least 80 characters." : "";
+    setValidationErrors(updatedErrors);
   };
 
   // Delete thumbnail image
   const handleDeleteThumb = () => {
     setThumb(null);
     setThumbImage(null);
+    setThumbError(""); // Clear error when deleted
   };
 
   // Delete other image
@@ -61,11 +92,39 @@ const CreateBlogs = () => {
     updatedFiles.splice(index, 1);
     setOtherImages(updatedImages);
     setImages(updatedFiles);
+    setImagesError(""); // Clear error if images are deleted
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate descriptions
+    const newValidationErrors = description.map((desc) =>
+      desc.length < 80 ? "Must be at least 80 characters." : ""
+    );
+
+    setValidationErrors(newValidationErrors);
+
+    // Reset error states
+    setThumbError("");
+    setImagesError("");
+
+    // Check if any validation errors exist
+    if (
+      newValidationErrors.some((error) => error) || 
+      !thumb || // Check if thumbnail is missing
+      images.length === 0 // Check if additional images are missing
+    ) {
+      if (!thumb) {
+        setThumbError("Thumbnail is required.");
+      }
+
+      if (images.length === 0) {
+        setImagesError("At least one additional image is required.");
+      }
+      return; // Prevent submission if validation fails
+    }
 
     const formData = new FormData();
     formData.append("title", title);
@@ -102,9 +161,9 @@ const CreateBlogs = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await apiGetServices(); 
+        const response = await apiGetServices();
         console.log(response);
-        setCategories(response.service); 
+        setCategories(response.service);
       } catch (err) {
         console.log("Error fetching categories:", err.message);
       }
@@ -131,11 +190,14 @@ const CreateBlogs = () => {
             <div key={index} className="w-[48%]">
               <label>{label}</label>
               <textarea
-                className="border rounded-xl mt-1 px-4 w-full"
+                className="border rounded-xl mt-1 px-4 w-full h-[100px]"
                 value={description[index]}
                 onChange={(e) => handleDescriptionChange(index, e.target.value)}
                 placeholder={`Describe ${label.toLowerCase()}`}
               />
+              {validationErrors[index] && (
+                <p className="text-red-500 text-sm">{validationErrors[index]}</p>
+              )}
             </div>
           ))}
           <div className="w-[48%]">
@@ -182,6 +244,7 @@ const CreateBlogs = () => {
                 </button>
               </div>
             )}
+            {thumbError && <p className="text-red-500 text-sm">{thumbError}</p>}
           </div>
 
           <div className="flex flex-col justify-center items-center">
@@ -216,6 +279,8 @@ const CreateBlogs = () => {
                 ))}
               </div>
             )}
+            {/* Display error message for additional images */}
+            {imagesError && <p className="text-red-500 text-sm">{imagesError}</p>}
           </div>
         </div>
         <div className="w-full">
