@@ -12,16 +12,20 @@ router.post(
   ]),
   ctrls.createproducts
 );
+
+
+// Create many products 
+const maxProducts = 6; // Có thể thay đổi số này tùy nhu cầu
+
+const fields = [];
+
+for (let i = 0; i < maxProducts; i++) {
+  fields.push({ name: `thumb${i}`, maxCount: 1 });
+  fields.push({ name: `images${i}[]`, maxCount: 10 });
+}
 router.post(
   "/createdmanyproducts",
-  [verifyToken, isAdmin],
-  uploader.fields([
-    { name: 'thumb0', maxCount: 1 }, // Thumb cho sản phẩm thứ nhất
-    { name: 'images0[]', maxCount: 10 }, // Hình ảnh cho sản phẩm thứ nhất
-    { name: 'thumb1', maxCount: 1 }, // Thumb cho sản phẩm thứ hai
-    { name: 'images1[]', maxCount: 10 }, // Hình ảnh cho sản phẩm thứ hai
-    // Bạn có thể thêm nhiều sản phẩm hơn nếu cần
-  ]),
+  uploader.fields(fields),
   ctrls.createmanyproducts
 );
 router.get("/", ctrls.getallproducts);

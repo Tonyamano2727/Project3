@@ -142,35 +142,41 @@ const addReview = asyncHandler(async (req, res) => {
 
   try {
     const blog = await Blog.findById(bid);
-    
+
     if (!blog) {
       return res.status(404).json({ success: false, message: "Blog not found" });
     }
-    const alreadyReviewed = blog.reviews.find(
+
+    const existingReview = blog.reviews.find(
       (review) => review.user.toString() === userId.toString()
     );
 
-    if (alreadyReviewed) {
-      return res.status(400).json({ success: false, message: "You have already reviewed this blog" });
+    if (existingReview) {
+      // Update the existing comment
+      existingReview.comment = comment;
+      existingReview.updatedAt = new Date();
+    } else {
+      // Add a new review if not found
+      const newReview = {
+        user: userId,
+        comment,
+        createdAt: new Date(),
+      };
+      blog.reviews.push(newReview);
     }
-    const newReview = {
-      user: userId,
-      comment,
-      createdAt: new Date(),
-    };
 
-    blog.reviews.push(newReview);
     await blog.save();
 
     return res.status(201).json({
       success: true,
-      message: "Review added successfully",
+      message: existingReview ? "Review updated successfully" : "Review added successfully",
       reviews: blog.reviews,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 });
+
 
 
 // Khi người dùng like một bài blog thì :

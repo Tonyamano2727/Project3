@@ -31,41 +31,94 @@ export const generateRage = (start, end) => {
 };
 
 
-export const validate = (payload, setinvalidFields) => {
+// export const validate = (payload, setinvalidFields) => {
+//   let invalids = 0;
+//   const formatPayload = Object.entries(payload);
+//   for (let arr of formatPayload) {
+//     if (arr[1].trim() === "") {
+//       invalids++;
+//       setinvalidFields((prev) => [
+//         ...prev,
+//         { name: arr[0], mes: "Required this field" },
+//       ]);
+//     }
+//   }
+//   for (let arr of formatPayload) {
+//     switch (arr[0]) {
+//       case "email":
+//         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//         if (!arr[1].match(regex)) {
+//           invalids++;
+//           setinvalidFields((prev) => [
+//             ...prev,
+//             { name: arr[0], mes: "Email invalid" },
+//           ]);
+//         }
+//         break;
+//       case "password":
+//         const regexpassword = /^(?=.*[A-Z])[A-Z0-9]+$/;
+//         if (!regexpassword.test(arr[1]) || arr[1].length < 10) {
+//           invalids++;
+//           setinvalidFields((prev) => [
+//             ...prev,
+//             {
+//               name: arr[0],
+//               mes: "Password must be at least 10 characters long",
+//             },
+//           ]);
+//         }
+//         break;
+
+//       case "mobile":
+//         const regexMobile = /^[0-9 +\-()]+$/;
+//         if (!regexMobile.test(arr[1]) || arr[1].length < 10) {
+//           invalids++;
+//           setinvalidFields((prev) => [
+//             ...prev,
+//             {
+//               name: arr[0],
+//               mes: "Mobile number must be at least 10 digits long.",
+//             },
+//           ]);
+//         }
+//         break;
+
+//       default:
+//         break;
+//     }
+//   }
+//   return invalids;
+// };
+export const validate = (payload, setInvalidFields) => {
   let invalids = 0;
   const formatPayload = Object.entries(payload);
+  const errors = []; // Mảng lưu trữ lỗi
+
   for (let arr of formatPayload) {
-    if (arr[1].trim() === "") {
+    // Kiểm tra nếu arr[1] không phải là chuỗi
+    if (typeof arr[1] !== 'string' || arr[1].trim() === "") {
       invalids++;
-      setinvalidFields((prev) => [
-        ...prev,
-        { name: arr[0], mes: "Required this field" },
-      ]);
+      errors.push({ name: arr[0], mes: "Required this field" }); // Thêm vào mảng lỗi
     }
   }
+
   for (let arr of formatPayload) {
     switch (arr[0]) {
       case "email":
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!arr[1].match(regex)) {
           invalids++;
-          setinvalidFields((prev) => [
-            ...prev,
-            { name: arr[0], mes: "Email invalid" },
-          ]);
+          errors.push({ name: arr[0], mes: "Email invalid" });
         }
         break;
       case "password":
         const regexpassword = /^(?=.*[A-Z])[A-Z0-9]+$/;
         if (!regexpassword.test(arr[1]) || arr[1].length < 10) {
           invalids++;
-          setinvalidFields((prev) => [
-            ...prev,
-            {
-              name: arr[0],
-              mes: "Password must be at least 10 characters long",
-            },
-          ]);
+          errors.push({
+            name: arr[0],
+            mes: "Password must be at least 10 characters long",
+          });
         }
         break;
 
@@ -73,13 +126,10 @@ export const validate = (payload, setinvalidFields) => {
         const regexMobile = /^[0-9 +\-()]+$/;
         if (!regexMobile.test(arr[1]) || arr[1].length < 10) {
           invalids++;
-          setinvalidFields((prev) => [
-            ...prev,
-            {
-              name: arr[0],
-              mes: "Mobile number must be at least 10 digits long.",
-            },
-          ]);
+          errors.push({
+            name: arr[0],
+            mes: "Mobile number must be at least 10 digits long.",
+          });
         }
         break;
 
@@ -87,8 +137,11 @@ export const validate = (payload, setinvalidFields) => {
         break;
     }
   }
+
+  setInvalidFields(errors); // Cập nhật trạng thái với tất cả lỗi
   return invalids;
 };
+
 
 export function getBase64(file) {
   if (!file) return "";
