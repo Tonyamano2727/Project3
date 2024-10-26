@@ -2,15 +2,17 @@ const HotDistrict = require("../models/hotdistric");
 
 const createHotDistrict = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, percentage } = req.body; 
 
-    if (!name) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Tên quận không được cung cấp" });
+    if (!(name && percentage))
+      throw new Error("Missing input");
+
+
+    if (percentage !== undefined && (percentage < 0 || percentage > 100)) {
+      return res.status(400).json({ success: false, message: "Phần trăm phải nằm trong khoảng từ 0 đến 100" });
     }
 
-    const hotDistrict = new HotDistrict({ name });
+    const hotDistrict = new HotDistrict({ name, percentage }); 
     await hotDistrict.save();
 
     res.status(201).json({ success: true, data: hotDistrict });
@@ -18,6 +20,7 @@ const createHotDistrict = async (req, res) => {
     res.status(400).json({ success: false, error: error.message });
   }
 };
+
 const deleteHotDistrict = async (req, res) => {
 
   try {
@@ -42,5 +45,14 @@ const deleteHotDistrict = async (req, res) => {
     res.status(400).json({ success: false, error: error.message });
   }
 };
+const getAllHotDistricts = async (req, res) => {
+  try {
+    const hotDistricts = await HotDistrict.find();
+    res.status(200).json({ success: true, data: hotDistricts });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
 
-module.exports = { createHotDistrict, deleteHotDistrict };
+
+module.exports = { createHotDistrict, deleteHotDistrict, getAllHotDistricts };

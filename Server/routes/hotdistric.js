@@ -4,6 +4,7 @@ const {verifyToken , isAdmin} = require('../middlewares/verifyToken')
 
 
 router.post('/createhotdistric',[verifyToken, isAdmin], ctrls.createHotDistrict)
+router.get('/', ctrls.getAllHotDistricts)
 router.delete('/deletedhotdistric/:did',[verifyToken, isAdmin],ctrls.deleteHotDistrict)
 
 

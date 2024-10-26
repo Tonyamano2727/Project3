@@ -7,6 +7,10 @@ const HotDistrictSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    percentage: {
+      type: Number,
+      required: false,
+    },
   },
   {
     timestamps: true,
