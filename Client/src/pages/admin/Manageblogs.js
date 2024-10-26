@@ -39,7 +39,6 @@ const Manageblogs = () => {
       if (response.success) {
         setBlogs(response.blogs);
         setCounts(response.counts);
-        // Nếu đây là lần đầu tiên load, lưu tất cả danh mục
         if (!allCategories.length) {
           const uniqueCategories = [...new Set(response.blogs.map((blog) => blog.category))];
           setAllCategories(uniqueCategories);

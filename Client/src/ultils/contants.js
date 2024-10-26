@@ -18,27 +18,27 @@ export const Icon = [
   {
     id: 1,
     imageSrc: houseicon,
-    title : "View details",
+    title: "View details",
   },
   {
     id: 2,
     imageSrc: houseicon2,
-    title : "View details",
+    title: "View details",
   },
   {
     id: 3,
     imageSrc: houseicon3,
-    title : "View details",
+    title: "View details",
   },
   {
     id: 4,
     imageSrc: houseicon4,
-    title : "View details",
+    title: "View details",
   },
   {
     id: 5,
     imageSrc: houseicon5,
-    title : "View details",
+    title: "View details",
   },
 ];
 
@@ -178,13 +178,11 @@ export const Productinfortabs = [
   {
     id: 2,
     title: "WARRANTY",
-    
   },
   {
     id: 3,
     title: "CUSTOM REVIEW",
   },
-  
 ];
 
 export const colors = [
@@ -257,7 +255,7 @@ export const sortByDate = [
   {
     id: 2,
     value: "createdAt",
-    text: "Date, old to new", 
+    text: "Date, old to new",
   },
 ];
 
@@ -322,11 +320,10 @@ export const sortsupervisor = [
     value: "District 12",
     text: "District 12",
   },
-  
 ];
 
-
-const { FaUsers , TbBrandProducthunt, FaRegMoneyBillAlt , MdOutlineGridView } = icons;
+const { FaUsers, TbBrandProducthunt, FaRegMoneyBillAlt, MdOutlineGridView } =
+  icons;
 
 export const AdminSidebar = [
   {
@@ -341,7 +338,7 @@ export const AdminSidebar = [
     type: "SINGLE",
     text: "Manage users",
     path: `/${path.ADMIN}/${path.MANAGE_USER}`,
-    icon: <FaUsers  />,
+    icon: <FaUsers />,
   },
   {
     id: 3,
@@ -416,13 +413,22 @@ export const AdminSidebar = [
   },
   {
     id: 8,
-    type: "SINGLE",
+    type: "PARENT",
     text: "Manage booking",
-    path: `/${path.ADMIN}/${path.MANAGE_BOOKING}`,
     icon: <FaRegMoneyBillAlt />,
+    submenu: [
+      {
+        text: "Manage Hotdistric",
+        path: `/${path.ADMIN}/${path.MANAGE_HOTDISTRIC}`,
+      },
+      {
+        text: "Manage booking",
+        path: `/${path.ADMIN}/${path.MANAGE_BOOKING}`,
+      },
+    ],
   },
   {
-    id: 8,
+    id: 9,
     type: "SINGLE",
     text: "Profile",
     path: `/${path.ADMIN}/${path.PROFILE_ADMIN}`,
@@ -436,7 +442,7 @@ export const membersidebar = [
     type: "SINGLE",
     text: "PERSONAL",
     path: `/${path.MEMBER}/${path.PERSONAL}`,
-    icon: <FaUsers  />,
+    icon: <FaUsers />,
   },
   {
     id: 2,
@@ -480,7 +486,6 @@ export const statusOptions = [
   { value: "Cancelled", text: "Cancelled" },
 ];
 
-
 export const statusOptionsBooking = [
   { value: "Pending", text: "Pending" },
   { value: "Confirmed", text: "Confirmed" },
@@ -488,7 +493,6 @@ export const statusOptionsBooking = [
   { value: "Completed", text: "Completed" },
   { value: "Cancelled", text: "Cancelled" },
 ];
- 
 
 export const wardsByDistrict = {
   "District 1": [

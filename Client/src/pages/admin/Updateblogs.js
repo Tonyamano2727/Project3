@@ -99,7 +99,7 @@ const UpdateBlogs = ({ editBlog, render, setEditBlog }) => {
     const fetchCategories = async () => {
       try {
         const response = await apiGetServices();
-        setCategories(response.services);
+        setCategories(response.service);
       } catch (err) {
         console.log("Error fetching categories:", err.message);
       }

@@ -27,6 +27,7 @@ import {
   Createdsupervise,
   Createdservices,
   Manageservices,
+  Managehotdistric,
 } from "./pages/admin";
 import {
   MemberLayout,
@@ -115,6 +116,7 @@ function App() {
             <Route path={path.CREATE_BLOGS} element={<Createblogs />} />
             <Route path={path.PROFILE_ADMIN} element={<ProfileAdmin />} />
             <Route path={path.MANAGE_SUPERVISE} element={<Managesupervise />} />
+            <Route path={path.MANAGE_HOTDISTRIC} element={<Managehotdistric />} />
             <Route
               path={path.CREATE_SUPERVISE}
               element={<Createdsupervise />}

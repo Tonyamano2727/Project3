@@ -21,6 +21,42 @@ const createHotDistrict = async (req, res) => {
   }
 };
 
+const updateHotDistrict = async (req, res) => {
+  try {
+    const { did } = req.params; // Get the district ID from the URL parameters
+    const { percentage } = req.body; // Get the percentage from the request body
+
+    // Check if the percentage is provided; if not, throw an error
+    if (percentage === undefined) {
+      return res.status(400).json({ success: false, message: "No fields to update" });
+    }
+
+    // Validate the percentage value
+    if (percentage < 0 || percentage > 100) {
+      return res.status(400).json({ success: false, message: "Phần trăm phải nằm trong khoảng từ 0 đến 100" });
+    }
+
+    // Update the district with the new percentage
+    const hotDistrict = await HotDistrict.findByIdAndUpdate(
+      did,
+      { percentage }, // Pass the percentage to update
+      { new: true, runValidators: true } // Options: return the updated document and run validation
+    );
+
+    // If the district is not found, return a 404 error
+    if (!hotDistrict) {
+      return res.status(404).json({ success: false, message: "Quận không được tìm thấy" });
+    }
+
+    // Return the updated district information
+    res.status(200).json({ success: true, data: hotDistrict });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
+
+
+
 const deleteHotDistrict = async (req, res) => {
 
   try {
@@ -55,4 +91,4 @@ const getAllHotDistricts = async (req, res) => {
 };
 
 
-module.exports = { createHotDistrict, deleteHotDistrict, getAllHotDistricts };
+module.exports = { createHotDistrict, deleteHotDistrict, getAllHotDistricts , updateHotDistrict};

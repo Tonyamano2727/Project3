@@ -34,6 +34,7 @@ const path = {
     MANAGE_SERVICES: 'manage-services',
     CREATE_SERVICES: 'create-services',
     OVER_VIEW: 'over-view',
+    MANAGE_HOTDISTRIC: 'manage-hotdistric',
     PROFILE_ADMIN: 'profile-admin',
 
     // Member

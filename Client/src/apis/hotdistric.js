@@ -5,3 +5,10 @@ export const gethotdistric = () =>
     url: "/hotdistric/",
     method: "get",
   });
+
+export const updatehotdistric = (data, did) =>
+  axios({
+    url: "/hotdistric/updatehotdistric/" + did ,
+    method: "put",
+    data
+  });
