@@ -33,6 +33,7 @@ const path = {
     CREATE_BLOGS: 'create-blogs',
     MANAGE_SERVICES: 'manage-services',
     CREATE_SERVICES: 'create-services',
+    CATEGORY_SERVICES: 'category-services',
     OVER_VIEW: 'over-view',
     MANAGE_HOTDISTRIC: 'manage-hotdistric',
     PROFILE_ADMIN: 'profile-admin',

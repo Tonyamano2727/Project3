@@ -395,6 +395,10 @@ export const AdminSidebar = [
     icon: <TbBrandProducthunt />,
     submenu: [
       {
+        text: "Create Category Services",
+        path: `/${path.ADMIN}/${path.CATEGORY_SERVICES}`,
+      },
+      {
         text: "Create Services",
         path: `/${path.ADMIN}/${path.CREATE_SERVICES}`,
       },

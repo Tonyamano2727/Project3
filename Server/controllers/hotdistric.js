@@ -55,15 +55,13 @@ const updateHotDistrict = async (req, res) => {
   }
 };
 
-
-
 const deleteHotDistrict = async (req, res) => {
 
   try {
     const { did } = req.params;
 
   
-    if (!id) {
+    if (!did) {
       return res
         .status(400)
         .json({ success: false, message: "ID không được cung cấp" });

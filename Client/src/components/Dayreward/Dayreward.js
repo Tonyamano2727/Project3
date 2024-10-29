@@ -49,15 +49,6 @@ const Dayreward = () => {
   useEffect(() => {
     fetchBookings();
   }, []);
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
-
   return (
     <div className="bg-white w-[28%] border flex flex-col p-5 rounded-2xl hover:mt-2 duration-200 ease-in-out">
       <h1 className="text-[17px] flex items-center gap-2">

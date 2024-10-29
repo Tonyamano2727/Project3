@@ -122,7 +122,7 @@ const CreateProducts = () => {
       formData.append(`products[${index}][price]`, product.price);
       formData.append(`products[${index}][description]`, product.description);
       formData.append(`products[${index}][brand]`, product.brand);
-      formData.append(`products[${index}][category]`, product.categoryTitle); // Use categoryTitle instead of category ID
+      formData.append(`products[${index}][category]`, product.categoryTitle); 
       formData.append(`products[${index}][color]`, product.color);
       formData.append(`products[${index}][quantity]`, product.quantity);
 

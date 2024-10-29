@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { InputForm, Button, Markdoweditor } from "../../components";
 import { useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
-import { apiCreateServices } from "../../apis";
+import { apiCreateServices, apigetallcategoryservice } from "../../apis";
 
-const Createdservices = ({ category }) => {
+const Createdservices = () => {
   const [isFocusDescription, setIsFocusDescription] = useState(null);
   const [thumbImage, setThumbImage] = useState(null);
   const [otherImages, setOtherImages] = useState([]);
   const [payload, setPayload] = useState({
     description: "",
+    category: "",
   });
+  const [categories, setCategories] = useState([]); // Lưu danh sách danh mục
 
   const { enqueueSnackbar } = useSnackbar();
   const {
@@ -20,10 +22,27 @@ const Createdservices = ({ category }) => {
     handleSubmit,
   } = useForm();
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await apigetallcategoryservice();
+        if (Array.isArray(response) && response.length > 0) {
+          setCategories(response); 
+        } else {
+          console.log("Failed to fetch categories");
+        }
+      } catch (error) {
+        enqueueSnackbar("Đã xảy ra lỗi khi lấy danh mục.", { variant: "error" });
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const handleThumbFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setThumbImage(file); // Lưu file thay vì base64
+      setThumbImage(file);
     }
   };
 
@@ -33,7 +52,7 @@ const Createdservices = ({ category }) => {
 
   const handleOtherFilesChange = (e) => {
     const files = Array.from(e.target.files);
-    setOtherImages(files); // Lưu file thay vì base64
+    setOtherImages(files);
   };
 
   const handleDeleteOtherImage = (index) => {
@@ -42,26 +61,21 @@ const Createdservices = ({ category }) => {
   };
 
   const handleCreateService = async (data) => {
-    // Kiểm tra nếu không có hình ảnh nào
     if (!thumbImage && otherImages.length === 0) {
       enqueueSnackbar("Bạn cần cung cấp ít nhất một hình ảnh để tạo dịch vụ.", { variant: "error" });
       return;
     }
 
-    // Tạo một FormData object cho upload file
     const formData = new FormData();
-
-    // Append regular form fields
     formData.append("title", data.title);
-    formData.append("description", payload.description); // Đảm bảo description là một chuỗi
+    formData.append("description", payload.description);
     formData.append("price", data.price);
-    formData.append("category", data.category);
+    formData.append("category", payload.category); 
 
-    // Append files (thumbImage và otherImages)
-    if (thumbImage) formData.append("thumb", thumbImage); // Thêm file thực tế
+    if (thumbImage) formData.append("thumb", thumbImage);
     if (otherImages.length > 0) {
       otherImages.forEach((image) => {
-        formData.append("images", image); // Thêm file thực tế
+        formData.append("images", image);
       });
     }
 
@@ -90,9 +104,7 @@ const Createdservices = ({ category }) => {
             register={register}
             errors={errors}
             id="title"
-            validate={{
-              required: "This field is required",
-            }}
+            validate={{ required: "This field is required" }}
             placeholder="Enter service title"
           />
 
@@ -101,23 +113,29 @@ const Createdservices = ({ category }) => {
             register={register}
             errors={errors}
             id="price"
-            validate={{
-              required: "This field is required",
-            }}
+            validate={{ required: "This field is required" }}
             placeholder="Enter service price"
           />
-
-          <InputForm
-            label="Category"
-            register={register}
-            errors={errors}
-            id="category"
-            value={category}
-            validate={{
-              required: "This field is required",
-            }}
-            placeholder="Enter category"
-          />
+          <div className="mb-4">
+            <label htmlFor="category" className="block mt-3 text-[13px] mb-2">Category</label>
+            <select
+              id="category"
+              {...register("category", { required: "This field is required" })}
+              onChange={(e) => {
+                const selectedCategory = categories.find(cat => cat._id === e.target.value);
+                setPayload((prev) => ({ ...prev, category: selectedCategory?.title || "" }));
+              }}
+              className={`border p-2 w-full  rounded-3xl ${errors.category ? "border-red-500" : "border-gray-300"}`}
+            >
+              <option value="">Select category</option>
+              {categories.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.title}
+                </option>
+              ))}
+            </select>
+            {errors.category && <span className="text-red-500">{errors.category.message}</span>}
+          </div>
 
           <Markdoweditor
             name="description"
@@ -132,7 +150,8 @@ const Createdservices = ({ category }) => {
             <div className="flex flex-col justify-center items-center">
               <label
                 htmlFor="thumbImage"
-                className="mt-2 bg-white px-4 py-2 rounded-lg cursor-pointer">
+                className="mt-2 bg-white px-4 py-2 rounded-lg cursor-pointer"
+              >
                 Thumb Image
               </label>
               <input
@@ -145,13 +164,14 @@ const Createdservices = ({ category }) => {
               {thumbImage && (
                 <div className="relative">
                   <img
-                    src={URL.createObjectURL(thumbImage)} // Sử dụng URL.createObjectURL để hiển thị hình ảnh
+                    src={URL.createObjectURL(thumbImage)}
                     alt="Thumb Preview"
                     className="mt-2 h-20 w-20 object-cover"
                   />
                   <button
                     onClick={handleDeleteThumb}
-                    className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
+                    className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1"
+                  >
                     X
                   </button>
                 </div>
@@ -161,7 +181,8 @@ const Createdservices = ({ category }) => {
             <div className="flex flex-col justify-center items-center">
               <label
                 htmlFor="otherImages"
-                className="mt-2 bg-white px-4 py-2 rounded-lg cursor-pointer">
+                className="mt-2 bg-white px-4 py-2 rounded-lg cursor-pointer"
+              >
                 Other Images
               </label>
               <input
@@ -177,13 +198,14 @@ const Createdservices = ({ category }) => {
                   {otherImages.map((image, index) => (
                     <div key={index} className="relative">
                       <img
-                        src={URL.createObjectURL(image)} // Sử dụng URL.createObjectURL để hiển thị hình ảnh
+                        src={URL.createObjectURL(image)}
                         alt={`Other Image ${index}`}
                         className="h-20 w-20 object-cover"
                       />
                       <button
                         onClick={() => handleDeleteOtherImage(index)}
-                        className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
+                        className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1"
+                      >
                         X
                       </button>
                     </div>

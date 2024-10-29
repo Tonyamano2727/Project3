@@ -82,18 +82,15 @@ const updateBooking = async (req, res) => {
 
     // Cập nhật nhân viên phụ trách nếu có
     if (updatedData.employeeId) {
-      // Tìm tất cả nhân viên tương ứng dựa trên ID được cung cấp
       const employees = await Employee.find({ _id: { $in: updatedData.employeeId } });
 
-      // Kiểm tra nếu có nhân viên nào được tìm thấy
       if (employees.length === 0) {
         return res.status(404).json({ success: false, message: "Không có nhân viên nào tồn tại." });
       }
 
-      // Tạo mảng để giữ ID và tên nhân viên
       updatedBooking.employeeDetails = employees.map(employee => ({
-        employeeId: employee._id.toString(), // Giữ ID nhân viên
-        name: employee.name, // Giữ tên nhân viên
+        employeeId: employee._id.toString(),
+        name: employee.name,
       }));
     }
 
@@ -105,9 +102,8 @@ const updateBooking = async (req, res) => {
       if (updatedData.service) {
         const service = await Service.findById(updatedData.service);
         if (service) {
-          updatedBooking.category = service.category; // Cập nhật loại dịch vụ dựa trên dịch vụ
-          updatedBooking.totalPrice =
-            service.price * (updatedData.quantity || updatedBooking.quantity); // Tính toán lại tổng giá
+          updatedBooking.category = service.category;
+          updatedBooking.totalPrice = service.price * (updatedData.quantity || updatedBooking.quantity);
         }
       } else {
         updatedBooking.totalPrice =
@@ -116,63 +112,62 @@ const updateBooking = async (req, res) => {
       }
     }
 
-    // Lưu thông tin booking đã cập nhật vào cơ sở dữ liệu
     await updatedBooking.save();
 
     // Nếu trạng thái booking được cập nhật thành "Completed", tính lương cho nhân viên
     if (updatedBooking.status === "Completed") {
       const employeeIds = updatedBooking.employeeDetails.map(detail => detail.employeeId);
-      const month = new Date().getMonth() + 1; // Tháng hiện tại
-      const year = new Date().getFullYear(); // Năm hiện tại
+      const month = new Date().getMonth() + 1;
+      const year = new Date().getFullYear();
 
-      // Kiểm tra nếu employeeId là hợp lệ
       if (employeeIds.length > 0) {
-        const employeeId = employeeIds[0]; // Lấy ID của nhân viên đầu tiên (hoặc bạn có thể thay đổi theo logic của mình)
+        const employeeId = employeeIds[0];
 
-        // Tính toán lương cho nhân viên
         const employee = await Employee.findById(employeeId);
         const completedBookings = await Booking.find({
-          employeeDetails: {
-            $elemMatch: {
-              employeeId: employeeId // Kiểm tra employeeId trong mảng employeeDetails
-            }
-          },
+          employeeDetails: { $elemMatch: { employeeId: employeeId } },
           status: "Completed",
-          createdAt: {
-            $gte: new Date(year, month - 1, 1), // Bắt đầu từ ngày 1 của tháng
-            $lt: new Date(year, month, 1) // Trước ngày 1 của tháng sau
-          }
+          createdAt: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) }
         });
 
-       
         if (completedBookings.length > 0) {
-      
           const totalBookingValue = completedBookings.reduce((sum, booking) => sum + booking.totalPrice, 0);
-          const commission = totalBookingValue * 0.30; 
-
-     
+          const commission = totalBookingValue * 0.30;
           const totalSalary = employee.baseSalary + commission;
 
-          
           const bookingDetails = completedBookings.map(booking => ({
             bookingId: booking._id,
             totalPrice: booking.totalPrice,
             createdAt: booking.createdAt
           }));
 
-          // Lưu kết quả vào model Salary
-          const salaryRecord = new Salary({
+          // Kiểm tra xem bản ghi lương đã tồn tại chưa
+          const existingSalaryRecord = await Salary.findOne({
             employee: employeeId,
             month: month,
-            year: year,
-            baseSalary: employee.baseSalary,
-            commission: commission,
-            totalSalary: totalSalary,
-            bookings: bookingDetails 
+            year: year
           });
 
-          // Lưu thông tin lương
-          await salaryRecord.save();
+          if (existingSalaryRecord) {
+            // Nếu tồn tại, cập nhật lại tổng lương và chi tiết booking
+            existingSalaryRecord.baseSalary = employee.baseSalary;
+            existingSalaryRecord.commission = commission;
+            existingSalaryRecord.totalSalary = totalSalary;
+            existingSalaryRecord.bookings = bookingDetails;
+            await existingSalaryRecord.save();
+          } else {
+            // Nếu chưa tồn tại, tạo bản ghi mới
+            const salaryRecord = new Salary({
+              employee: employeeId,
+              month: month,
+              year: year,
+              baseSalary: employee.baseSalary,
+              commission: commission,
+              totalSalary: totalSalary,
+              bookings: bookingDetails 
+            });
+            await salaryRecord.save();
+          }
         }
       }
     }
@@ -188,6 +183,7 @@ const updateBooking = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 const getBookings = async (req, res) => {

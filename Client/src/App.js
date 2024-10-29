@@ -28,6 +28,7 @@ import {
   Createdservices,
   Manageservices,
   Managehotdistric,
+  Categoryservice,
 } from "./pages/admin";
 import {
   MemberLayout,
@@ -120,6 +121,10 @@ function App() {
             <Route
               path={path.CREATE_SUPERVISE}
               element={<Createdsupervise />}
+            />
+             <Route
+              path={path.CATEGORY_SERVICES}
+              element={<Categoryservice />}
             />
             <Route
               path={path.CREATE_SERVICES}
