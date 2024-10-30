@@ -24,7 +24,7 @@ const Mywhistlist = ({ title }) => {
           </div>
           <div className="flex absolute flex-col text-white left-20 top-[200px] p-4">
             <h2 className="text-[45px] mb-[8px] font-bold font tracking-wide">
-              Whistlist
+              Wishlist
             </h2>
             <Breadcrumb title={title} />
           </div>
