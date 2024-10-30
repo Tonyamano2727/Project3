@@ -13,13 +13,13 @@ const { response } = require("express");
 
 const register = asyncHandler(async (req, res) => {
   try {
-    const { email, password, firstname, lastname, mobile} = req.body;
-    if (!email || !password || !lastname || !firstname || !mobile )
+    const { email, password, firstname, lastname, mobile } = req.body;
+    if (!email || !password || !lastname || !firstname || !mobile)
       return res.status(400).json({
         success: false,
         mes: "Missing input",
       });
-    
+
     const user = await User.findOne({ email: email });
     if (user) throw new Error("User already exists");
     else {
@@ -40,7 +40,7 @@ const register = asyncHandler(async (req, res) => {
 });
 
 // Refresh  token => Cấp mới access token
-// Access token => Xác thực người dùng , phân quyền người dùng
+// Access token => Xác thực người dùng, phân quyền người dùng
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password)
@@ -305,15 +305,12 @@ const updateuserAddress = asyncHandler(async (req, res) => {
   });
 });
 
-
 const updateCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { pid, quantity = 1, color, price, title, thumb } = req.body;
 
-  
   if (!pid || !color) throw new Error("Missing input");
 
- 
   const product = await Product.findById(pid);
   if (!product) {
     return res.status(404).json({
@@ -322,7 +319,6 @@ const updateCart = asyncHandler(async (req, res) => {
     });
   }
 
-  
   if (product.quantity <= 0) {
     return res.status(400).json({
       success: false,
@@ -330,7 +326,6 @@ const updateCart = asyncHandler(async (req, res) => {
     });
   }
 
-  
   if (quantity < 0) {
     return res.status(400).json({
       success: false,
@@ -342,7 +337,6 @@ const updateCart = asyncHandler(async (req, res) => {
   const alreadyProduct = user?.cart?.find(
     (el) => el.product && el.product.toString() === pid
   );
-
 
   if (alreadyProduct && alreadyProduct.color === color) {
     const response = await User.updateOne(
@@ -382,7 +376,6 @@ const updateCart = asyncHandler(async (req, res) => {
     });
   }
 });
-
 
 const removeProductInCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
@@ -431,7 +424,7 @@ const UpdateWhistlist = asyncHandler(async (req, res) => {
     );
     return res.json({
       success: response ? true : false,
-      mes: response ? "Updated your whistlist" : "Failed to update wthlist!",
+      mes: response ? "Updated your wishlist" : "Failed to update wishlist!",
     });
   }
 });
