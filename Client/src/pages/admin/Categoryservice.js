@@ -61,10 +61,8 @@ const Categoryservice = () => {
       });
       console.log("Create API response:", response);
 
-      // Kiểm tra phản hồi từ API
       if (response && response._id) {
-        // Cập nhật danh sách danh mục bằng cách thêm danh mục mới vào danh sách hiện tại
-        setCategories((prev) => [...prev, response]); // Giả sử response chứa thông tin danh mục mới
+        setCategories((prev) => [...prev, response]);
         setNewCategoryTitle("");
         setShowCreateForm(false);
         console.log("Category created successfully");
@@ -80,7 +78,8 @@ const Categoryservice = () => {
       <div className="flex w-[85%] justify-start items-start">
         <button
           onClick={() => setShowCreateForm((prev) => !prev)}
-          className="p-2 bg-gradient-to-r from-[#e0a96a] to-[#e07c93] rounded-2xl w-[15%] text-[14px] text-white text-center">
+          className="p-2 bg-gradient-to-r from-[#e0a96a] to-[#e07c93] rounded-2xl w-[15%] text-[14px] text-white text-center"
+        >
           + New Category
         </button>
       </div>
@@ -96,12 +95,14 @@ const Categoryservice = () => {
           />
           <button
             onClick={handleCreate}
-            className="bg-blue-500 text-white px-4 py-2 rounded-2xl mr-2">
+            className="bg-blue-500 text-white px-4 py-2 rounded-2xl mr-2"
+          >
             Create
           </button>
           <button
             onClick={() => setShowCreateForm(false)}
-            className="bg-gray-300 text-black px-4 py-2 rounded-2xl">
+            className="bg-gray-300 text-black px-4 py-2 rounded-2xl"
+          >
             Cancel
           </button>
         </div>
@@ -111,19 +112,17 @@ const Categoryservice = () => {
         {categories.length > 0 ? (
           <ul className="w-full ">
             {categories.map((category) => (
-              <li
-                key={category._id}
-                className="flex justify-between p-2">
+              <li key={category._id} className="flex justify-between p-2">
                 <div className="flex gap-5">
                   <span>{category.title}</span>
                   <span className="text-gray-500 ml-2">
-                 
                     {moment(category.createdAt).format("DD/MM/YYYY")}
                   </span>
                 </div>
                 <button
                   onClick={() => handleDelete(category._id)}
-                  className="text-red-500 hover:underline ml-4">
+                  className="text-red-500 hover:underline ml-4"
+                >
                   Delete
                 </button>
               </li>
