@@ -7,7 +7,7 @@ const cors = require ('cors')
 
 const app = express()
 app.use(cors({
-    origin: [process.env.CLIENT_URL, process.env.SUPERVISOR],
+    origin: [process.env.CLIENT_URL, process.env.SUPERVISOR, process.env.CLIENT_MOBILE],
     methods: ['POST', 'PUT', 'GET', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   }));
