@@ -1,28 +1,90 @@
-import React, { useState, useEffect } from 'react';
-import { apiGetemployee } from '../../api/supervisor'; 
+import React, { useState, useEffect } from "react";
+import { apiGetemployee, apiUpdateEmployee } from "../../api/supervisor";
+import { FaEdit } from "react-icons/fa";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+
+const styles = {
+  container: {
+    maxWidth: "500px",
+    margin: "0 auto",
+    padding: "2rem",
+    backgroundColor: "#ffffff",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  },
+  modalStyle: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+  },
+};
 
 const Manageemployee = () => {
-  const [staff, setStaff] = useState([]); 
-  const [loading, setLoading] = useState(true); 
+  const [staff, setStaff] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [open, setOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const fetchEmployees = async () => {
     try {
-      const response = await apiGetemployee(); 
+      const response = await apiGetemployee();
       if (response.success) {
-        setStaff(response.staff); 
+        setStaff(response.staff);
       } else {
-        setError(response.message || "No staff found"); // Handle API response error
+        setError(response.message || "No staff found");
       }
     } catch (error) {
-      setError(error.message || "An error occurred while fetching employees."); // Handle any unexpected errors
+      setError(error.message || "An error occurred while fetching employees.");
     } finally {
-      setLoading(false); // Set loading to false after the API call
+      setLoading(false);
     }
   };
 
-  // Fetch employees when the component mounts
+  const handleEdit = (employee) => {
+    setSelectedEmployee(employee);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedEmployee(null);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedEmployee({
+      ...selectedEmployee,
+      [name]: value,
+    });
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await apiUpdateEmployee(
+        selectedEmployee._id,
+        selectedEmployee
+      );
+      if (response.success) {
+        setOpen(false);
+        fetchEmployees();
+      } else {
+        alert("Failed to update employee");
+      }
+    } catch (error) {
+      alert("An error occurred while updating employee.");
+    }
+  };
+
   useEffect(() => {
     fetchEmployees();
   }, []);
@@ -31,9 +93,9 @@ const Manageemployee = () => {
     <div className="w-full flex justify-center items-center flex-col bg-gray-100 p-6">
       <h1 className="text-2xl font-bold mb-6">Manage Employees</h1>
       {loading ? (
-        <div className="text-lg">Loading...</div> // Loading indicator
+        <div className="text-lg">Loading...</div>
       ) : error ? (
-        <div className="text-red-500">{error}</div> // Display error message if any
+        <div className="text-red-500">{error}</div>
       ) : (
         <div className="w-full border rounded-2xl bg-white p-5">
           <table className="w-full rounded-3xl overflow-hidden leading-10">
@@ -44,6 +106,8 @@ const Manageemployee = () => {
                 <th className="p-2">Job</th>
                 <th className="p-2">Email</th>
                 <th className="p-2">Phone</th>
+                <th className="p-2">Base Salary</th>
+                <th className="p-2">Action</th>
               </tr>
             </thead>
             <tbody className="text-center">
@@ -60,12 +124,83 @@ const Manageemployee = () => {
                   <td className="p-2">{employee.job}</td>
                   <td className="p-2">{employee.email}</td>
                   <td className="p-2">{employee.mobile}</td>
+                  <td className="p-2">
+                    {employee.baseSalary.toLocaleString()} VND
+                  </td>
+                  <td className="p-2">
+                    <button
+                      onClick={() => handleEdit(employee)}
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      <FaEdit />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      <Modal open={open} onClose={handleClose}>
+        <Box sx={styles.modalStyle}>
+          <h2>Update Employee's Info</h2>
+          <TextField
+            label="Name"
+            name="name"
+            value={selectedEmployee?.name || ""}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Email"
+            name="email"
+            value={selectedEmployee?.email || ""}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Job"
+            name="job"
+            value={selectedEmployee?.job || ""}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Mobile"
+            name="mobile"
+            value={selectedEmployee?.mobile || ""}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Base Salary"
+            name="baseSalary"
+            value={selectedEmployee?.baseSalary || ""}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+            type="number"
+          />
+          <div className="flex justify-end mt-4">
+            <Button onClick={handleClose} color="secondary">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              variant="contained"
+              color="primary"
+              className="ml-2"
+            >
+              Save
+            </Button>
+          </div>
+        </Box>
+      </Modal>
     </div>
   );
 };

@@ -6,9 +6,9 @@ export const SuperSidebar = [
     type: "SINGLE",
     text: "Over View",
     path: `/${path.SUPER_LAYOUT}/${path.OVER_VIEW}`,
-    icon:"sss",
+    icon: "sss",
   },
- 
+
   {
     id: 2,
     type: "PARENT",
@@ -16,7 +16,7 @@ export const SuperSidebar = [
     icon: "sss",
     submenu: [
       {
-        text: "Manageemployee",
+        text: "Manage Employee",
         path: `/${path.SUPER_LAYOUT}/${path.MANAGE_EMPLOYYEE}`,
       },
       {
@@ -29,7 +29,7 @@ export const SuperSidebar = [
       },
     ],
   },
-  
+
   {
     id: 3,
     type: "PARENT",
@@ -42,5 +42,4 @@ export const SuperSidebar = [
       },
     ],
   },
-  
 ];
