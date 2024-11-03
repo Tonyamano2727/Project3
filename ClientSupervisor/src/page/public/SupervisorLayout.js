@@ -1,15 +1,14 @@
 import React from "react";
 import Sidebar from "../../component/Sidebar/Sidebar";
 import { Outlet, useNavigate } from "react-router-dom";
-import { FiLogOut } from "react-icons/fi"; // Icon Logout từ react-icons
+import { FiLogOut } from "react-icons/fi";
 
 const SupervisorLayout = () => {
   const navigate = useNavigate();
 
-  // Hàm xử lý logout
   const handleLogout = () => {
-    localStorage.removeItem("accessToken"); // Xóa accessToken khỏi localStorage
-    navigate("/"); // Điều hướng về trang đăng nhập
+    localStorage.removeItem("accessToken");
+    navigate("/");
   };
 
   return (
