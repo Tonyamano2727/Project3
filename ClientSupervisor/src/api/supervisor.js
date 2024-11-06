@@ -40,3 +40,16 @@ export const apiUpdateEmployee = (eid, data) =>
     method: "put",
     data,
   });
+
+export const apiGetAllSalaries = () =>
+  axios({
+    url: "/salary",
+    method: "get",
+  });
+
+export const apiCalculateSalary = (employeeId, data) =>
+  axios({
+    url: `/salary/salary/${employeeId}`,
+    method: "post",
+    data,
+  });
