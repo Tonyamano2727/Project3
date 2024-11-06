@@ -8,11 +8,11 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TextField,
   MenuItem,
   Select,
   InputLabel,
   FormControl,
+  Typography,
 } from "@mui/material";
 import { apiGetemployee } from "../../api/supervisor";
 import { apiGetAllSalaries, apiCalculateSalary } from "../../api/supervisor";
@@ -20,10 +20,16 @@ import { apiGetAllSalaries, apiCalculateSalary } from "../../api/supervisor";
 const Salary = () => {
   const [employees, setEmployees] = useState([]);
   const [salaries, setSalaries] = useState([]);
+  const [filteredSalaries, setFilteredSalaries] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
+  const [filterMonth, setFilterMonth] = useState("");
+  const [filterYear, setFilterYear] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const years = Array.from({ length: 7 }, (_, i) => 2024 + i);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -47,6 +53,7 @@ const Salary = () => {
       if (response.success) {
         const uniqueSalaries = removeDuplicateSalaries(response.data);
         setSalaries(uniqueSalaries);
+        setFilteredSalaries(uniqueSalaries);
       }
     } catch (error) {
       console.error("Error fetching salaries:", error);
@@ -95,9 +102,24 @@ const Salary = () => {
     }
   };
 
+  const handleFilterChange = () => {
+    const filtered = salaries.filter(
+      (salary) =>
+        (filterMonth ? salary.month === filterMonth : true) &&
+        (filterYear ? salary.year === filterYear : true)
+    );
+    setFilteredSalaries(filtered);
+  };
+
+  useEffect(() => {
+    handleFilterChange();
+  }, [filterMonth, filterYear, salaries]);
+
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Salary Management</h2>
+      <Typography variant="h4" gutterBottom>
+        Salary Management
+      </Typography>
 
       <Paper style={{ padding: "20px", marginBottom: "20px" }}>
         <FormControl fullWidth margin="normal">
@@ -115,32 +137,82 @@ const Salary = () => {
           </Select>
         </FormControl>
 
-        <TextField
-          label="Tháng"
-          type="number"
-          value={month}
-          onChange={(e) => setMonth(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Tháng</InputLabel>
+          <Select
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+            label="Tháng"
+          >
+            {months.map((month) => (
+              <MenuItem key={month} value={month}>
+                {month}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-        <TextField
-          label="Năm"
-          type="number"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Năm</InputLabel>
+          <Select
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            label="Năm"
+          >
+            {years.map((year) => (
+              <MenuItem key={year} value={year}>
+                {year}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
         <Button
           variant="contained"
           color="primary"
           onClick={handleCalculateSalary}
           disabled={loading}
+          style={{ marginTop: "20px" }}
         >
           {loading ? "Đang tính lương..." : "Tính lương"}
         </Button>
+      </Paper>
+
+      <Paper style={{ padding: "20px", marginBottom: "20px" }}>
+        <Typography variant="h6" gutterBottom>
+          Lọc bảng lương
+        </Typography>
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Tháng</InputLabel>
+          <Select
+            value={filterMonth}
+            onChange={(e) => setFilterMonth(e.target.value)}
+            label="Tháng"
+          >
+            <MenuItem value="">Tất cả</MenuItem>
+            {months.map((month) => (
+              <MenuItem key={month} value={month}>
+                {month}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Năm</InputLabel>
+          <Select
+            value={filterYear}
+            onChange={(e) => setFilterYear(e.target.value)}
+            label="Năm"
+          >
+            <MenuItem value="">Tất cả</MenuItem>
+            {years.map((year) => (
+              <MenuItem key={year} value={year}>
+                {year}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Paper>
 
       <TableContainer component={Paper}>
@@ -156,7 +228,7 @@ const Salary = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {salaries.map((salary) => (
+            {filteredSalaries.map((salary) => (
               <TableRow key={salary._id}>
                 <TableCell>{salary.employee?.name}</TableCell>
                 <TableCell>{salary.month}</TableCell>
