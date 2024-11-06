@@ -34,6 +34,7 @@ const Manageemployee = () => {
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [avatarFile, setAvatarFile] = useState(null);
 
   const fetchEmployees = async () => {
     try {
@@ -52,6 +53,7 @@ const Manageemployee = () => {
 
   const handleEdit = (employee) => {
     setSelectedEmployee(employee);
+    setAvatarFile(null);
     setOpen(true);
   };
 
@@ -68,12 +70,24 @@ const Manageemployee = () => {
     });
   };
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    setAvatarFile(file);
+  };
+
   const handleSave = async () => {
+    const formData = new FormData();
+    formData.append("name", selectedEmployee.name);
+    formData.append("email", selectedEmployee.email);
+    formData.append("job", selectedEmployee.job);
+    formData.append("mobile", selectedEmployee.mobile);
+
+    if (avatarFile) {
+      formData.append("avatar", avatarFile);
+    }
+
     try {
-      const response = await apiUpdateEmployee(
-        selectedEmployee._id,
-        selectedEmployee
-      );
+      const response = await apiUpdateEmployee(selectedEmployee._id, formData);
       if (response.success) {
         setOpen(false);
         fetchEmployees();
@@ -180,12 +194,17 @@ const Manageemployee = () => {
           <TextField
             label="Base Salary"
             name="baseSalary"
-            value={selectedEmployee?.baseSalary || ""}
-            onChange={handleInputChange}
+            value={selectedEmployee?.baseSalary.toLocaleString() || ""}
+            InputProps={{
+              readOnly: true,
+            }}
             fullWidth
             margin="normal"
-            type="number"
           />
+          <div className="mt-4">
+            <label>Avatar:</label>
+            <input type="file" onChange={handleAvatarChange} />
+          </div>
           <div className="flex justify-end mt-4">
             <Button onClick={handleClose} color="secondary">
               Cancel
