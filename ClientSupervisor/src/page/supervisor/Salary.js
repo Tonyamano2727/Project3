@@ -123,11 +123,11 @@ const Salary = () => {
 
       <Paper style={{ padding: "20px", marginBottom: "20px" }}>
         <FormControl fullWidth margin="normal">
-          <InputLabel>Chọn nhân viên</InputLabel>
+          <InputLabel>Select Employee</InputLabel>
           <Select
             value={selectedEmployee}
             onChange={(e) => setSelectedEmployee(e.target.value)}
-            label="Chọn nhân viên"
+            label="Select Employee"
           >
             {employees.map((employee) => (
               <MenuItem key={employee._id} value={employee._id}>
@@ -138,11 +138,11 @@ const Salary = () => {
         </FormControl>
 
         <FormControl fullWidth margin="normal">
-          <InputLabel>Tháng</InputLabel>
+          <InputLabel>Month</InputLabel>
           <Select
             value={month}
             onChange={(e) => setMonth(e.target.value)}
-            label="Tháng"
+            label="Month"
           >
             {months.map((month) => (
               <MenuItem key={month} value={month}>
@@ -153,11 +153,11 @@ const Salary = () => {
         </FormControl>
 
         <FormControl fullWidth margin="normal">
-          <InputLabel>Năm</InputLabel>
+          <InputLabel>Year</InputLabel>
           <Select
             value={year}
             onChange={(e) => setYear(e.target.value)}
-            label="Năm"
+            label="Year"
           >
             {years.map((year) => (
               <MenuItem key={year} value={year}>
@@ -180,16 +180,16 @@ const Salary = () => {
 
       <Paper style={{ padding: "20px", marginBottom: "20px" }}>
         <Typography variant="h6" gutterBottom>
-          Lọc bảng lương
+          Salary Filter
         </Typography>
         <FormControl fullWidth margin="normal">
-          <InputLabel>Tháng</InputLabel>
+          <InputLabel>Month</InputLabel>
           <Select
             value={filterMonth}
             onChange={(e) => setFilterMonth(e.target.value)}
-            label="Tháng"
+            label="Month"
           >
-            <MenuItem value="">Tất cả</MenuItem>
+            <MenuItem value="">All</MenuItem>
             {months.map((month) => (
               <MenuItem key={month} value={month}>
                 {month}
@@ -199,13 +199,13 @@ const Salary = () => {
         </FormControl>
 
         <FormControl fullWidth margin="normal">
-          <InputLabel>Năm</InputLabel>
+          <InputLabel>Year</InputLabel>
           <Select
             value={filterYear}
             onChange={(e) => setFilterYear(e.target.value)}
-            label="Năm"
+            label="Year"
           >
-            <MenuItem value="">Tất cả</MenuItem>
+            <MenuItem value="">All</MenuItem>
             {years.map((year) => (
               <MenuItem key={year} value={year}>
                 {year}
@@ -219,12 +219,12 @@ const Salary = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Tên nhân viên</TableCell>
-              <TableCell>Tháng</TableCell>
-              <TableCell>Năm</TableCell>
-              <TableCell>Lương cơ bản</TableCell>
-              <TableCell>Hoa hồng</TableCell>
-              <TableCell>Tổng lương</TableCell>
+              <TableCell>Employee's Name</TableCell>
+              <TableCell>Month</TableCell>
+              <TableCell>Year</TableCell>
+              <TableCell>Base Salary</TableCell>
+              <TableCell>Commission</TableCell>
+              <TableCell>Total Salary</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
