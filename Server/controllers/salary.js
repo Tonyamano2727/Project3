@@ -92,8 +92,7 @@ const calculateSalary = asyncHandler(async (req, res) => {
 
 const getAllSalaries = asyncHandler(async (req, res) => {
   try {
-    // Lấy tất cả các bản ghi từ model Salary
-    const salaries = await Salary.find().populate("employee", "name"); // Populating tên nhân viên
+    const salaries = await Salary.find().populate("employee", "name");
 
     return res.json({
       success: true,
