@@ -4,118 +4,107 @@ const Booking = require("../models/booking");
 const Salary = require("../models/salary");
 const mongoose = require("mongoose");
 
-
 const calculateSalary = asyncHandler(async (req, res) => {
-    const { month, year } = req.body; // Lấy month và year từ body
-    const employeeId = req.params.employeeId; // Lấy employeeId từ params
-    console.log(employeeId);
-    // Kiểm tra nếu employeeId không tồn tại hoặc không hợp lệ
-    if (!employeeId || !mongoose.Types.ObjectId.isValid(employeeId)) {
-        return res.status(400).json({
-            success: false,
-            mes: "ID nhân viên không hợp lệ.",
-        });
-    }
+  const { month, year } = req.body;
+  const employeeId = req.params.employeeId;
 
-    // Tìm nhân viên theo ID
-    const employee = await Employee.findById(employeeId);
-    if (!employee) {
-        return res.status(404).json({
-            success: false,
-            mes: "Nhân viên không tồn tại.",
-        });
-    }
-    console.log(employee);
-    // Kiểm tra tháng và năm nhập vào
-    console.log("Tháng nhập vào:", month);
-    console.log("Năm nhập vào:", year);
-
-    // Lấy tất cả các booking đã hoàn thành của nhân viên trong tháng và năm đã cho
-    const completedBookings = await Booking.find({
-        employeeDetails: {
-            $elemMatch: {
-                employeeId: employeeId // Kiểm tra employeeId trong mảng employeeDetails
-            }
-        },
-        status: "Completed",
-        createdAt: {
-            $gte: new Date(year, month - 1, 1), // Bắt đầu từ ngày 1 của tháng
-            $lt: new Date(year, month, 1) // Trước ngày 1 của tháng sau
-        }
+  if (!employeeId || !mongoose.Types.ObjectId.isValid(employeeId)) {
+    return res.status(400).json({
+      success: false,
+      mes: "ID nhân viên không hợp lệ.",
     });
-    console.log('Dữ liệu booking:', completedBookings); // Thêm log để kiểm tra dữ liệu trả về
+  }
 
-    // Kiểm tra nếu không có booking nào
-    if (completedBookings.length === 0) {
-        return res.status(404).json({
-            success: true,
-            mes: "Không có booking nào đã hoàn thành cho nhân viên này trong tháng và năm đã cho.",
-            data: [] // Trả về mảng rỗng
-        });
-    }
+  const employee = await Employee.findById(employeeId);
+  if (!employee) {
+    return res.status(404).json({
+      success: false,
+      mes: "Nhân viên không tồn tại.",
+    });
+  }
 
-    // Tính lương theo % từ giá trị booking
-    const totalBookingValue = completedBookings.reduce((sum, booking) => sum + booking.totalPrice, 0);
-    const commission = totalBookingValue * 0.30; // 30% từ giá trị booking
+  const completedBookings = await Booking.find({
+    employeeDetails: {
+      $elemMatch: {
+        employeeId: employeeId,
+      },
+    },
+    status: "Completed",
+    createdAt: {
+      $gte: new Date(year, month - 1, 1),
+      $lt: new Date(year, month, 1),
+    },
+  });
 
-    // Tính tổng lương
-    const totalSalary = employee.baseSalary + commission;
+  let commission = 0;
+  let bookingDetails = [];
 
-    // Kiểm tra xem giá trị lương có hợp lệ hay không
-    if (isNaN(totalSalary) || !employee.baseSalary) {
-        return res.status(400).json({
-            success: false,
-            mes: "Có lỗi xảy ra khi tính toán lương.",
-        });
-    }
+  if (completedBookings.length > 0) {
+    const totalBookingValue = completedBookings.reduce(
+      (sum, booking) => sum + booking.totalPrice,
+      0
+    );
+    commission = totalBookingValue * 0.3;
 
-    // Lưu thông tin chi tiết về các booking đã hoàn thành
-    const bookingDetails = completedBookings.map(booking => ({
-        bookingId: booking._id,
-        totalPrice: booking.totalPrice,
-        createdAt: booking.createdAt // Thêm trường createdAt để ghi lại thời gian thực hiện booking
+    bookingDetails = completedBookings.map((booking) => ({
+      bookingId: booking._id,
+      totalPrice: booking.totalPrice,
+      createdAt: booking.createdAt,
     }));
+  }
 
-    // Lưu kết quả vào model Salary
+  const totalSalary = employee.baseSalary + commission;
+
+  const existingSalaryRecord = await Salary.findOne({
+    employee: employeeId,
+    month: month,
+    year: year,
+  });
+
+  if (existingSalaryRecord) {
+    existingSalaryRecord.baseSalary = employee.baseSalary;
+    existingSalaryRecord.commission = commission;
+    existingSalaryRecord.totalSalary = totalSalary;
+    existingSalaryRecord.bookings = bookingDetails;
+    await existingSalaryRecord.save();
+  } else {
     const salaryRecord = new Salary({
-        employee: employeeId,
-        month: month,
-        year: year,
-        baseSalary: employee.baseSalary,
-        commission: commission,
-        totalSalary: totalSalary,
-        bookings: bookingDetails 
+      employee: employeeId,
+      month: month,
+      year: year,
+      baseSalary: employee.baseSalary,
+      commission: commission,
+      totalSalary: totalSalary,
+      bookings: bookingDetails,
     });
-
-    // Lưu thông tin lương
     await salaryRecord.save();
+  }
 
-    return res.json({
-        success: true,
-        data: {
-            totalSalary: totalSalary,
-            commission: commission,
-            bookingDetails: bookingDetails 
-        },
-    });
+  return res.json({
+    success: true,
+    data: {
+      totalSalary: totalSalary,
+      commission: commission,
+      bookingDetails: bookingDetails,
+    },
+  });
 });
 
 const getAllSalaries = asyncHandler(async (req, res) => {
-    try {
-        // Lấy tất cả các bản ghi từ model Salary
-        const salaries = await Salary.find().populate("employee", "name"); // Populating tên nhân viên
+  try {
+    const salaries = await Salary.find().populate("employee", "name");
 
-        return res.json({
-            success: true,
-            data: salaries,
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            mes: "Có lỗi xảy ra khi lấy dữ liệu bảng lương.",
-            error: error.message,
-        });
-    }
+    return res.json({
+      success: true,
+      data: salaries,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      mes: "Có lỗi xảy ra khi lấy dữ liệu bảng lương.",
+      error: error.message,
+    });
+  }
 });
 
 module.exports = {
