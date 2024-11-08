@@ -14,7 +14,6 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ success: false, message: "Email của khách hàng không được xác định" });
     }
 
-    // Kiểm tra xem dịch vụ có tồn tại hay không
     const foundService = await Service.findById(service);
     if (!foundService) {
       return res.status(404).json({ success: false, message: "Dịch vụ không tồn tại" });

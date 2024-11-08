@@ -36,7 +36,6 @@ const createNewBlog = asyncHandler(async (req, res) => {
 const updateBlog = asyncHandler(async (req, res) => {
   const { bid } = req.params;
 
-  // Kiểm tra xem có ít nhất một trường trong req.body hoặc một tệp trong req.files không
   if (Object.keys(req.body).length === 0 && (!req.files || Object.keys(req.files).length === 0)) {
     return res.status(400).json({
       success: false,
@@ -151,16 +150,29 @@ const addReview = asyncHandler(async (req, res) => {
       (review) => review.user.toString() === userId.toString()
     );
 
+    const now = new Date();
+    const twentyMinutes = 20 * 60 * 1000; // 20 phút tính bằng milliseconds
+
     if (existingReview) {
-      // Update the existing comment
+      const timeSinceLastUpdate = now - existingReview.updatedAt;
+
+      if (timeSinceLastUpdate < twentyMinutes) {
+        return res.status(400).json({
+          success: false,
+          message: "You can only update your comment every 20 minutes."
+        });
+      }
+
+  
       existingReview.comment = comment;
-      existingReview.updatedAt = new Date();
+      existingReview.updatedAt = now;
     } else {
-      // Add a new review if not found
+   
       const newReview = {
         user: userId,
         comment,
-        createdAt: new Date(),
+        createdAt: now,
+        updatedAt: now
       };
       blog.reviews.push(newReview);
     }
@@ -176,6 +188,7 @@ const addReview = asyncHandler(async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 });
+
 
 
 

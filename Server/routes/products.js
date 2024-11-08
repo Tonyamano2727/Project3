@@ -12,10 +12,7 @@ router.post(
   ]),
   ctrls.createproducts
 );
-
-
-// Create many products 
-const maxProducts = 6; // Có thể thay đổi số này tùy nhu cầu
+const maxProducts = 5; 
 
 const fields = [];
 
