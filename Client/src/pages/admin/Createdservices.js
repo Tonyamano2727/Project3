@@ -12,7 +12,7 @@ const Createdservices = () => {
     description: "",
     category: "",
   });
-  const [categories, setCategories] = useState([]); // Lưu danh sách danh mục
+  const [categories, setCategories] = useState([]); 
 
   const { enqueueSnackbar } = useSnackbar();
   const {
@@ -27,12 +27,14 @@ const Createdservices = () => {
       try {
         const response = await apigetallcategoryservice();
         if (Array.isArray(response) && response.length > 0) {
-          setCategories(response); 
+          setCategories(response);
         } else {
           console.log("Failed to fetch categories");
         }
       } catch (error) {
-        enqueueSnackbar("Đã xảy ra lỗi khi lấy danh mục.", { variant: "error" });
+        enqueueSnackbar("Đã xảy ra lỗi khi lấy danh mục.", {
+          variant: "error",
+        });
       }
     };
 
@@ -62,7 +64,9 @@ const Createdservices = () => {
 
   const handleCreateService = async (data) => {
     if (!thumbImage && otherImages.length === 0) {
-      enqueueSnackbar("Bạn cần cung cấp ít nhất một hình ảnh để tạo dịch vụ.", { variant: "error" });
+      enqueueSnackbar("Bạn cần cung cấp ít nhất một hình ảnh để tạo dịch vụ.", {
+        variant: "error",
+      });
       return;
     }
 
@@ -70,7 +74,7 @@ const Createdservices = () => {
     formData.append("title", data.title);
     formData.append("description", payload.description);
     formData.append("price", data.price);
-    formData.append("category", payload.category); 
+    formData.append("category", payload.category);
 
     if (thumbImage) formData.append("thumb", thumbImage);
     if (otherImages.length > 0) {
@@ -82,7 +86,9 @@ const Createdservices = () => {
     try {
       const response = await apiCreateServices(formData);
       if (response.success) {
-        enqueueSnackbar("Dịch vụ đã được tạo thành công", { variant: "success" });
+        enqueueSnackbar("Dịch vụ đã được tạo thành công", {
+          variant: "success",
+        });
         reset();
         setThumbImage(null);
         setOtherImages([]);
@@ -117,16 +123,24 @@ const Createdservices = () => {
             placeholder="Enter service price"
           />
           <div className="mb-4">
-            <label htmlFor="category" className="block mt-3 text-[13px] mb-2">Category</label>
+            <label htmlFor="category" className="block mt-3 text-[13px] mb-2">
+              Category
+            </label>
             <select
               id="category"
               {...register("category", { required: "This field is required" })}
               onChange={(e) => {
-                const selectedCategory = categories.find(cat => cat._id === e.target.value);
-                setPayload((prev) => ({ ...prev, category: selectedCategory?.title || "" }));
+                const selectedCategory = categories.find(
+                  (cat) => cat._id === e.target.value
+                );
+                setPayload((prev) => ({
+                  ...prev,
+                  category: selectedCategory?.title || "",
+                }));
               }}
-              className={`border p-2 w-full  rounded-3xl ${errors.category ? "border-red-500" : "border-gray-300"}`}
-            >
+              className={`border p-2 w-full  rounded-3xl ${
+                errors.category ? "border-red-500" : "border-gray-300"
+              }`}>
               <option value="">Select category</option>
               {categories.map((category) => (
                 <option key={category._id} value={category._id}>
@@ -134,11 +148,14 @@ const Createdservices = () => {
                 </option>
               ))}
             </select>
-            {errors.category && <span className="text-red-500">{errors.category.message}</span>}
+            {errors.category && (
+              <span className="text-red-500">{errors.category.message}</span>
+            )}
           </div>
 
           <Markdoweditor
             name="description"
+            value={payload.description}
             changevalue={(content) =>
               setPayload((prev) => ({ ...prev, description: content }))
             }
@@ -150,8 +167,7 @@ const Createdservices = () => {
             <div className="flex flex-col justify-center items-center">
               <label
                 htmlFor="thumbImage"
-                className="mt-2 bg-white px-4 py-2 rounded-lg cursor-pointer"
-              >
+                className="mt-2 bg-white px-4 py-2 rounded-lg cursor-pointer">
                 Thumb Image
               </label>
               <input
@@ -170,8 +186,7 @@ const Createdservices = () => {
                   />
                   <button
                     onClick={handleDeleteThumb}
-                    className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1"
-                  >
+                    className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
                     X
                   </button>
                 </div>
@@ -181,8 +196,7 @@ const Createdservices = () => {
             <div className="flex flex-col justify-center items-center">
               <label
                 htmlFor="otherImages"
-                className="mt-2 bg-white px-4 py-2 rounded-lg cursor-pointer"
-              >
+                className="mt-2 bg-white px-4 py-2 rounded-lg cursor-pointer">
                 Other Images
               </label>
               <input
@@ -204,8 +218,7 @@ const Createdservices = () => {
                       />
                       <button
                         onClick={() => handleDeleteOtherImage(index)}
-                        className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1"
-                      >
+                        className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
                         X
                       </button>
                     </div>

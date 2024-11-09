@@ -114,13 +114,13 @@ const ManageUser = () => {
         </div>
         <div className="flex w-full justify-around items-center mb-5 gap-10">
           <Selectinput
-            className="bg-gradient-to-r from-[#d3b491] to-[#e07c93]"
+            className="bg-gradient-to-r from-[#979db6] to-gray-300"
             changeValue={changeValue}
             value={sort}
             options={sortsuser}
           />
           <Selectinput
-            className={"bg-gradient-to-r from-[#d3b491] to-[#e07c93]"}
+            className={"bg-gradient-to-r from-[#979db6] to-gray-300"}
             changeValue={changeValue}
             value={sort}
             options={sortByDate}

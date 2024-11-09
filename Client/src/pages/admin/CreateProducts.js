@@ -10,7 +10,7 @@ const CreateProducts = () => {
       description: "",
       brand: "",
       quantity: "",
-      category: "", 
+      category: "",
       categoryTitle: "",
       color: "",
       thumb: null,
@@ -42,15 +42,14 @@ const CreateProducts = () => {
     const newProducts = [...products];
     newProducts[index][name] = value;
 
-   
     if (name === "category") {
-      const selectedCategory = categories.find(cat => cat._id === value);
+      const selectedCategory = categories.find((cat) => cat._id === value);
       if (selectedCategory) {
-        newProducts[index].brand = ""; 
-        newProducts[index].categoryTitle = selectedCategory.title; 
-        setBrands(prevBrands => ({
+        newProducts[index].brand = "";
+        newProducts[index].categoryTitle = selectedCategory.title;
+        setBrands((prevBrands) => ({
           ...prevBrands,
-          [value]: selectedCategory.brand || [], 
+          [value]: selectedCategory.brand || [],
         }));
       }
     }
@@ -69,7 +68,9 @@ const CreateProducts = () => {
     } else if (name === "images") {
       const files = Array.from(e.target.files);
       newProducts[index].images = files;
-      newProducts[index].imagePreviews = files.map((file) => URL.createObjectURL(file));
+      newProducts[index].imagePreviews = files.map((file) =>
+        URL.createObjectURL(file)
+      );
     }
 
     setProducts(newProducts);
@@ -84,7 +85,7 @@ const CreateProducts = () => {
         description: "",
         brand: "",
         category: "",
-        categoryTitle: "", 
+        categoryTitle: "",
         color: "",
         quantity: "",
         thumb: null,
@@ -122,7 +123,7 @@ const CreateProducts = () => {
       formData.append(`products[${index}][price]`, product.price);
       formData.append(`products[${index}][description]`, product.description);
       formData.append(`products[${index}][brand]`, product.brand);
-      formData.append(`products[${index}][category]`, product.categoryTitle); 
+      formData.append(`products[${index}][category]`, product.categoryTitle);
       formData.append(`products[${index}][color]`, product.color);
       formData.append(`products[${index}][quantity]`, product.quantity);
 
@@ -149,31 +150,21 @@ const CreateProducts = () => {
         {products.map((product, index) => (
           <div
             key={index}
-            className="gap-5 flex flex-wrap justify-center items-center mb-5"
-          >
+            className="gap-5 flex flex-wrap justify-center items-center mb-5">
             <div className="w-[95%] justify-between flex items-center">
               <h2 className="font-semibold w-full">Product {index + 1}</h2>
               {products.length > 1 && (
                 <button
                   type="button"
                   onClick={() => deleteProduct(index)}
-                  className="px-4 w-[20%] py-2 text-white bg-gradient-to-r from-[#0f1c92] to-[#0e28d1] rounded-full"
-                >
+                  className="px-4 w-[20%] py-2 text-white bg-gradient-to-r from-[#0f1c92] to-[#0e28d1] rounded-full">
                   Delete Product
                 </button>
               )}
             </div>
+
             <input
-              className="border p-1 rounded-full w-[30%]"
-              type="number"
-              name="quantity"
-              placeholder="Quantity"
-              value={product.quantity}
-              onChange={(e) => handleChange(index, e)}
-              required
-            />
-            <input
-              className="border p-1 rounded-full w-[30%]"
+              className="border p-1 rounded-full w-[45%]"
               type="text"
               name="title"
               placeholder="Title"
@@ -182,7 +173,7 @@ const CreateProducts = () => {
               required
             />
             <input
-              className="border p-1 rounded-full w-[30%]"
+              className="border p-1 rounded-full w-[45%]"
               type="number"
               name="price"
               placeholder="Price"
@@ -191,7 +182,16 @@ const CreateProducts = () => {
               required
             />
             <input
-              className="border p-1 rounded-full w-[30%]"
+              className="border p-1 rounded-full w-[45%]"
+              type="number"
+              name="quantity"
+              placeholder="Quantity"
+              value={product.quantity}
+              onChange={(e) => handleChange(index, e)}
+              required
+            />
+            <input
+              className="border p-1 rounded-full w-[45%]"
               type="text"
               name="color"
               placeholder="Color"
@@ -199,34 +199,34 @@ const CreateProducts = () => {
               onChange={(e) => handleChange(index, e)}
               required
             />
-            <select
-              className="border p-2 rounded-full w-[46%]"
-              name="category"
-              value={product.category}
-              onChange={(e) => handleChange(index, e)}
-              required
-            >
-              <option value="">Select Category</option>
-              {categories.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.title}
-                </option>
-              ))}
-            </select>
-            <select
-              className="border p-2 rounded-full w-[46%]"
-              name="brand"
-              value={product.brand}
-              onChange={(e) => handleChange(index, e)}
-              required
-            >
-              <option value="">Select Brand</option>
-              {brands[product.category]?.map((brand, i) => (
-                <option key={i} value={brand}>
-                  {brand}
-                </option>
-              ))}
-            </select>
+            <div className="w-full justify-center items-center flex  gap-3">
+              <select
+                className="border p-2 rounded-full w-[46%]"
+                name="category"
+                value={product.category}
+                onChange={(e) => handleChange(index, e)}
+                required>
+                <option value="">Select Category</option>
+                {categories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.title}
+                  </option>
+                ))}
+              </select>
+              <select
+                className="border p-2 rounded-full w-[46%]"
+                name="brand"
+                value={product.brand}
+                onChange={(e) => handleChange(index, e)}
+                required>
+                <option value="">Select Brand</option>
+                {brands[product.category]?.map((brand, i) => (
+                  <option key={i} value={brand}>
+                    {brand}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <textarea
               className="border p-1 rounded-2xl w-[94%]"
@@ -257,8 +257,7 @@ const CreateProducts = () => {
                 <button
                   type="button"
                   onClick={() => deleteThumb(index)}
-                  className="text-red-600"
-                >
+                  className="text-red-600">
                   Delete Thumb
                 </button>
               </div>
@@ -283,8 +282,7 @@ const CreateProducts = () => {
                     display: "inline-block",
                     position: "relative",
                     marginRight: "5px",
-                  }}
-                >
+                  }}>
                   <img
                     src={preview}
                     alt={`Image Preview ${i + 1}`}
@@ -302,8 +300,7 @@ const CreateProducts = () => {
                       borderRadius: "50%",
                       width: "20px",
                       height: "20px",
-                    }}
-                  >
+                    }}>
                     X
                   </button>
                 </div>
@@ -320,8 +317,7 @@ const CreateProducts = () => {
             <button
               type="button"
               onClick={addProduct}
-              className="px-4 py-2 mt-3 w-full text-white bg-gradient-to-r from-[#0f1c92] to-[#0e28d1] rounded-full"
-            >
+              className="px-4 py-2 mt-3 w-full text-white bg-gradient-to-r from-[#0f1c92] to-[#0e28d1] rounded-full">
               Add Another Product
             </button>
           </div>

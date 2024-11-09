@@ -1,10 +1,69 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+
+const styles = {
+  container: {
+    maxWidth: "500px",
+    margin: "0 auto",
+    padding: "2rem",
+    backgroundColor: "#ffffff",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  },
+  title: {
+    textAlign: "center",
+    color: "#333",
+    marginBottom: "1.5rem",
+  },
+  formGroup: {
+    marginBottom: "0.5rem",
+  },
+  label: {
+    display: "block",
+    fontWeight: "600",
+    color: "#4a5568",
+    marginBottom: "0.5rem",
+  },
+  input: {
+    width: "100%",
+    padding: "0.75rem",
+    border: "1px solid #e2e8f0",
+    borderRadius: "8px",
+    fontSize: "1rem",
+    color: "#333",
+    backgroundColor: "#f7f7f9",
+  },
+  select: {
+    width: "100%",
+    padding: "0.75rem",
+    border: "1px solid #e2e8f0",
+    borderRadius: "8px",
+    fontSize: "1rem",
+    color: "#333",
+    backgroundColor: "#f7f7f9",
+    marginBottom: "0.5rem",
+  },
+  button: {
+    width: "100%",
+    padding: "0.75rem",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: "#3182ce",
+    color: "#ffffff",
+    fontWeight: "bold",
+    fontSize: "1rem",
+    cursor: "pointer",
+    transition: "background-color 0.3s ease",
+  },
+};
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const Createdemployee = () => {
-  const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -12,9 +71,13 @@ const Createdemployee = () => {
     mobile: "",
     district: "",
     avatar: null,
+    baseSalary: "",
   });
-
   const [jobCategories, setJobCategories] = useState([]);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const districts = ["District 11"];
 
   useEffect(() => {
     const fetchJobCategories = async () => {
@@ -23,7 +86,6 @@ const Createdemployee = () => {
           "http://localhost:5000/api/categoryservice"
         );
         setJobCategories(response.data);
-        console.log("Job Categories:", response.data); // Log danh sách job categories sau khi lấy
       } catch (error) {
         console.error("Error fetching job categories:", error);
       }
@@ -38,7 +100,6 @@ const Createdemployee = () => {
       ...formData,
       [name]: value,
     });
-    console.log("Form Data:", { ...formData, [name]: value }); // Log dữ liệu form mỗi khi thay đổi
   };
 
   const handleFileChange = (e) => {
@@ -46,7 +107,6 @@ const Createdemployee = () => {
       ...formData,
       avatar: e.target.files[0],
     });
-    console.log("Avatar File Selected:", e.target.files[0]); // Log file avatar khi được chọn
   };
 
   const handleSubmit = async (e) => {
@@ -58,9 +118,8 @@ const Createdemployee = () => {
     data.append("job", formData.job);
     data.append("mobile", formData.mobile);
     data.append("district", formData.district);
+    data.append("baseSalary", formData.baseSalary);
     if (formData.avatar) data.append("avatar", formData.avatar);
-
-    console.log("Submitting Employee Data:", formData); // Log dữ liệu form trước khi gửi lên server
 
     try {
       const response = await axios.post(
@@ -73,11 +132,9 @@ const Createdemployee = () => {
           },
         }
       );
-      console.log("API Response:", response.data); // Log phản hồi từ API sau khi gửi
 
       if (response.data.success) {
-        alert("Employee created successfully!");
-        navigate("/manage-employee");
+        setOpenSnackbar(true);
       }
     } catch (error) {
       console.error("Error creating employee:", error);
@@ -85,34 +142,41 @@ const Createdemployee = () => {
     }
   };
 
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
   return (
-    <div>
-      <h2>Create Employee</h2>
+    <div style={styles.container}>
+      <h2 style={styles.title}>Create Employee</h2>
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <div>
-          <label>Name:</label>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Name:</label>
           <input
             type="text"
             name="name"
+            style={styles.input}
             value={formData.name}
             onChange={handleChange}
             required
           />
         </div>
-        <div>
-          <label>Email:</label>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Email:</label>
           <input
             type="email"
             name="email"
+            style={styles.input}
             value={formData.email}
             onChange={handleChange}
             required
           />
         </div>
-        <div>
-          <label>Job:</label>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Job:</label>
           <select
             name="job"
+            style={styles.select}
             value={formData.job}
             onChange={handleChange}
             required
@@ -125,32 +189,78 @@ const Createdemployee = () => {
             ))}
           </select>
         </div>
-        <div>
-          <label>Mobile:</label>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Mobile:</label>
           <input
             type="text"
             name="mobile"
+            style={styles.input}
             value={formData.mobile}
             onChange={handleChange}
             required
           />
         </div>
-        <div>
-          <label>District:</label>
-          <input
-            type="text"
+        <div style={styles.formGroup}>
+          <label style={styles.label}>District:</label>
+          <select
             name="district"
+            style={styles.select}
             value={formData.district}
             onChange={handleChange}
             required
+          >
+            <option value="">Select District</option>
+            {districts.map((district, index) => (
+              <option key={index} value={district}>
+                {district}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Avatar:</label>
+          <input
+            type="file"
+            name="avatar"
+            style={styles.input}
+            onChange={handleFileChange}
           />
         </div>
-        <div>
-          <label>Avatar:</label>
-          <input type="file" name="avatar" onChange={handleFileChange} />
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Base Salary:</label>
+          <input
+            type="number"
+            name="baseSalary"
+            style={styles.input}
+            value={formData.baseSalary}
+            onChange={handleChange}
+            required
+            max="10000000"
+          />
         </div>
-        <button type="submit">Create Employee</button>
+        <button
+          type="submit"
+          style={{
+            ...styles.button,
+            backgroundColor: isHovered ? "#2b6cb0" : "#3182ce",
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          Create Employee
+        </button>
       </form>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={1500}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="success">
+          Employee created successfully!
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

@@ -3,9 +3,10 @@ import { NavLink, useParams } from "react-router-dom";
 import { Breadcrumb, Frombooking } from "../../components";
 import backgroundservice from "../../assets/backgroundservice.png";
 import thumb from "../../assets/thumb.png";
+import DOMPurify from "dompurify";
 import iconphone from "../../assets/iconphone.png";
 import icons from "../../ultils/icons";
-import { apiGetServices, apiGetDetailsServices } from "../../apis"; 
+import { apiGetServices, apiGetDetailsServices } from "../../apis";
 const { FaArrowRightLong } = icons;
 
 const Detailservice = ({ category }) => {
@@ -27,7 +28,7 @@ const Detailservice = ({ category }) => {
         console.log(err.message);
       }
     };
-  
+
     fetchServices();
   }, [category]);
 
@@ -41,7 +42,7 @@ const Detailservice = ({ category }) => {
         console.log(err.message);
       }
     };
-  
+
     fetchServiceDetail();
   }, [sid, title]);
 
@@ -88,8 +89,11 @@ const Detailservice = ({ category }) => {
                             : "text-[#00197E] bg-white hover:bg-[#FFC703] duration-300 ease-in-out"
                         }`
                       }
-                      to={`/services/${services.find(service => service.category === category)?._id}/${category}`}
-                    >
+                      to={`/services/${
+                        services.find(
+                          (service) => service.category === category
+                        )?._id
+                      }/${category}`}>
                       {category}
                     </NavLink>
 
@@ -101,7 +105,11 @@ const Detailservice = ({ category }) => {
           </div>
           <div className="flex flex-col justify-center items-center mt-4 relative">
             <div className="flex items-center justify-center w-full">
-              <img className="w-full h-[400px] object-cover rounded-xl" src={thumb} alt="Thumbnail" />
+              <img
+                className="w-full h-[400px] object-cover rounded-xl"
+                src={thumb}
+                alt="Thumbnail"
+              />
             </div>
             <div className="flex flex-col justify-center absolute top-0 left-0 p-8">
               <div>
@@ -109,14 +117,15 @@ const Detailservice = ({ category }) => {
               </div>
               <div className="flex flex-col justify-start text-white leading-10">
                 <span className="text-[18px] font-medium">Call Us Anytime</span>
-                <span className="text-[24px] font-semibold">+038 (6950) 752</span>
+                <span className="text-[24px] font-semibold">
+                  +038 (6950) 752
+                </span>
                 <span className="text-[16px]">Toanb3074@gmail.com</span>
               </div>
               <div>
                 <button
                   onClick={handleButtonClick}
-                  className="p-4 bg-[#2F6EFF] text-[15px] font-normal rounded-full w-full mt-4 text-white justify-center flex items-center gap-2"
-                >
+                  className="p-4 bg-[#2F6EFF] text-[15px] font-normal rounded-full w-full mt-4 text-white justify-center flex items-center gap-2">
                   Book Now
                   <span>
                     <FaArrowRightLong />
@@ -139,10 +148,20 @@ const Detailservice = ({ category }) => {
             </h1>
           </div>
           <div>
-            <p className="text-[#3a4268] mt-[20px]">
-              {serviceDetail?.description}
-            </p>
+            {serviceDetail?.description?.length > 1 && (
+              <span className="flex leading-8 mt-4 flex-col">
+                {serviceDetail?.description}
+              </span>
+            )}
+            {serviceDetail?.description?.length === 1 && (
+              <div
+                className="flex leading-8 mt-4 flex-col"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(serviceDetail?.description[0]),
+                }}></div>
+            )}
           </div>
+
           <div className="w-full mt-[20px]">
             <img
               className="w-full object-cover h-auto"
