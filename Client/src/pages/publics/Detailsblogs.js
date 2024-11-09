@@ -56,41 +56,41 @@ const Detailsblogs = () => {
     }
   };
 
-  // Handle comment submission
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     setSubmissionError(null);
-
+  
     try {
       const response = await createComment(bid, { comment });
       if (response.success) {
         setComment("");
-        fetchBlogDetails();
+        fetchBlogDetails(); 
       } else {
-        setSubmissionError("You have already reviewed this blog");
+        setSubmissionError(response.message);
       }
     } catch (err) {
       setSubmissionError(err.message);
     }
   };
+  
 
   const handleLike = async () => {
     try {
       const response = await likeBlog(bid);
       if (response.success) {
-        fetchBlogDetails(); // Refresh blog details after liking
+        fetchBlogDetails(); 
       }
     } catch (err) {
       console.log(err.message);
     }
   };
 
-  // Handle dislike
+
   const handleDislike = async () => {
     try {
       const response = await dislikeBlog(bid);
       if (response.success) {
-        fetchBlogDetails(); // Refresh blog details after disliking
+        fetchBlogDetails(); 
       }
     } catch (err) {
       console.log(err.message);
@@ -247,9 +247,6 @@ const Detailsblogs = () => {
             onSubmit={handleCommentSubmit}
             className="mt-6 bg-[#f7f6ee] p-4 rounded-lg">
             <h3 className="text-[#00197e] text-[20px] font-medium">Comment</h3>
-            {submissionError && (
-              <p className="text-red-500">{submissionError}</p>
-            )}
             <textarea
               rows="4"
               className="w-full p-2 border border-gray-300 rounded-xl mt-2"

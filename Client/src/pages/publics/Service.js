@@ -8,7 +8,7 @@ import backgroundservice from "../../assets/backgroundservice.png";
 
 const { FaArrowRightLong } = icons;
 
-const Service = ({ title , category }) => {
+const Service = ({ title, category }) => {
   const [services, setServices] = useState([]);
   useEffect(() => {
     const fetchServices = async () => {
@@ -34,7 +34,11 @@ const Service = ({ title , category }) => {
     <div className="w-full justify-center items-center flex flex-col bg-[#F3F3F7]">
       <div className="flex justify-center w-full ">
         <div className="w-full  ">
-          <img className="relative" src={backgroundservice} alt="backgroundservice"/>
+          <img
+            className="relative"
+            src={backgroundservice}
+            alt="backgroundservice"
+          />
         </div>
         <div className="flex absolute flex-col text-white left-20 top-[200px] p-4">
           <h2 className="text-[45px] mb-[8px] font-bold font tracking-wide">
@@ -74,11 +78,12 @@ const Service = ({ title , category }) => {
                 alt={service.title}
                 className="w-full h-[300px] object-cover rounded-tl-xl rounded-tr-xl"
               />
-               
+
               <div className="w-full bg-white p-8 rounded-bl-xl rounded-br-xl">
                 <Link
                   className="w-full text-[#273689] text-[16px] font-medium flex items-center justify-between"
-                  to={`/services/${service._id}/${service.title}`}>
+                  to={`/services/${service._id}/${service.title}`}
+                >
                   <div className="flex gap-2 items-center">
                     {Icon[index % Icon.length].title}
                     <span>
