@@ -71,25 +71,13 @@ const Createdemployee = () => {
     mobile: "",
     district: "",
     avatar: null,
+    baseSalary: "",
   });
   const [jobCategories, setJobCategories] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  const districts = [
-    "District 1",
-    "District 2",
-    "District 3",
-    "District 4",
-    "District 5",
-    "District 6",
-    "District 7",
-    "District 8",
-    "District 9",
-    "District 10",
-    "District 11",
-    "District 12",
-  ];
+  const districts = ["District 11"];
 
   useEffect(() => {
     const fetchJobCategories = async () => {
@@ -130,6 +118,7 @@ const Createdemployee = () => {
     data.append("job", formData.job);
     data.append("mobile", formData.mobile);
     data.append("district", formData.district);
+    data.append("baseSalary", formData.baseSalary);
     if (formData.avatar) data.append("avatar", formData.avatar);
 
     try {
@@ -235,6 +224,18 @@ const Createdemployee = () => {
             name="avatar"
             style={styles.input}
             onChange={handleFileChange}
+          />
+        </div>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Base Salary:</label>
+          <input
+            type="number"
+            name="baseSalary"
+            style={styles.input}
+            value={formData.baseSalary}
+            onChange={handleChange}
+            required
+            max="10000000"
           />
         </div>
         <button
