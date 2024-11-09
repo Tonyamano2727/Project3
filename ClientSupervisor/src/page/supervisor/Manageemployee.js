@@ -196,7 +196,7 @@ const Manageemployee = () => {
             name="baseSalary"
             value={selectedEmployee?.baseSalary.toLocaleString() || ""}
             InputProps={{
-              readOnly: true,
+              readOnly: false,
             }}
             fullWidth
             margin="normal"
