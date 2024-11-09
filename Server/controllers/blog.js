@@ -151,7 +151,7 @@ const addReview = asyncHandler(async (req, res) => {
     );
 
     const now = new Date();
-    const twentyMinutes = 20 * 60 * 1000; // 20 phút tính bằng milliseconds
+    const twentyMinutes = 20 * 60 * 1000; 
 
     if (existingReview) {
       const timeSinceLastUpdate = now - existingReview.updatedAt;

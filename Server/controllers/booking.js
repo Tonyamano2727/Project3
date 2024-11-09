@@ -65,21 +65,20 @@ const createBooking = async (req, res) => {
 };
 
 
-
 const updateBooking = async (req, res) => {
   try {
-    const { bkid } = req.params; // Lấy booking ID từ tham số yêu cầu
-    const updatedData = req.body; // Lấy dữ liệu cập nhật từ body yêu cầu
+    const { bkid } = req.params; 
+    const updatedData = req.body;
 
-    // Tìm booking theo ID
+   
     const updatedBooking = await Booking.findById(bkid);
 
-    // Kiểm tra nếu booking tồn tại
+ 
     if (!updatedBooking) {
       return res.status(404).json({ success: false, message: "Booking không tồn tại." });
     }
 
-    // Cập nhật nhân viên phụ trách nếu có
+   
     if (updatedData.employeeId) {
       const employees = await Employee.find({ _id: { $in: updatedData.employeeId } });
 
@@ -93,10 +92,10 @@ const updateBooking = async (req, res) => {
       }));
     }
 
-    // Cập nhật thông tin booking từ body yêu cầu
+    
     Object.assign(updatedBooking, updatedData);
 
-    // Tính toán tổng giá nếu số lượng hoặc dịch vụ thay đổi
+    
     if (updatedData.quantity || updatedData.service) {
       if (updatedData.service) {
         const service = await Service.findById(updatedData.service);
@@ -171,7 +170,6 @@ const updateBooking = async (req, res) => {
       }
     }
 
-    // Bao gồm thông tin nhân viên trong phản hồi
     return res.status(200).json({ 
       success: true, 
       data: { 
