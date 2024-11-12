@@ -26,10 +26,7 @@ var EmployeeSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
-  baseSalary: { type: Number,
-    default : 4000000
-  },
-  
+  baseSalary: { type: Number },
 });
 
 module.exports = mongoose.model("Employee", EmployeeSchema);

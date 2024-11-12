@@ -1,12 +1,20 @@
 const asyncHandler = require("express-async-handler");
 const Employee = require("../models/employee");
-const Supervisor = require('../models/supervisor');
+const Supervisor = require("../models/supervisor");
 
 const Registeremployee = asyncHandler(async (req, res) => {
   try {
-    const { email, mobile, name, job, district } = req.body;
+    const { email, mobile, name, job, district, baseSalary } = req.body;
 
-    if (!email || !mobile || !name || !job || !district || !req.file) {
+    if (
+      !email ||
+      !mobile ||
+      !name ||
+      !job ||
+      !district ||
+      !req.file ||
+      !baseSalary
+    ) {
       return res.status(400).json({
         success: false,
         mes: "Missing input",
@@ -28,6 +36,7 @@ const Registeremployee = asyncHandler(async (req, res) => {
       job,
       district,
       avatar: req.file.path,
+      baseSalary,
     };
 
     const newEmployee = await Employee.create(newEmployeeData);
@@ -47,22 +56,23 @@ const Registeremployee = asyncHandler(async (req, res) => {
 
 const updateEmployee = asyncHandler(async (req, res) => {
   try {
-    const { eid } = req.params; // Lấy ID từ params
-    const { email, mobile, name } = req.body;
+    const { eid } = req.params;
+    const { email, mobile, name, job, baseSalary } = req.body;
 
     const updatedData = {
       email,
-
       mobile,
       name,
+      job,
+      baseSalary,
     };
 
-    // Nếu có file avatar mới, cập nhật đường dẫn file avatar
     if (req.file) updatedData.avatar = req.file.path;
 
     const updatedEmployee = await Employee.findByIdAndUpdate(eid, updatedData, {
       new: true,
     });
+
     if (!updatedEmployee) {
       return res.status(404).json({
         success: false,
@@ -131,10 +141,9 @@ const getEmployee = asyncHandler(async (req, res) => {
   }
 });
 
-
 const getAllEmployees = asyncHandler(async (req, res) => {
-  const { _id } = req.user; 
-  const supervisor = await Supervisor.findById(_id); 
+  const { _id } = req.user;
+  const supervisor = await Supervisor.findById(_id);
 
   // Kiểm tra nếu không tìm thấy supervisor
   if (!supervisor) {
@@ -145,7 +154,7 @@ const getAllEmployees = asyncHandler(async (req, res) => {
   }
 
   // Tìm kiếm nhân viên theo quận mà supervisor phụ trách
-  const staff = await Employee.find({ district: supervisor.district }); 
+  const staff = await Employee.find({ district: supervisor.district });
 
   // Trả về danh sách nhân viên nếu tìm thấy
   return res.status(200).json({
@@ -157,7 +166,7 @@ const getAllEmployees = asyncHandler(async (req, res) => {
 const getAllEmployee = asyncHandler(async (req, res) => {
   try {
     // Lấy tất cả nhân viên từ cơ sở dữ liệu
-    const staff = await Employee.find(); 
+    const staff = await Employee.find();
 
     // Trả về danh sách nhân viên nếu tìm thấy
     if (staff.length > 0) {
@@ -180,7 +189,6 @@ const getAllEmployee = asyncHandler(async (req, res) => {
     });
   }
 });
-
 
 module.exports = {
   Registeremployee,
