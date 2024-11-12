@@ -1,92 +1,98 @@
-import React, { useState, useEffect } from "react"; // Import React and necessary hooks
+import React, { useState, useEffect } from "react";
 import {
   apiGetbooking,
   apiupdatebooking,
   apigetdetailbooking,
   apiGetemployee,
-} from "../../api/supervisor"; // Import your API functions
+} from "../../api/supervisor";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const Managebooking = () => {
-  const [bookings, setBookings] = useState([]); // State to hold bookings data
-  const [employees, setEmployees] = useState([]); // State to hold employee data
-  const [loading, setLoading] = useState(true); // State to track loading status
-  const [error, setError] = useState(null); // State to hold error messages
-  const [showForm, setShowForm] = useState(false); // State to toggle the update form
-  const [selectedBooking, setSelectedBooking] = useState(null); // State to hold selected booking details
-  const [updateError, setUpdateError] = useState(null); // State to hold update error messages
+  const [bookings, setBookings] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [updateError, setUpdateError] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-  // Fetch bookings from the API
   const fetchBookings = async () => {
     try {
-      const response = await apiGetbooking(); // Call the API to get bookings
+      const response = await apiGetbooking();
       if (response.success) {
-        setBookings(response.bookings); // Update state with bookings data
+        setBookings(response.bookings);
       } else {
-        setError(response.message || "No bookings found"); // Handle API response error
+        setError(response.message || "No bookings found");
       }
     } catch (error) {
-      setError(error.message || "An error occurred while fetching bookings."); // Handle any unexpected errors
+      setError(error.message || "An error occurred while fetching bookings.");
     } finally {
-      setLoading(false); // Set loading to false after the API call
+      setLoading(false);
     }
   };
 
-  // Fetch employees from the API
   const fetchEmployees = async () => {
     try {
-      const response = await apiGetemployee(); // Call the API to get employees
+      const response = await apiGetemployee();
       if (response.success) {
-        setEmployees(response.staff); // Update state with employees data
+        setEmployees(response.staff);
       } else {
-        setError(response.message || "Failed to fetch employees"); // Handle API response error
+        setError(response.message || "Failed to fetch employees");
       }
     } catch (error) {
-      setError(error.message || "An error occurred while fetching employees."); // Handle any unexpected errors
+      setError(error.message || "An error occurred while fetching employees.");
     }
   };
 
-  // Fetch bookings and employees when the component mounts
   useEffect(() => {
     fetchBookings();
     fetchEmployees();
   }, []);
 
-  // Function to fetch booking details
   const fetchBookingDetails = async (bookingId) => {
     try {
-      const response = await apigetdetailbooking(bookingId); // Call the API to get booking details
+      const response = await apigetdetailbooking(bookingId);
       if (response.success) {
-        setSelectedBooking(response.data); // Set selected booking details
-        setShowForm(true); // Show the form
+        setSelectedBooking(response.data);
+        setShowForm(true);
       } else {
-        setError(response.message || "Failed to fetch booking details"); // Handle API response error
+        setError(response.message || "Failed to fetch booking details");
       }
     } catch (error) {
-      setError(error.message || "An error occurred while fetching booking details."); // Handle any unexpected errors
+      setError(
+        error.message || "An error occurred while fetching booking details."
+      );
     }
   };
 
-  // Function to handle booking update
   const handleUpdateBooking = async (bookingId) => {
-    const booking = bookings.find((b) => b._id === bookingId); // Find the booking by ID
+    const booking = bookings.find((b) => b._id === bookingId);
     if (booking.status === "Completed") {
-      alert("Không thể cập nhật đơn hàng vì đơn hàng đã hoàn thành."); // Alert if booking is completed
-      return; // Don't fetch booking details if status is completed
+      setSnackbarMessage("Cannot update completed booking.");
+      setSnackbarSeverity("warning");
+      setSnackbarOpen(true);
+      return;
     }
-    fetchBookingDetails(bookingId); // Fetch booking details if not completed
+    fetchBookingDetails(bookingId);
   };
 
-  // Function to submit the update form
   const handleSubmitUpdate = async (e) => {
     e.preventDefault();
-
-    if (!selectedBooking) return; 
+    if (!selectedBooking) return;
 
     try {
       const response = await apiupdatebooking(
         selectedBooking,
         selectedBooking._id
-      ); // Call the API to update booking
+      );
       if (response.success) {
         setBookings((prevBookings) =>
           prevBookings.map((booking) =>
@@ -95,30 +101,35 @@ const Managebooking = () => {
               : booking
           )
         );
-        setShowForm(false); // Hide the form after successful update
-        setSelectedBooking(null); // Reset selected booking
-        setUpdateError(null); // Reset update error message
+        setShowForm(false);
+        setSelectedBooking(null);
+        setUpdateError(null);
+        setSnackbarMessage("Booking updated successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
       } else {
-        setError(response.message || "Failed to update booking"); // Handle API response error
+        setSnackbarMessage(response.message || "Failed to update booking");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
       }
     } catch (error) {
-      setError(
+      setSnackbarMessage(
         error.message || "An error occurred while updating the booking."
-      ); // Handle any unexpected errors
+      );
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
-  // Function to update quantity and calculate total price
   const handleQuantityChange = (e) => {
     const quantity = e.target.value;
     setSelectedBooking((prev) => ({
       ...prev,
       quantity: quantity,
-      totalPrice: quantity * prev.price, // Calculate total price based on quantity and price
+      totalPrice: quantity * prev.price,
     }));
   };
 
-  // Function to handle employee change
   const handleEmployeeChange = (e) => {
     const selectedEmployeeId = e.target.value;
     const selectedEmployee = employees.find(
@@ -126,21 +137,28 @@ const Managebooking = () => {
     );
     setSelectedBooking((prev) => ({
       ...prev,
-      employeeDetails: [{ employeeId: selectedEmployeeId, name: selectedEmployee.name }],
+      employeeDetails: [
+        { employeeId: selectedEmployeeId, name: selectedEmployee.name },
+      ],
     }));
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
     <div className="w-full flex justify-center items-center flex-col bg-gray-100 p-6">
       <h1 className="text-2xl font-bold mb-6">Manage Bookings</h1>
       {loading ? (
-        <div className="text-lg">Loading...</div> // Loading indicator
+        <div className="text-lg">Loading...</div>
       ) : error ? (
-        <div className="text-red-500">{error}</div> // Display error message if any
+        <div className="text-red-500">{error}</div>
       ) : (
         <form
           className="w-full border rounded-2xl bg-white p-5"
-          onSubmit={handleSubmitUpdate}>
+          onSubmit={handleSubmitUpdate}
+        >
           <table className="w-full rounded-3xl overflow-hidden leading-10">
             <thead>
               <tr className="text-[13px] bg-gray-200">
@@ -154,7 +172,7 @@ const Managebooking = () => {
                 <th className="p-2">Employee</th>
                 <th className="p-2">Status</th>
                 <th className="p-2">Total Price</th>
-                <th className="p-2">Action</th> {/* New column for action */}
+                <th className="p-2">Action</th>
               </tr>
             </thead>
             <tbody className="text-center">
@@ -184,7 +202,8 @@ const Managebooking = () => {
                     <button
                       type="button"
                       className="bg-blue-500 text-white p-1 rounded"
-                      onClick={() => handleUpdateBooking(booking._id)}>
+                      onClick={() => handleUpdateBooking(booking._id)}
+                    >
                       Update
                     </button>
                   </td>
@@ -198,8 +217,7 @@ const Managebooking = () => {
               <h2 className="text-lg font-bold mb-2">Update Booking</h2>
               {updateError && (
                 <div className="text-red-500 mb-2">{updateError}</div>
-              )}{" "}
-              {/* Display update error message */}
+              )}
               <div>
                 <label>Status</label>
                 <select
@@ -210,7 +228,8 @@ const Managebooking = () => {
                       status: e.target.value,
                     })
                   }
-                  className="border p-2 rounded w-full mb-2">
+                  className="border p-2 rounded w-full mb-2"
+                >
                   <option value="Pending">Pending</option>
                   <option value="Confirmed">Confirmed</option>
                   <option value="In-progress">In-progress</option>
@@ -223,7 +242,8 @@ const Managebooking = () => {
                 <select
                   value={selectedBooking.employeeDetails[0]?.employeeId || ""}
                   onChange={handleEmployeeChange}
-                  className="border p-2 rounded w-full mb-2">
+                  className="border p-2 rounded w-full mb-2"
+                >
                   <option value="">Select Employee</option>
                   {employees.map((employee) => (
                     <option key={employee._id} value={employee._id}>
@@ -241,7 +261,7 @@ const Managebooking = () => {
                 <input
                   type="number"
                   value={selectedBooking.quantity}
-                  onChange={handleQuantityChange} // Update quantity and total price
+                  onChange={handleQuantityChange}
                   className="border p-2 rounded w-full mb-2"
                 />
               </div>
@@ -251,12 +271,13 @@ const Managebooking = () => {
                   type="number"
                   value={selectedBooking.totalPrice}
                   className="border p-2 rounded w-full mb-2"
-                  disabled // Optional: Disable total price field to prevent manual edits
+                  disabled
                 />
               </div>
               <button
-                type="submit" // Submit the form
-                className="bg-green-500 text-white p-2 rounded">
+                type="submit"
+                className="bg-green-500 text-white p-2 rounded"
+              >
                 Save Changes
               </button>
               <button
@@ -265,14 +286,26 @@ const Managebooking = () => {
                   setShowForm(false);
                   setSelectedBooking(null);
                   setUpdateError(null);
-                }} // Hide the form and reset error
-                className="bg-red-500 text-white p-2 rounded ml-2">
+                }}
+                className="bg-red-500 text-white p-2 rounded ml-2"
+              >
                 Cancel
               </button>
             </div>
           )}
         </form>
       )}
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
