@@ -66,7 +66,7 @@ const Manageemployee = () => {
     const { name, value } = e.target;
     setSelectedEmployee({
       ...selectedEmployee,
-      [name]: value,
+      [name]: name === "baseSalary" ? Number(value) : value, // Parse baseSalary as a number
     });
   };
 
@@ -81,6 +81,7 @@ const Manageemployee = () => {
     formData.append("email", selectedEmployee.email);
     formData.append("job", selectedEmployee.job);
     formData.append("mobile", selectedEmployee.mobile);
+    formData.append("baseSalary", selectedEmployee.baseSalary); // Ensure baseSalary is included
 
     if (avatarFile) {
       formData.append("avatar", avatarFile);
@@ -139,7 +140,10 @@ const Manageemployee = () => {
                   <td className="p-2">{employee.email}</td>
                   <td className="p-2">{employee.mobile}</td>
                   <td className="p-2">
-                    {employee.baseSalary.toLocaleString()} VND
+                    {employee.baseSalary
+                      ? employee.baseSalary.toLocaleString()
+                      : "N/A"}{" "}
+                    VND
                   </td>
                   <td className="p-2">
                     <button
@@ -194,10 +198,9 @@ const Manageemployee = () => {
           <TextField
             label="Base Salary"
             name="baseSalary"
-            value={selectedEmployee?.baseSalary.toLocaleString() || ""}
-            InputProps={{
-              readOnly: false,
-            }}
+            type="number"
+            value={selectedEmployee?.baseSalary || ""}
+            onChange={handleInputChange}
             fullWidth
             margin="normal"
           />

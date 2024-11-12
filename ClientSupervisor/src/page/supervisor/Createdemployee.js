@@ -234,8 +234,13 @@ const Createdemployee = () => {
             style={styles.input}
             value={formData.baseSalary}
             onChange={handleChange}
+            onInput={(e) => {
+              if (e.target.value > 4000000) {
+                e.target.value = 4000000;
+              }
+            }}
             required
-            max="10000000"
+            max="4000000"
           />
         </div>
         <button
