@@ -16,7 +16,7 @@ const Markdoweditor = ({label , value , changevalue , name, invalidFields , seti
            
           height: 200,
         }}
-        onChange={e => changevalue(prev => ({ ...prev, [name]: e.target.getContent() }))}
+        onEditorChange={(content) => changevalue(content)}
         onFocus={() => {
           setinvalidFields && setinvalidFields([])
           setisfousdescription(true)

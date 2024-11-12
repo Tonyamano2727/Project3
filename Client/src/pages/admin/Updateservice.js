@@ -66,34 +66,32 @@ const UpdateServices = ({ category, editService, setEditService }) => {
     const finalPayload = { ...data, ...payload };
     const formData = new FormData();
 
-  
     Object.entries(finalPayload).forEach(([key, value]) => {
-        formData.append(key, value);
+      formData.append(key, value);
     });
 
     if (thumbImage) {
-        const blob = await fetch(thumbImage).then((res) => res.blob());
-        formData.append("thumb", blob, "thumb.jpg");
+      const blob = await fetch(thumbImage).then((res) => res.blob());
+      formData.append("thumb", blob, "thumb.jpg");
     }
 
     // Thêm các hình ảnh khác
     otherImages.forEach(async (image) => {
-        const blob = await fetch(image).then((res) => res.blob());
-        formData.append("images", blob, `image-${Date.now()}.jpg`);
+      const blob = await fetch(image).then((res) => res.blob());
+      formData.append("images", blob, `image-${Date.now()}.jpg`);
     });
 
     // Gửi dữ liệu
     try {
-        const response = await apiUpdateServices(formData, editService._id);
-        // Xử lý phản hồi từ server...
+      const response = await apiUpdateServices(formData, editService._id);
+      // Xử lý phản hồi từ server...
     } catch (error) {
-        console.error("Error updating service:", error);
-        enqueueSnackbar("An error occurred while updating the service.", {
-            variant: "error",
-        });
+      console.error("Error updating service:", error);
+      enqueueSnackbar("An error occurred while updating the service.", {
+        variant: "error",
+      });
     }
-};
-
+  };
 
   return (
     <div className="w-[85%] bg-gray-300 rounded-2xl">
@@ -134,19 +132,18 @@ const UpdateServices = ({ category, editService, setEditService }) => {
 
           <Markdoweditor
             name="description"
-            changevalue={(e) => setPayload((prev) => ({ ...prev, description: e }))}
+            value={payload.description}
+            changevalue={(content) =>
+              setPayload((prev) => ({ ...prev, description: content }))
+            }
             label="Service Description"
-            value={payload.description} 
             setisfousdescription={setIsFocusDescription}
           />
-
-          {/* Thumbnail and Images Section */}
           <div className="flex items-center justify-around mb-5">
             <div className="flex flex-col justify-center items-center">
               <label
                 htmlFor="thumbImage"
-                className="mt-2 bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer"
-              >
+                className="mt-2 bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer">
                 Thumb Image
               </label>
               <input
@@ -165,8 +162,7 @@ const UpdateServices = ({ category, editService, setEditService }) => {
                   />
                   <button
                     onClick={handleDeleteThumb}
-                    className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1"
-                  >
+                    className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
                     X
                   </button>
                 </div>
@@ -176,8 +172,7 @@ const UpdateServices = ({ category, editService, setEditService }) => {
             <div className="flex flex-col justify-center items-center">
               <label
                 htmlFor="otherImages"
-                className="mt-2 bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer"
-              >
+                className="mt-2 bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer">
                 Other Images
               </label>
               <input
@@ -199,8 +194,7 @@ const UpdateServices = ({ category, editService, setEditService }) => {
                       />
                       <button
                         onClick={() => handleDeleteOtherImage(index)}
-                        className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1"
-                      >
+                        className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
                         X
                       </button>
                     </div>

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Service = require('../models/service');
 const Employee = require("../models/employee");
-const HotDistrict = require("../models/hotdistric"); // Import model hotDistrict
+const HotDistrict = require("../models/hotdistric");
 
 const BookingSchema = new mongoose.Schema(
   {
@@ -21,7 +21,7 @@ const BookingSchema = new mongoose.Schema(
       },
       name: String,
     }],
-    hotDistrict: { // Thêm trường hotDistrict
+    hotDistrict: { 
       type: mongoose.Schema.Types.ObjectId,
       ref: 'HotDistrict',
     },
@@ -85,7 +85,6 @@ const BookingSchema = new mongoose.Schema(
   }
 );
 
-// Pre-save hook to set category, price, and totalPrice
 BookingSchema.pre("save", async function (next) {
   try {
     const service = await Service.findById(this.service);
@@ -97,19 +96,18 @@ BookingSchema.pre("save", async function (next) {
     this.category = service.category; 
     this.price = service.price; 
 
-    // Kiểm tra xem quận có nằm trong danh sách hot không
     if (this.hotDistrict) {
       const hotDistrict = await HotDistrict.findById(this.hotDistrict);
       if (hotDistrict) {
-        this.totalPrice = this.price * this.quantity * 1.1; // Tăng 10% nếu là quận hot
+        this.totalPrice = this.price * this.quantity * 1.1; 
       } else {
-        this.totalPrice = this.price * this.quantity; // Không phải quận hot
+        this.totalPrice = this.price * this.quantity; 
       }
     } else {
-      this.totalPrice = this.price * this.quantity; // Không có quận hot
+      this.totalPrice = this.price * this.quantity;
     }
 
-    // Log giá trị để kiểm tra
+   
     console.log('Service Price:', this.price);
     console.log('Quantity:', this.quantity);
     console.log('Is Hot District:', !!this.hotDistrict);

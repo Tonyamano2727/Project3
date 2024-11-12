@@ -98,7 +98,7 @@ const Createdsupervise = () => {
         <div className="mt-2">
           <h2 className="text-[13px]">District</h2>
           <Selectinput
-            className="mt-2 py-3 rounded-full bg-white"
+            className="bg-gradient-to-r from-[#979db6] to-gray-300"
             value={district}
             changeValue={setDistrict}
             options={districts}
