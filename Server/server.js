@@ -12,6 +12,7 @@ app.use(
       process.env.CLIENT_URL,
       process.env.SUPERVISOR,
       process.env.CLIENT_MOBILE,
+      process.env.CONNECTION_MOBILE,
     ],
     methods: ["POST", "PUT", "GET", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
