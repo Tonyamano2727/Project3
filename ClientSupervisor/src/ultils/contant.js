@@ -20,7 +20,7 @@ export const SuperSidebar = [
         path: `/${path.SUPER_LAYOUT}/${path.MANAGE_EMPLOYYEE}`,
       },
       {
-        text: "Created Supervise",
+        text: "Create Employee ",
         path: `/${path.SUPER_LAYOUT}/${path.CREATED_EMPLOYYEE}`,
       },
       {
