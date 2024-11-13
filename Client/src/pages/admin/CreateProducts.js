@@ -21,7 +21,7 @@ const CreateProducts = () => {
   ]);
 
   const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState({}); // Stores brands for each category
+  const [brands, setBrands] = useState({}); 
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -311,13 +311,13 @@ const CreateProducts = () => {
 
         <div className="flex items-center justify-center">
           <div className="w-[95%]">
-            <Button type="submit" fw>
+            <Button type="submit" fw style={"w-full p-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300"}>
               Create Products
             </Button>
             <button
               type="button"
               onClick={addProduct}
-              className="px-4 py-2 mt-3 w-full text-white bg-gradient-to-r from-[#0f1c92] to-[#0e28d1] rounded-full">
+              className="w-full p-2 mt-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300">
               Add Another Product
             </button>
           </div>
