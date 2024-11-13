@@ -21,14 +21,17 @@ const CreateProducts = () => {
   ]);
 
   const [categories, setCategories] = useState([]);
+<<<<<<< HEAD
   const [brands, setBrands] = useState({}); 
+=======
+  const [brands, setBrands] = useState({});
+>>>>>>> 93bb54df831090f995733c727d4baf37779dfc14
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await apiGetCategories();
         setCategories(response.getallCategory);
-        console.log(response);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -146,66 +149,69 @@ const CreateProducts = () => {
   return (
     <div className="w-[85%] border bg-white rounded-2xl p-5 flex flex-col items-center">
       <h1 className="font-bold text-2xl mb-5">Create Products</h1>
-      <form onSubmit={handleSubmit} className="w-full">
+      <form onSubmit={handleSubmit} className="w-full space-y-6">
         {products.map((product, index) => (
           <div
             key={index}
-            className="gap-5 flex flex-wrap justify-center items-center mb-5">
-            <div className="w-[95%] justify-between flex items-center">
-              <h2 className="font-semibold w-full">Product {index + 1}</h2>
+            className="w-full flex flex-col items-start border rounded-lg p-4 mb-5 shadow-sm"
+          >
+            <div className="flex w-full justify-between items-center mb-4">
+              <h2 className="font-semibold text-lg">Product {index + 1}</h2>
               {products.length > 1 && (
                 <button
                   type="button"
                   onClick={() => deleteProduct(index)}
-                  className="px-4 w-[20%] py-2 text-white bg-gradient-to-r from-[#0f1c92] to-[#0e28d1] rounded-full">
+                  className="px-4 py-1 text-white bg-red-600 rounded-full"
+                >
                   Delete Product
                 </button>
               )}
             </div>
 
-            <input
-              className="border p-1 rounded-full w-[45%]"
-              type="text"
-              name="title"
-              placeholder="Title"
-              value={product.title}
-              onChange={(e) => handleChange(index, e)}
-              required
-            />
-            <input
-              className="border p-1 rounded-full w-[45%]"
-              type="number"
-              name="price"
-              placeholder="Price"
-              value={product.price}
-              onChange={(e) => handleChange(index, e)}
-              required
-            />
-            <input
-              className="border p-1 rounded-full w-[45%]"
-              type="number"
-              name="quantity"
-              placeholder="Quantity"
-              value={product.quantity}
-              onChange={(e) => handleChange(index, e)}
-              required
-            />
-            <input
-              className="border p-1 rounded-full w-[45%]"
-              type="text"
-              name="color"
-              placeholder="Color"
-              value={product.color}
-              onChange={(e) => handleChange(index, e)}
-              required
-            />
-            <div className="w-full justify-center items-center flex  gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+              <input
+                className="border p-2 rounded w-full"
+                type="text"
+                name="title"
+                placeholder="Title"
+                value={product.title}
+                onChange={(e) => handleChange(index, e)}
+                required
+              />
+              <input
+                className="border p-2 rounded w-full"
+                type="number"
+                name="price"
+                placeholder="Price"
+                value={product.price}
+                onChange={(e) => handleChange(index, e)}
+                required
+              />
+              <input
+                className="border p-2 rounded w-full"
+                type="number"
+                name="quantity"
+                placeholder="Quantity"
+                value={product.quantity}
+                onChange={(e) => handleChange(index, e)}
+                required
+              />
+              <input
+                className="border p-2 rounded w-full"
+                type="text"
+                name="color"
+                placeholder="Color"
+                value={product.color}
+                onChange={(e) => handleChange(index, e)}
+                required
+              />
               <select
-                className="border p-2 rounded-full w-[46%]"
+                className="border p-2 rounded w-full"
                 name="category"
                 value={product.category}
                 onChange={(e) => handleChange(index, e)}
-                required>
+                required
+              >
                 <option value="">Select Category</option>
                 {categories.map((category) => (
                   <option key={category._id} value={category._id}>
@@ -214,11 +220,12 @@ const CreateProducts = () => {
                 ))}
               </select>
               <select
-                className="border p-2 rounded-full w-[46%]"
+                className="border p-2 rounded w-full"
                 name="brand"
                 value={product.brand}
                 onChange={(e) => handleChange(index, e)}
-                required>
+                required
+              >
                 <option value="">Select Brand</option>
                 {brands[product.category]?.map((brand, i) => (
                   <option key={i} value={brand}>
@@ -229,7 +236,7 @@ const CreateProducts = () => {
             </div>
 
             <textarea
-              className="border p-1 rounded-2xl w-[94%]"
+              className="border p-2 rounded w-full mt-4"
               name="description"
               placeholder="Description"
               value={product.description}
@@ -237,78 +244,70 @@ const CreateProducts = () => {
               required
             />
 
-            <label className="border rounded-full px-10 py-3 cursor-pointer text-center">
-              Thumb
-              <input
-                type="file"
-                name="thumb"
-                onChange={(e) => handleFileChange(index, e)}
-                className="hidden"
-                required
-              />
-            </label>
-            {product.thumbPreview && (
-              <div>
-                <img
-                  src={product.thumbPreview}
-                  alt="Thumbnail Preview"
-                  style={{ width: "100px", height: "100px" }}
+            <div className="flex flex-col sm:flex-row sm:space-x-4 mt-4">
+              <label className="border rounded px-4 py-2 cursor-pointer text-center mb-2 sm:mb-0">
+                Thumbnail
+                <input
+                  type="file"
+                  name="thumb"
+                  onChange={(e) => handleFileChange(index, e)}
+                  className="hidden"
+                  required
                 />
-                <button
-                  type="button"
-                  onClick={() => deleteThumb(index)}
-                  className="text-red-600">
-                  Delete Thumb
-                </button>
-              </div>
-            )}
-
-            <label className="border p-1 rounded-full px-10 py-3 cursor-pointer text-center">
-              Other Images
-              <input
-                type="file"
-                name="images"
-                multiple
-                onChange={(e) => handleFileChange(index, e)}
-                className="hidden"
-                required
-              />
-            </label>
-            <div className="image-previews flex flex-wrap mt-2">
-              {product.imagePreviews.map((preview, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "inline-block",
-                    position: "relative",
-                    marginRight: "5px",
-                  }}>
+              </label>
+              {product.thumbPreview && (
+                <div className="flex flex-col items-center">
                   <img
-                    src={preview}
-                    alt={`Image Preview ${i + 1}`}
-                    style={{ width: "100px", height: "100px" }}
+                    src={product.thumbPreview}
+                    alt="Thumbnail Preview"
+                    className="w-24 h-24 object-cover rounded"
                   />
                   <button
                     type="button"
-                    onClick={() => deleteImage(index, i)}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      background: "red",
-                      color: "white",
-                      borderRadius: "50%",
-                      width: "20px",
-                      height: "20px",
-                    }}>
-                    X
+                    onClick={() => deleteThumb(index)}
+                    className="text-red-600 mt-1"
+                  >
+                    Delete Thumb
                   </button>
                 </div>
-              ))}
+              )}
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:space-x-4 mt-4">
+              <label className="border rounded px-4 py-2 cursor-pointer text-center">
+                Additional Images
+                <input
+                  type="file"
+                  name="images"
+                  multiple
+                  onChange={(e) => handleFileChange(index, e)}
+                  className="hidden"
+                  required
+                />
+              </label>
+              <div className="flex flex-wrap mt-2">
+                {product.imagePreviews.map((preview, i) => (
+                  <div key={i} className="relative mr-2 mb-2">
+                    <img
+                      src={preview}
+                      alt={`Image Preview ${i + 1}`}
+                      className="w-24 h-24 object-cover rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => deleteImage(index, i)}
+                      className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center"
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         ))}
 
+<<<<<<< HEAD
         <div className="flex items-center justify-center">
           <div className="w-[95%]">
             <Button type="submit" fw style={"w-full p-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300"}>
@@ -321,6 +320,19 @@ const CreateProducts = () => {
               Add Another Product
             </button>
           </div>
+=======
+        <div className="flex flex-col items-center space-y-3 mt-6">
+          <Button type="submit" fw>
+            Create Products
+          </Button>
+          <button
+            type="button"
+            onClick={addProduct}
+            className="px-4 py-2 w-full text-white bg-gradient-to-r from-[#0f1c92] to-[#0e28d1] rounded-full"
+          >
+            Add Another Product
+          </button>
+>>>>>>> 93bb54df831090f995733c727d4baf37779dfc14
         </div>
       </form>
     </div>
