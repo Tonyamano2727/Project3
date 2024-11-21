@@ -37,8 +37,8 @@ const Headeradmin = () => {
           <span className="h-[3px] w-[27%] bg-red-500 rounded-3xl"></span>
           <span className="px-2">{formattedDate}</span>
         </div>
-        <div className="h-[35px] flex items-center justify-center w-[35px] rounded-full bg-gradient-to-r from-[#e0a96a] to-[#e07c93]">
-          <Link className="text-white">{current?.firstname[0]}</Link>
+        <div className="h-[35px] flex items-center justify-center w-[35px] rounded-full bg-gradient-to-r from-[#979db6] to-gray-300">
+          <Link className="text-black font-semibold">{current?.firstname[0]}</Link>
         </div>
       </div>
     </div>

@@ -100,7 +100,7 @@ const Manageservices = () => {
   }, [update]);
 
   return (
-    <div className="w-[90%] flex flex-col gap-4 relative h-[10060px]">
+    <div className="w-[90%] flex flex-col gap-4 relative h-[1060px]">
       {editService && (
         <Updateservices
           editService={editService}
@@ -184,7 +184,7 @@ const Manageservices = () => {
                       <FaEdit size={20} />
                     </span>
                     <span
-                      onClick={() => handleDeleteService(service._id)} // Gọi hàm xóa dịch vụ
+                      onClick={() => handleDeleteService(service._id)} 
                       className="text-red-500 hover:underline cursor-pointer px-2">
                       <RiDeleteBin6Line size={20} />
                     </span>

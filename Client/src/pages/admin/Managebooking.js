@@ -85,11 +85,13 @@ const ManageBooking = () => {
         />
         <div className="flex gap-5">
           <Selectinput
+          className={'bg-gradient-to-r from-[#979db6] to-gray-300'}
             options={statusOptionsBooking}
             changeValue={setSelectedStatus}
             value={selectedStatus}
           />
           <Selectinput
+           className={'bg-gradient-to-r from-[#979db6] to-gray-300'}
             options={[...new Set(categories)].map((category) => ({
               value: category,
               text: category,
@@ -98,6 +100,7 @@ const ManageBooking = () => {
             value={selectedCategory}
           />
           <Selectinput
+           className={'bg-gradient-to-r from-[#979db6] to-gray-300'}
             options={sortByDate}
             changeValue={setSelectedSortByDate}
             value={selectedSortByDate}

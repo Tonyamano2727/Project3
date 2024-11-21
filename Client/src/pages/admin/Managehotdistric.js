@@ -5,6 +5,7 @@ import {
   deletedhotdistric,
   apicreatehotdistric,
 } from "../../apis";
+import { districtsHCM } from "../../ultils/contants";
 
 const ManageHotDistrict = () => {
   const [hotDistricts, setHotDistricts] = useState([]);
@@ -143,21 +144,25 @@ const ManageHotDistrict = () => {
       <div className="flex w-[85%] justify-start items-start">
         <button
           onClick={() => setShowCreateForm((prev) => !prev)}
-          className="p-2 bg-gradient-to-r from-[#e0a96a] to-[#e07c93] rounded-2xl w-[15%] text-[14px] text-white text-center">
+          className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl w-[15%] text-[14px] text-white text-center">
           + New Hotdistric
         </button>
       </div>
 
       {showCreateForm && (
         <div className=" w-[85%] mt-5">
-         
-          <input
-            type="text"
-            placeholder="District Name"
+          <select
             value={newDistrictName}
             onChange={(e) => setNewDistrictName(e.target.value)}
-            className="border p-2 w-full mb-2 rounded-2xl"
-          />
+            className="border p-2 w-full mb-2 rounded-2xl">
+            <option value="">Chọn Quận/Huyện</option>
+            {districtsHCM.map((district, index) => (
+              <option key={index} value={district}>
+                {district}
+              </option>
+            ))}
+          </select>
+
           <input
             type="number"
             placeholder="Percentage"
@@ -196,7 +201,7 @@ const ManageHotDistrict = () => {
             </tr>
           </thead>
           {hotDistricts.length > 0 && (
-            <tbody>
+            <tbody className="text-[14px]">
               {hotDistricts.map((district) => (
                 <tr key={district._id}>
                   <td>{district.name}</td>

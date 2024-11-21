@@ -36,7 +36,7 @@ const Createdsupervise = () => {
         enqueueSnackbar("Supervisor created successfully!", {
           variant: "success",
         });
-        reset(); // Reset form fields
+        reset(); 
       } else {
         enqueueSnackbar(response.mes || "Failed to create supervisor.", {
           variant: "error",
@@ -105,7 +105,7 @@ const Createdsupervise = () => {
           />
         </div>
         <div className="mt-5">
-          <Button fw type="submit" style={"w-full p-2 bg-white rounded-2xl"}>
+          <Button fw type="submit" style={"w-full p-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300"}>
             Create Supervisor
           </Button>
         </div>

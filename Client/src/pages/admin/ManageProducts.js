@@ -98,9 +98,9 @@ const ManageProducts = () => {
       if (rs.isConfirmed) {
         const response = await apiDeleteproduct(pid);
         if (response.success) {
-          enqueueSnackbar(response.mes, { variant: 'success' }); // Use Notistack
+          enqueueSnackbar(response.mes, { variant: 'success' }); 
         } else {
-          enqueueSnackbar(response.mes, { variant: 'error' }); // Use Notistack
+          enqueueSnackbar(response.mes, { variant: 'error' }); 
         }
         render();
       }
@@ -117,12 +117,12 @@ const ManageProducts = () => {
         />
       )}
       <div className="w-full flex p-2 items-center justify-between">
-        <Link className="p-2 bg-gradient-to-r from-[#d3b491] to-[#e07c93] rounded-2xl text-[14px] text-white px-4">
+        <Link className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl text-[13px]  px-4">
           + New Products
         </Link>
         <div className="w-[25%]">
           <Selectinput 
-          className='bg-gradient-to-r from-[#d3b491] to-[#e07c93]'
+          className='bg-gradient-to-r from-[#979db6] to-gray-300'
             changeValue={(value) => setSort(value)}
             value={sort}
             options={sortByDate}
@@ -130,8 +130,8 @@ const ManageProducts = () => {
         </div>
         <div className="w-[25%]">
           <Selectinput
-           className='bg-gradient-to-r from-[#d3b491] to-[#e07c93]'
-            changeValue={(value) => setSelectedCategory(value)} // Cập nhật giá trị selectedCategory
+           className='bg-gradient-to-r from-[#979db6] to-gray-300'
+            changeValue={(value) => setSelectedCategory(value)} 
             value={selectedCategory}
             options={getallCategory.map((category) => ({
               text: category.title,
@@ -141,7 +141,7 @@ const ManageProducts = () => {
         </div>
         <div className="w-[25%]">
           <Selectinput
-           className='bg-gradient-to-r from-[#d3b491] to-[#e07c93]'
+           className='bg-gradient-to-r from-[#979db6] to-gray-300'
             changeValue={(value) => setSelectedBrand(value)}
             value={selectedBrand}
             options={getallCategory.map((category) => ({
