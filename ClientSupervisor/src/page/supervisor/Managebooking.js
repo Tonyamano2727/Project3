@@ -7,6 +7,11 @@ import {
 } from "../../api/supervisor";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -14,21 +19,27 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 const Managebooking = () => {
   const [bookings, setBookings] = useState([]);
+  const [filteredBookings, setFilteredBookings] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showForm, setShowForm] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [updateError, setUpdateError] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [filterStatus, setFilterStatus] = useState("");
 
   const fetchBookings = async () => {
     try {
       const response = await apiGetbooking();
       if (response.success) {
-        setBookings(response.bookings);
+        const sortedBookings = response.bookings.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
+        setBookings(sortedBookings);
+        setFilteredBookings(sortedBookings);
       } else {
         setError(response.message || "No bookings found");
       }
@@ -62,7 +73,6 @@ const Managebooking = () => {
       const response = await apigetdetailbooking(bookingId);
       if (response.success) {
         setSelectedBooking(response.data);
-        setShowForm(true);
       } else {
         setError(response.message || "Failed to fetch booking details");
       }
@@ -73,15 +83,22 @@ const Managebooking = () => {
     }
   };
 
-  const handleUpdateBooking = async (bookingId) => {
+  const handleOpenModal = (bookingId) => {
     const booking = bookings.find((b) => b._id === bookingId);
-    if (booking.status === "Completed") {
-      setSnackbarMessage("Cannot update completed booking.");
+    if (booking.status === "Completed" || booking.status === "Canceled") {
+      setSnackbarMessage("Cannot update COMPLETED/CANCELED booking.");
       setSnackbarSeverity("warning");
       setSnackbarOpen(true);
       return;
     }
     fetchBookingDetails(bookingId);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelectedBooking(null);
+    setUpdateError(null);
   };
 
   const handleSubmitUpdate = async (e) => {
@@ -101,7 +118,14 @@ const Managebooking = () => {
               : booking
           )
         );
-        setShowForm(false);
+        setFilteredBookings((prevBookings) =>
+          prevBookings.map((booking) =>
+            booking._id === selectedBooking._id
+              ? { ...booking, ...selectedBooking }
+              : booking
+          )
+        );
+        setOpenModal(false);
         setSelectedBooking(null);
         setUpdateError(null);
         setSnackbarMessage("Booking updated successfully!");
@@ -118,6 +142,16 @@ const Managebooking = () => {
       );
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
+    }
+  };
+
+  const handleFilterChange = (status) => {
+    setFilterStatus(status);
+    if (status === "") {
+      setFilteredBookings(bookings);
+    } else {
+      const filtered = bookings.filter((booking) => booking.status === status);
+      setFilteredBookings(filtered);
     }
   };
 
@@ -155,10 +189,21 @@ const Managebooking = () => {
       ) : error ? (
         <div className="text-red-500">{error}</div>
       ) : (
-        <form
-          className="w-full border rounded-2xl bg-white p-5"
-          onSubmit={handleSubmitUpdate}
-        >
+        <>
+          <div className="mb-4">
+            <select
+              value={filterStatus}
+              onChange={(e) => handleFilterChange(e.target.value)}
+              className="border p-2 rounded"
+            >
+              <option value="">All Status</option>
+              <option value="Pending">Pending</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="In-progress">In-progress</option>
+              <option value="Completed">Completed</option>
+              <option value="Canceled">Canceled</option>
+            </select>
+          </div>
           <table className="w-full rounded-3xl overflow-hidden leading-10">
             <thead>
               <tr className="text-[13px] bg-gray-200">
@@ -176,7 +221,7 @@ const Managebooking = () => {
               </tr>
             </thead>
             <tbody className="text-center">
-              {bookings.map((booking) => (
+              {filteredBookings.map((booking) => (
                 <tr key={booking._id} className="text-[11px] border-b">
                   <td className="p-2">{booking.customerName}</td>
                   <td className="p-2">{booking.category}</td>
@@ -202,7 +247,7 @@ const Managebooking = () => {
                     <button
                       type="button"
                       className="bg-blue-500 text-white p-1 rounded"
-                      onClick={() => handleUpdateBooking(booking._id)}
+                      onClick={() => handleOpenModal(booking._id)}
                     >
                       Update
                     </button>
@@ -211,90 +256,86 @@ const Managebooking = () => {
               ))}
             </tbody>
           </table>
-
-          {showForm && selectedBooking && (
-            <div className="mt-5 p-4 border rounded">
-              <h2 className="text-lg font-bold mb-2">Update Booking</h2>
-              {updateError && (
-                <div className="text-red-500 mb-2">{updateError}</div>
-              )}
-              <div>
-                <label>Status</label>
-                <select
-                  value={selectedBooking.status}
-                  onChange={(e) =>
-                    setSelectedBooking({
-                      ...selectedBooking,
-                      status: e.target.value,
-                    })
-                  }
-                  className="border p-2 rounded w-full mb-2"
-                >
-                  <option value="Pending">Pending</option>
-                  <option value="Confirmed">Confirmed</option>
-                  <option value="In-progress">In-progress</option>
-                  <option value="Completed">Completed</option>
-                  <option value="Canceled">Canceled</option>
-                </select>
-              </div>
-              <div>
-                <label>Employee</label>
-                <select
-                  value={selectedBooking.employeeDetails[0]?.employeeId || ""}
-                  onChange={handleEmployeeChange}
-                  className="border p-2 rounded w-full mb-2"
-                >
-                  <option value="">Select Employee</option>
-                  {employees.map((employee) => (
-                    <option key={employee._id} value={employee._id}>
-                      {employee.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label>Price</label>
-                <div>{selectedBooking.price} VND</div>
-              </div>
-              <div>
-                <label>Quantity</label>
-                <input
-                  type="number"
-                  value={selectedBooking.quantity}
-                  onChange={handleQuantityChange}
-                  className="border p-2 rounded w-full mb-2"
-                />
-              </div>
-              <div>
-                <label>Total Price</label>
-                <input
-                  type="number"
-                  value={selectedBooking.totalPrice}
-                  className="border p-2 rounded w-full mb-2"
-                  disabled
-                />
-              </div>
-              <button
-                type="submit"
-                className="bg-green-500 text-white p-2 rounded"
-              >
-                Save Changes
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowForm(false);
-                  setSelectedBooking(null);
-                  setUpdateError(null);
-                }}
-                className="bg-red-500 text-white p-2 rounded ml-2"
-              >
-                Cancel
-              </button>
-            </div>
-          )}
-        </form>
+        </>
       )}
+
+      <Dialog
+        open={openModal}
+        onClose={handleCloseModal}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Update Booking</DialogTitle>
+        <DialogContent>
+          {updateError && (
+            <div className="text-red-500 mb-2">{updateError}</div>
+          )}
+          <div>
+            <label>Status</label>
+            <select
+              value={selectedBooking?.status || ""}
+              onChange={(e) =>
+                setSelectedBooking({
+                  ...selectedBooking,
+                  status: e.target.value,
+                })
+              }
+              className="border p-2 rounded w-full mb-2"
+            >
+              <option value="Pending">Pending</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="In-progress">In-progress</option>
+              <option value="Completed">Completed</option>
+              <option value="Canceled">Canceled</option>
+            </select>
+          </div>
+          <div>
+            <label>Employee</label>
+            <select
+              value={selectedBooking?.employeeDetails[0]?.employeeId || ""}
+              onChange={handleEmployeeChange}
+              className="border p-2 rounded w-full mb-2"
+            >
+              <option value="">Select Employee</option>
+              {employees.map((employee) => (
+                <option key={employee._id} value={employee._id}>
+                  {employee.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label>Price</label>
+            <div>{selectedBooking?.price || 0} VND</div>
+          </div>
+          <div>
+            <label>Quantity</label>
+            <input
+              type="number"
+              value={selectedBooking?.quantity || ""}
+              onChange={handleQuantityChange}
+              className="border p-2 rounded w-full mb-2"
+            />
+          </div>
+          <div>
+            <label>Total Price</label>
+            <input
+              type="number"
+              value={selectedBooking?.totalPrice || ""}
+              className="border p-2 rounded w-full mb-2"
+              disabled
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="error">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmitUpdate} color="primary">
+            Save Changes
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         open={snackbarOpen}
