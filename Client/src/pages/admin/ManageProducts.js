@@ -1,36 +1,32 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { InputForm, Pagination, Selectinput } from "../../components";
 import { useForm } from "react-hook-form";
-import { apiGetProducts, apiGetCategory } from "../../apis"; // Import API lấy danh mục và thương hiệu
+import { apiGetProducts, apiGetCategory, apiDeleteproduct } from "../../apis";
 import { formatMoney } from "../../ultils/helper";
 import { Link, useSearchParams } from "react-router-dom";
 import useDebounce from "../../hooks/useDebounce";
 import Updateproducts from "./Updateproducts";
-import { apiDeleteproduct } from "../../apis";
 import Swal from "sweetalert2";
-import { useSnackbar } from 'notistack'; // Import Notistack
+import { useSnackbar } from "notistack";
 import { sortByDate } from "../../ultils/contants";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { CSVLink } from "react-csv";
+import Papa from "papaparse";
+import moment from "moment"; // Import moment for date formatting
 
 const ManageProducts = () => {
-  const {
-    register,
-    formState: { errors },
-    watch,
-  } = useForm();
-
-  const { enqueueSnackbar } = useSnackbar(); 
-
+  const { register, formState: { errors }, watch } = useForm();
+  const { enqueueSnackbar } = useSnackbar();
   const [params] = useSearchParams();
-  const [products, setProducts] = useState(null);
+  const [products, setProducts] = useState([]);
   const [getallCategory, setgetallCategory] = useState([]);
   const [counts, setCounts] = useState(0);
   const [editProduct, setEditProduct] = useState(null);
   const [update, setUpdate] = useState(false);
-  const [sort, setSort] = useState(""); 
-  const [selectedCategory, setSelectedCategory] = useState(""); 
-  const [selectedBrand, setSelectedBrand] = useState(""); 
+  const [sort, setSort] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");
 
   const render = useCallback(() => {
     setUpdate(!update);
@@ -42,17 +38,11 @@ const ManageProducts = () => {
       limit: process.env.REACT_APP_PRODUCT_LIMIT,
     };
 
-    if (!selectedCategory) {
-      delete queryParams.category; 
-    } else {
-      queryParams.category = selectedCategory; 
-    }
+    if (!selectedCategory) delete queryParams.category;
+    else queryParams.category = selectedCategory;
 
-    if (!selectedBrand) {
-      delete queryParams.brand;
-    } else {
-      queryParams.brand = selectedBrand; 
-    }
+    if (!selectedBrand) delete queryParams.brand;
+    else queryParams.brand = selectedBrand;
 
     const response = await apiGetProducts(queryParams);
     if (response.success) {
@@ -68,24 +58,20 @@ const ManageProducts = () => {
     if (querydeBounce) searchParams.q = querydeBounce;
     fetchProducts(searchParams);
   }, [params, querydeBounce, update, selectedCategory, selectedBrand]);
+
   const fetchCategories = async () => {
     try {
-      const response = await apiGetCategory(); 
+      const response = await apiGetCategory();
       if (response.success) {
         setgetallCategory(response.getallCategory);
-      } else {
-        console.error(
-          "Lỗi khi lấy danh mục:",
-          response.message || "Unknown error"
-        );
       }
     } catch (error) {
-      console.error("Có lỗi xảy ra khi gọi API:", error);
+      console.error("Error fetching categories:", error);
     }
   };
 
   useEffect(() => {
-    fetchCategories(); 
+    fetchCategories();
   }, []);
 
   const handleDeleteProduct = (pid) => {
@@ -98,13 +84,65 @@ const ManageProducts = () => {
       if (rs.isConfirmed) {
         const response = await apiDeleteproduct(pid);
         if (response.success) {
-          enqueueSnackbar(response.mes, { variant: 'success' }); 
+          enqueueSnackbar(response.mes, { variant: "success" });
         } else {
-          enqueueSnackbar(response.mes, { variant: 'error' }); 
+          enqueueSnackbar(response.mes, { variant: "error" });
         }
         render();
       }
     });
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (result) => {
+          setProducts(result.data);
+          enqueueSnackbar("Products imported successfully!", { variant: "success" });
+        },
+        error: (error) => {
+          enqueueSnackbar(`Error importing products: ${error.message}`, { variant: "error" });
+        },
+      });
+    }
+  };
+
+  const generateCsvData = () => {
+    const currentDate = moment().format("YYYY-MM-DD HH:mm:ss");
+    const metadata = [
+      ["Product Report"], // Title row
+      [`Generated On: ${currentDate}`], // Date row
+      [], // Blank row
+    ];
+
+    const headers = [
+      { label: "Title", key: "title" },
+      { label: "Image URL", key: "thumb" },
+      { label: "Color", key: "color" },
+      { label: "Brand", key: "brand" },
+      { label: "Category", key: "category" },
+      { label: "Price", key: "price" },
+      { label: "Quantity", key: "quantity" },
+      { label: "Sold", key: "sold" },
+      { label: "Ratings", key: "totalRatings" },
+    ];
+
+    const productData = products.map((product) => ({
+      title: product.title,
+      thumb: product.thumb,
+      color: product.color,
+      brand: product.brand,
+      category: product.category,
+      price: formatMoney(product.price),
+      quantity: product.quantity,
+      sold: product.sold,
+      totalRatings: product.totalRatings,
+    }));
+
+    return metadata.concat([headers.map((header) => header.label)]).concat(productData.map(Object.values));
   };
 
   return (
@@ -117,50 +155,24 @@ const ManageProducts = () => {
         />
       )}
       <div className="w-full flex p-2 items-center justify-between">
-        <Link className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl text-[13px]  px-4">
+        <Link className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl text-[13px] px-4">
           + New Products
         </Link>
-        <div className="w-[25%]">
-          <Selectinput 
-          className='bg-gradient-to-r from-[#979db6] to-gray-300'
-            changeValue={(value) => setSort(value)}
-            value={sort}
-            options={sortByDate}
+        <div className="flex space-x-4">
+          <input
+            type="file"
+            accept=".csv"
+            onChange={handleFileUpload}
+            className="p-2 bg-white rounded-2xl border"
           />
+          <CSVLink
+            data={generateCsvData()}
+            filename={`Product_Report_${moment().format("YYYYMMDD_HHmmss")}.csv`}
+            className="p-2 bg-gradient-to-r from-green-500 to-green-700 rounded-2xl text-white"
+          >
+            Export Report
+          </CSVLink>
         </div>
-        <div className="w-[25%]">
-          <Selectinput
-           className='bg-gradient-to-r from-[#979db6] to-gray-300'
-            changeValue={(value) => setSelectedCategory(value)} 
-            value={selectedCategory}
-            options={getallCategory.map((category) => ({
-              text: category.title,
-            }))}
-            placeholder="Select Category"
-          />
-        </div>
-        <div className="w-[25%]">
-          <Selectinput
-           className='bg-gradient-to-r from-[#979db6] to-gray-300'
-            changeValue={(value) => setSelectedBrand(value)}
-            value={selectedBrand}
-            options={getallCategory.map((category) => ({
-              text: category.brand,
-            }))}
-            placeholder="Select Brand"
-          />
-        </div>
-      </div>
-      <div className="flex w-full justify-end items-center ">
-        <form className="w-[100%]">
-          <InputForm
-            id="q"
-            register={register}
-            errors={errors}
-            fullwith
-            placeholder="Search product by title"
-          />
-        </form>
       </div>
       <div className="border rounded-2xl p-5 bg-white">
         <table className="overflow-hidden w-full leading-10">
@@ -180,7 +192,7 @@ const ManageProducts = () => {
           </thead>
           <tbody className="text-center">
             {products?.map((el, idx) => (
-              <tr className="text-[13px]" key={el._id}>
+              <tr className="text-[13px]" key={el._id || idx}>
                 <td>{idx + 1}</td>
                 <td className="flex justify-center items-center flex-col">
                   <img
@@ -203,12 +215,14 @@ const ManageProducts = () => {
                   <div className="flex items-center justify-center">
                     <span
                       onClick={() => setEditProduct(el)}
-                      className="hover:underline cursor-pointer px-2 text-blue-500">
+                      className="hover:underline cursor-pointer px-2 text-blue-500"
+                    >
                       <FaEdit size={20} />
                     </span>
                     <span
                       onClick={() => handleDeleteProduct(el._id)}
-                      className="text-red-500 hover:underline cursor-pointer px-2">
+                      className="text-red-500 hover:underline cursor-pointer px-2"
+                    >
                       <RiDeleteBin6Line size={20} />
                     </span>
                   </div>
