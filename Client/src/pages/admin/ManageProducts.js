@@ -140,7 +140,7 @@ const ManageProducts = () => {
         />
       )}
       <div className="w-full flex p-2 items-center justify-between">
-        <Link className="p-2 bg-gradient-to-r from-[#d3b491] to-[#e07c93] rounded-2xl text-[14px] text-white px-4">
+        <Link className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl text-[13px]  px-4">
           + New Products
         </Link>
         <button

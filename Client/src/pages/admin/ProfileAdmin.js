@@ -34,7 +34,7 @@ const ProfileAdmin = () => {
       <div class=" rounded p-4 px-4 md:p-8 mb-6">
         <div className="flex justify-between items-center">
           <div className="flex justify-start items-center gap-3 ">
-            <div className="h-[70px] rounded-full bg-gradient-to-r from-[#e0a96a] to-[#e07c93] w-[70px] flex items-center justify-center">
+            <div className="h-[70px] rounded-full bg-gradient-to-r from-[#979db6] to-gray-300 w-[70px] flex items-center justify-center">
               <h1 className="text-[24px] text-white font-medium tracking-tight">
                 {current?.firstname[0]}
               </h1>

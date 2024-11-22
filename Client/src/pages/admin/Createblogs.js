@@ -11,9 +11,9 @@ const CreateBlogs = () => {
   const [images, setImages] = useState([]);
   const [thumbImage, setThumbImage] = useState(null);
   const [otherImages, setOtherImages] = useState([]);
-  const [validationErrors, setValidationErrors] = useState(Array(7).fill("")); // Array for description validation messages
-  const [thumbError, setThumbError] = useState(""); // Error message for thumbnail
-  const [imagesError, setImagesError] = useState(""); // Error message for images
+  const [validationErrors, setValidationErrors] = useState(Array(7).fill(""));
+  const [thumbError, setThumbError] = useState(""); 
+  const [imagesError, setImagesError] = useState("");
 
   const hygieneLabels = [
     "Personal Hygiene",
@@ -279,12 +279,11 @@ const CreateBlogs = () => {
                 ))}
               </div>
             )}
-            {/* Display error message for additional images */}
             {imagesError && <p className="text-red-500 text-sm">{imagesError}</p>}
           </div>
         </div>
         <div className="w-full">
-          <Button fw type="submit">Create Blog</Button>
+          <Button fw type="submit" style={'w-full p-2 mt-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300'}>Create Blog</Button>
         </div>
       </form>
     </div>

@@ -102,7 +102,7 @@ const Createdservices = () => {
   };
 
   return (
-    <div className="w-[85%] bg-gray-300 rounded-2xl">
+    <div className="w-[85%] bg-white rounded-2xl">
       <div className="p-10">
         <form onSubmit={handleSubmit(handleCreateService)}>
           <InputForm
@@ -228,7 +228,7 @@ const Createdservices = () => {
             </div>
           </div>
 
-          <Button type="submit" fw>
+          <Button type="submit" fw style={'w-full p-2 mt-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300'}>
             Create Service
           </Button>
         </form>
