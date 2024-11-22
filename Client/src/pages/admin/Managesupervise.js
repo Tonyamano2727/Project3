@@ -104,13 +104,13 @@ const Managesupervise = () => {
         </div>
         <div className="flex w-full justify-around items-center mb-5 gap-10">
           <Selectinput
-            className='bg-gradient-to-r from-[#d3b491] to-[#e07c93]'
+            className='bg-gradient-to-r from-[#979db6] to-gray-300'
             changeValue={(value) => changeValue(value, "district")}
             value={queries.district}
             options={sortsupervisor}
           />
           <Selectinput
-           className='bg-gradient-to-r from-[#d3b491] to-[#e07c93]'
+           className='bg-gradient-to-r from-[#979db6] to-gray-300'
             changeValue={(value) => changeValue(value, "sortByDate")}
             value={sort}
             options={sortByDate}

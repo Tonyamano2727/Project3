@@ -1,17 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { InputForm, Pagination, Selectinput } from "../../components";
 import { useForm } from "react-hook-form";
-import { apiGetProducts, apiGetCategory } from "../../apis"; // Import API lấy danh mục và thương hiệu
+import { apiGetProducts, apiGetCategory } from "../../apis";
 import { formatMoney } from "../../ultils/helper";
 import { Link, useSearchParams } from "react-router-dom";
 import useDebounce from "../../hooks/useDebounce";
 import Updateproducts from "./Updateproducts";
 import { apiDeleteproduct } from "../../apis";
 import Swal from "sweetalert2";
-import { useSnackbar } from 'notistack'; // Import Notistack
+import { useSnackbar } from "notistack";
 import { sortByDate } from "../../ultils/contants";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import * as XLSX from "xlsx";
 
 const ManageProducts = () => {
   const {
@@ -20,7 +21,7 @@ const ManageProducts = () => {
     watch,
   } = useForm();
 
-  const { enqueueSnackbar } = useSnackbar(); 
+  const { enqueueSnackbar } = useSnackbar();
 
   const [params] = useSearchParams();
   const [products, setProducts] = useState(null);
@@ -28,9 +29,9 @@ const ManageProducts = () => {
   const [counts, setCounts] = useState(0);
   const [editProduct, setEditProduct] = useState(null);
   const [update, setUpdate] = useState(false);
-  const [sort, setSort] = useState(""); 
-  const [selectedCategory, setSelectedCategory] = useState(""); 
-  const [selectedBrand, setSelectedBrand] = useState(""); 
+  const [sort, setSort] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");
 
   const render = useCallback(() => {
     setUpdate(!update);
@@ -43,15 +44,15 @@ const ManageProducts = () => {
     };
 
     if (!selectedCategory) {
-      delete queryParams.category; 
+      delete queryParams.category;
     } else {
-      queryParams.category = selectedCategory; 
+      queryParams.category = selectedCategory;
     }
 
     if (!selectedBrand) {
       delete queryParams.brand;
     } else {
-      queryParams.brand = selectedBrand; 
+      queryParams.brand = selectedBrand;
     }
 
     const response = await apiGetProducts(queryParams);
@@ -68,24 +69,20 @@ const ManageProducts = () => {
     if (querydeBounce) searchParams.q = querydeBounce;
     fetchProducts(searchParams);
   }, [params, querydeBounce, update, selectedCategory, selectedBrand]);
+
   const fetchCategories = async () => {
     try {
-      const response = await apiGetCategory(); 
+      const response = await apiGetCategory();
       if (response.success) {
         setgetallCategory(response.getallCategory);
-      } else {
-        console.error(
-          "Lỗi khi lấy danh mục:",
-          response.message || "Unknown error"
-        );
       }
     } catch (error) {
-      console.error("Có lỗi xảy ra khi gọi API:", error);
+      console.error(error);
     }
   };
 
   useEffect(() => {
-    fetchCategories(); 
+    fetchCategories();
   }, []);
 
   const handleDeleteProduct = (pid) => {
@@ -98,13 +95,39 @@ const ManageProducts = () => {
       if (rs.isConfirmed) {
         const response = await apiDeleteproduct(pid);
         if (response.success) {
-          enqueueSnackbar(response.mes, { variant: 'success' }); // Use Notistack
+          enqueueSnackbar(response.mes, { variant: "success" });
         } else {
-          enqueueSnackbar(response.mes, { variant: 'error' }); // Use Notistack
+          enqueueSnackbar(response.mes, { variant: "error" });
         }
         render();
       }
     });
+  };
+
+  const handleExportToExcel = () => {
+    if (!products || products.length === 0) {
+      enqueueSnackbar("No products available to export.", {
+        variant: "warning",
+      });
+      return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(
+      products.map((product) => ({
+        Title: product.title,
+        Color: product.color,
+        Brand: product.brand,
+        Category: product.category,
+        Price: product.price,
+        Quantity: product.quantity,
+        Sold: product.sold,
+        Ratings: product.totalRatings,
+      }))
+    );
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Products");
+    XLSX.writeFile(workbook, "Products.xlsx");
   };
 
   return (
@@ -117,12 +140,18 @@ const ManageProducts = () => {
         />
       )}
       <div className="w-full flex p-2 items-center justify-between">
-        <Link className="p-2 bg-gradient-to-r from-[#d3b491] to-[#e07c93] rounded-2xl text-[14px] text-white px-4">
+        <Link className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl text-[13px]  px-4">
           + New Products
         </Link>
+        <button
+          onClick={handleExportToExcel}
+          className="p-2 bg-gradient-to-r from-[#a1c4fd] to-[#c2e9fb] rounded-2xl text-[14px] text-white px-4"
+        >
+          Export to Excel
+        </button>
         <div className="w-[25%]">
-          <Selectinput 
-          className='bg-gradient-to-r from-[#d3b491] to-[#e07c93]'
+          <Selectinput
+            className="bg-gradient-to-r from-[#d3b491] to-[#e07c93]"
             changeValue={(value) => setSort(value)}
             value={sort}
             options={sortByDate}
@@ -130,8 +159,8 @@ const ManageProducts = () => {
         </div>
         <div className="w-[25%]">
           <Selectinput
-           className='bg-gradient-to-r from-[#d3b491] to-[#e07c93]'
-            changeValue={(value) => setSelectedCategory(value)} // Cập nhật giá trị selectedCategory
+            className="bg-gradient-to-r from-[#d3b491] to-[#e07c93]"
+            changeValue={(value) => setSelectedCategory(value)}
             value={selectedCategory}
             options={getallCategory.map((category) => ({
               text: category.title,
@@ -141,7 +170,7 @@ const ManageProducts = () => {
         </div>
         <div className="w-[25%]">
           <Selectinput
-           className='bg-gradient-to-r from-[#d3b491] to-[#e07c93]'
+            className="bg-gradient-to-r from-[#d3b491] to-[#e07c93]"
             changeValue={(value) => setSelectedBrand(value)}
             value={selectedBrand}
             options={getallCategory.map((category) => ({
@@ -203,12 +232,14 @@ const ManageProducts = () => {
                   <div className="flex items-center justify-center">
                     <span
                       onClick={() => setEditProduct(el)}
-                      className="hover:underline cursor-pointer px-2 text-blue-500">
+                      className="hover:underline cursor-pointer px-2 text-blue-500"
+                    >
                       <FaEdit size={20} />
                     </span>
                     <span
                       onClick={() => handleDeleteProduct(el._id)}
-                      className="text-red-500 hover:underline cursor-pointer px-2">
+                      className="text-red-500 hover:underline cursor-pointer px-2"
+                    >
                       <RiDeleteBin6Line size={20} />
                     </span>
                   </div>
