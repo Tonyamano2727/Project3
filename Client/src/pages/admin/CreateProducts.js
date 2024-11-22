@@ -21,11 +21,7 @@ const CreateProducts = () => {
   ]);
 
   const [categories, setCategories] = useState([]);
-<<<<<<< HEAD
-  const [brands, setBrands] = useState({}); 
-=======
   const [brands, setBrands] = useState({});
->>>>>>> 93bb54df831090f995733c727d4baf37779dfc14
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -307,32 +303,23 @@ const CreateProducts = () => {
           </div>
         ))}
 
-<<<<<<< HEAD
-        <div className="flex items-center justify-center">
-          <div className="w-[95%]">
-            <Button type="submit" fw style={"w-full p-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300"}>
-              Create Products
-            </Button>
-            <button
-              type="button"
-              onClick={addProduct}
-              className="w-full p-2 mt-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300">
-              Add Another Product
-            </button>
-          </div>
-=======
-        <div className="flex flex-col items-center space-y-3 mt-6">
-          <Button type="submit" fw>
+        <div className="flex items-center justify-center space-y-4 flex-col">
+          <Button
+            type="submit"
+            fw
+            style={
+              "w-full p-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300"
+            }
+          >
             Create Products
           </Button>
           <button
             type="button"
             onClick={addProduct}
-            className="px-4 py-2 w-full text-white bg-gradient-to-r from-[#0f1c92] to-[#0e28d1] rounded-full"
+            className="w-full p-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300"
           >
             Add Another Product
           </button>
->>>>>>> 93bb54df831090f995733c727d4baf37779dfc14
         </div>
       </form>
     </div>
