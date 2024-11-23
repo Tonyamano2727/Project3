@@ -204,7 +204,7 @@ const Frombooking = ({ handleCloseForm }) => {
           className="flex flex-wrap justify-center gap-2"
           onSubmit={handleSubmit}
         >
-          {/* Tên khách hàng */}
+   
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
             Customer name
