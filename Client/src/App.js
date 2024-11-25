@@ -14,6 +14,8 @@ import {
   Detailservice,
   Ourteam,
   Detailsblogs,
+  Serviceplan,
+  Detailsplanservice,
 } from "./pages/publics";
 import {
   AdminLayout,
@@ -95,6 +97,7 @@ function App() {
             />
             <Route path={path.FAQ} element={<FAQ />} />
             <Route path={path.OUR_TEAM} element={<Ourteam />} />
+            <Route path={path.SERVICES__PLAN} element={<Serviceplan />} />
             <Route path={path.OUR_SERVICES} element={<Service />} />
             <Route path={path.PRODUCTS_CATEGORY} element={<Products />} />
             <Route path={path.RESET_PASSWORD} element={<Resetpassword />} />
@@ -104,6 +107,10 @@ function App() {
             <Route path={path.PERSONAL} element={<Personal />} />
             <Route path={path.WISHLIST} element={<Mywhistlist />} />
             <Route path={path.HISTORY} element={<Orderhistory />} />
+            <Route
+              path={path.DETAIL_SERVICEPLAN__CATEGORY__SID__TITLE}
+              element={<Detailsplanservice />}
+            />
           </Route>
 
           <Route path={path.ADMIN} element={<AdminLayout />}>
@@ -117,23 +124,21 @@ function App() {
             <Route path={path.CREATE_BLOGS} element={<Createblogs />} />
             <Route path={path.PROFILE_ADMIN} element={<ProfileAdmin />} />
             <Route path={path.MANAGE_SUPERVISE} element={<Managesupervise />} />
-            <Route path={path.MANAGE_HOTDISTRIC} element={<Managehotdistric />} />
+
+            <Route
+              path={path.MANAGE_HOTDISTRIC}
+              element={<Managehotdistric />}
+            />
             <Route
               path={path.CREATE_SUPERVISE}
               element={<Createdsupervise />}
             />
-             <Route
+            <Route
               path={path.CATEGORY_SERVICES}
               element={<Categoryservice />}
             />
-            <Route
-              path={path.CREATE_SERVICES}
-              element={<Createdservices />}
-            />
-             <Route
-              path={path.MANAGE_SERVICES}
-              element={<Manageservices />}
-            />
+            <Route path={path.CREATE_SERVICES} element={<Createdservices />} />
+            <Route path={path.MANAGE_SERVICES} element={<Manageservices />} />
           </Route>
 
           <Route path={path.MEMBER} element={<MemberLayout />} />

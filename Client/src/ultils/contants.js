@@ -155,16 +155,21 @@ export const navigation = [
   },
   {
     id: 4,
+    value: "Serviceplan",
+    path: `/${path.SERVICES__PLAN}`,
+  },
+  {
+    id: 5,
     value: "Our Team",
     path: `/${path.OUR_TEAM}`,
   },
   {
-    id: 5,
+    id: 6,
     value: "Blogs",
     path: `/${path.BLOGS}`,
   },
   {
-    id: 6,
+    id: 7,
     value: "Contact",
     path: `/${path.FAQ}`,
   },

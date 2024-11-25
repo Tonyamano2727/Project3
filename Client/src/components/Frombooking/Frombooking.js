@@ -107,7 +107,7 @@ const handleDistrictChange = async (e) => {
   }
 };
 
-// Gợi ý địa chỉ tự động
+
 const handleAddressChange = async (e) => {
   const value = e.target.value;
   setFormData((prevData) => ({ ...prevData, address: value }));
@@ -208,7 +208,7 @@ const handleSuggestionClick = (suggestion) => {
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
               required
-              placeholder="tên khách sạn"
+              placeholder="Customer name"
             />
           </div>
           {/* Email */}

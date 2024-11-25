@@ -9,6 +9,8 @@ const path = {
     FAQ: 'contact',
     DETAIL_PRODUCT__CATEGORY__PID__TITLE: ':category/:pid/:title',
     DETAIL_SERVICE__CATEGORY__SID__TITLE: "services/:sid/:title",
+    SERVICES__PLAN : 'servicesplan',
+    DETAIL_SERVICEPLAN__CATEGORY__SID__TITLE: "servicesplan/:sid/:title",
     DETAIL_BLOGS__CATEGORY__SID__TITLE: "blogs/:bid/:title",
     RESET_PASSWORD:'reset-password/:token',
     CART : 'cart',
