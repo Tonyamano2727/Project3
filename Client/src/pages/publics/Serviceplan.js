@@ -30,10 +30,7 @@ const Serviceplan = () => {
     };
 
     fetchServices();
-  }, []);  
-
-  if (loading) return <div>Loading...</div>;  // Hiển thị loading nếu đang lấy dữ liệu
-  if (error) return <div>{error}</div>;  // Hiển thị lỗi nếu có lỗi xảy ra
+  }, []); 
 
   return (
     <div className="w-full justify-center items-center flex flex-col bg-[#F3F3F7]">

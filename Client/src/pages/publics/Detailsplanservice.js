@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useParams } from "react-router-dom";
-import { Breadcrumb, Frombooking } from "../../components";
+import { Breadcrumb, Frombookingplan } from "../../components";
 import backgroundservice from "../../assets/backgroundservice.png";
 import thumb from "../../assets/thumb.png";
 import DOMPurify from "dompurify";
 import iconphone from "../../assets/iconphone.png";
 import icons from "../../ultils/icons";
-import { apiGetServices, apiGetDetailsServicesplan } from "../../apis";
+import { apiGetServicesplan, apiGetDetailsServicesplan } from "../../apis";
 const { FaArrowRightLong } = icons;
 
 const Detailservice = ({ category }) => {
@@ -18,7 +18,7 @@ const Detailservice = ({ category }) => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await apiGetServices({
+        const response = await apiGetServicesplan({
           params: {
             category: category,
           },
@@ -86,7 +86,7 @@ const Detailservice = ({ category }) => {
                             : "text-[#00197E] bg-white hover:bg-[#FFC703] duration-300 ease-in-out"
                         }`
                       }
-                      to={`/services/${services.find(
+                      to={`/servicesplan/${services.find(
                         (service) => service.category === category
                       )?._id}/${category}`}
                     >
@@ -126,7 +126,7 @@ const Detailservice = ({ category }) => {
           </div>
           {showForm && (
             <div className="absolute min-h-screen bg-box inset-0 bg-overplay z-50 flex">
-              <Frombooking handleCloseForm={handleCloseForm} />
+              <Frombookingplan handleCloseForm={handleCloseForm} />
             </div>
           )}
         </div>

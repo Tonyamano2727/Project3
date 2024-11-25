@@ -7,15 +7,15 @@ import {
   timeSlots,
 } from "../../ultils/contants";
 import {
-  apiGetDetailsServices,
-  createbooking,
+  apiGetDetailsServicesplan,
+  createbookingplan,
   gethotdistric,
 } from "../../apis";
 
 
 const { IoCloseOutline } = icons;
 
-const Frombooking = ({ handleCloseForm }) => {
+const Frombookingplan = ({ handleCloseForm }) => {
   const { sid } = useParams();
   const [servicePrice, setServicePrice] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -42,13 +42,12 @@ const Frombooking = ({ handleCloseForm }) => {
     quantity: 1,
     notes: "",
   });
-
-  // Lấy thông tin dịch vụ
   useEffect(() => {
     const fetchServiceDetails = async () => {
       try {
-        const response = await apiGetDetailsServices(sid);
+        const response = await apiGetDetailsServicesplan(sid);
         setService(response.service);
+        console.log(response.service);
         setServicePrice(response.service.price);
       } catch (error) {
         console.error("Error fetching service details:", error);
@@ -157,7 +156,7 @@ const handleSuggestionClick = (suggestion) => {
     }
 
     try {
-      const response = await createbooking({
+      const response = await createbookingplan({
         ...formData,
         service: sid,
         totalPrice,
@@ -394,4 +393,4 @@ const handleSuggestionClick = (suggestion) => {
   );
 };
 
-export default Frombooking;
+export default Frombookingplan;

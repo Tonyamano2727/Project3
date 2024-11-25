@@ -46,5 +46,56 @@ const createCounsel = asyncHandler(async (req, res) => {
     });
   }
 });
+const updateCounsel = asyncHandler(async (req, res) => {
+  try {
+    const { cid } = req.params; 
+    const updates = req.body; 
 
-module.exports = { createCounsel };
+   
+    const updatedCounsel = await Counsel.findByIdAndUpdate(cid, updates, {
+      new: true, 
+      runValidators: true, 
+    });
+
+    if (!updatedCounsel) {
+      return res.status(404).json({
+        success: false,
+        mes: "Counsel not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      mes: "Counsel updated successfully",
+      counsel: updatedCounsel,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      mes: error.message,
+    });
+  }
+});
+const getAllCounsels = asyncHandler(async (req, res) => {
+  try {
+    const { status } = req.query; // Lọc theo trạng thái (nếu có)
+    const filter = status ? { status } : {}; // Nếu có trạng thái, lọc theo trạng thái
+
+    const counsels = await Counsel.find(filter);
+
+    res.status(200).json({
+      success: true,
+      mes: "Counsels fetched successfully",
+      counsels,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      mes: error.message,
+    });
+  }
+});
+
+
+
+module.exports = { createCounsel , updateCounsel, getAllCounsels };

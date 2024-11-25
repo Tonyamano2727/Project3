@@ -63,7 +63,7 @@ const Workgalary = ({ category }) => {
           </div>
           <div className="flex text-center bg-[#FFC703] rounded-full p-4 w-[15%] justify-center">
             <Link className="text-[15px] font-medium flex items-center gap-2">
-              View All Work{" "}
+              View All Work
               <span>
                 <FaArrowRightLong />
               </span>

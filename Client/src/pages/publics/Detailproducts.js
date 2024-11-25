@@ -17,7 +17,7 @@ import {
 import Slider from "react-slick";
 import { formatMoney, renderStarFromNumber } from "../../ultils/helper";
 import { useSelector, useDispatch } from "react-redux";
-import { useSnackbar } from 'notistack'; // Import Notistack
+import { useSnackbar } from 'notistack';
 import { getCurrent } from "../../store/user/asyncAction";
 import path from "../../ultils/path";
 import Swal from "sweetalert2";
@@ -160,8 +160,6 @@ const Detailproducts = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>; // Loading UI
-
   return (
     <div className="flex flex-col justify-center items-center">
       <div className="flex justify-center w-full ">
@@ -199,7 +197,7 @@ const Detailproducts = () => {
             </span>
             <span className="text-[17px] mt-4 font-semibold">Color: {product?.color}</span>
             <span className="text-[17px] mt-4 font-semibold">Sold: {product?.sold}</span>
-            <span className="text-[17px] mt-4 font-semibold">Kho: {product?.quantity}</span>
+            <span className="text-[17px] mt-4 font-semibold">Storehouse: {product?.quantity}</span>
             <div className="mt-4 flex flex-col gap-8">
               <Selectquantity
                 quantity={quantity}
@@ -212,10 +210,10 @@ const Detailproducts = () => {
           </div>
         </div>
       </div>
-      <div className="w-[80%]">
+      <div className="w-[80%] mt-5">
         <Productinformation />
       </div>
-      <div className="m-auto w-full">
+      <div className="m-auto w-[90%]">
         <Othermany />
       </div>
     </div>

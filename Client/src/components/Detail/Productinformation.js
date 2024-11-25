@@ -13,10 +13,10 @@ import { useSelector } from "react-redux";
 import DOMPurify from "dompurify";
 import Button from "../Button/Button";
 import Swal from "sweetalert2";
-import { useSnackbar } from "notistack"; // Import useSnackbar from notistack
+import { useSnackbar } from "notistack"; 
 
 const Productinformation = () => {
-  const { enqueueSnackbar } = useSnackbar(); // Initialize notistack
+  const { enqueueSnackbar } = useSnackbar();
   const { current } = useSelector((state) => state.user);
   const { pid } = useParams();
   const navigate = useNavigate();
@@ -107,20 +107,14 @@ const Productinformation = () => {
           </div>
         )}
 
-        {/* Specifications */}
-        {activedtab === 2 && (
-          <div>
-            <h2>Specifications</h2>
-            <p>{product?.specifications}</p>
-          </div>
-        )}
+        
 
-        {/* Reviews Tab */}
-        {activedtab === 3 && (
+      
+        {activedtab === 2 && (
           <div>
             <h2>Reviews</h2>
 
-            {/* Rating Submission Form */}
+           
             <div>
               <h3>Rate this product</h3>
               <div>

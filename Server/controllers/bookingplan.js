@@ -1,9 +1,9 @@
 const BookingPlan = require("../models/bookingplan");
-const ServicePlan = require("../models/serviceplan");
+const ServicePlan = require("../models/planservice");
 const Supervisor = require("../models/supervisor");
 const Employee = require("../models/employee");
-const HotDistrict = require("../models/hotdistrict");
-const sendMail = require("../utils/sendemail");
+const HotDistrict = require("../models/hotdistric");
+const sendMail = require("../ultils/sendemail");
 const asyncHandler = require("express-async-handler");
 const Salary = require("../models/salary");
 
@@ -168,7 +168,6 @@ const updateBookingPlan = asyncHandler(async (req, res) => {
   }
 });
 
-
 const getBookingPlanDetail = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
@@ -183,9 +182,42 @@ const getBookingPlanDetail = asyncHandler(async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+const getBookingPlansBySupervisor = asyncHandler(async (req, res) => {
+  try {
+    const { supervisorId } = req.query; // ID của Supervisor
+
+    if (!supervisorId) {
+      return res.status(400).json({ success: false, message: "Supervisor ID is required" });
+    }
+
+    // Tìm Supervisor dựa trên supervisorId
+    const supervisor = await Supervisor.findById(supervisorId);
+    if (!supervisor) {
+      return res.status(404).json({ success: false, message: "Supervisor not found" });
+    }
+
+    // Lọc các Booking Plan theo quận phụ trách của Supervisor
+    const bookingPlans = await BookingPlan.find({ district: supervisor.district })
+      .populate("service", "title price") // Lấy thông tin dịch vụ
+      .populate("hotDistrict", "name") // Lấy thông tin quận hot
+      .sort({ createdAt: -1 }); // Sắp xếp theo ngày tạo, mới nhất trước
+
+    res.status(200).json({
+      success: true,
+      data: bookingPlans,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+
+
+
 
 module.exports = {
   createBookingPlan,
   updateBookingPlan,
-  getBookingPlanDetail
+  getBookingPlanDetail,
+  getBookingPlansBySupervisor,
 };

@@ -1,11 +1,15 @@
 const data = [
     {
         cate: 'Vacuum cleaner',
-        brand: ['House']
+        brand: ['Panasonic','Samsung','Media','Comfee','Deerma']
     },
     {
-        cate: 'Test',
-        brand: ['Test']
+        cate: 'Floor Mixer',
+        brand: ['CelproX','Kumisai','HiClean']
+    },
+    {
+        cate: 'Sofa washing machine',
+        brand: ['Deerma','Kumisai','HiClean']
     },
 ]
 module.exports = data

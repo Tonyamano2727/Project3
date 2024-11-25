@@ -6,7 +6,7 @@ import { formatMoney } from "../../ultils/helper";
 import { Link, useSearchParams } from "react-router-dom";
 import useDebounce from "../../hooks/useDebounce";
 import Updateproducts from "./Updateproducts";
-import { apiDeleteproduct , apiImportProductsFromExcel  } from "../../apis";
+import { apiDeleteproduct, apiImportProductsFromExcel } from "../../apis";
 import Swal from "sweetalert2";
 import { useSnackbar } from "notistack";
 import { sortByDate } from "../../ultils/contants";
@@ -122,8 +122,8 @@ const ManageProducts = () => {
         Quantity: product.quantity,
         Sold: product.sold,
         Ratings: product.totalRatings,
-        Thumb: product.thumb,         
-        Images: product.images.join(", ") 
+        Thumb: product.thumb,
+        Images: product.images.join(", "),
       }))
     );
 
@@ -138,15 +138,16 @@ const ManageProducts = () => {
       enqueueSnackbar("No file selected!", { variant: "warning" });
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("excel", file);
-  
+
     try {
       const response = await apiImportProductsFromExcel(formData);
       if (response.success) {
-        enqueueSnackbar("Products imported successfully!", { variant: "success" });
-        
+        enqueueSnackbar("Products imported successfully!", {
+          variant: "success",
+        });
       } else {
         enqueueSnackbar(response.mes || "Import failed!", { variant: "error" });
       }
@@ -155,7 +156,6 @@ const ManageProducts = () => {
       enqueueSnackbar("An error occurred during import!", { variant: "error" });
     }
   };
-  
 
   return (
     <div className="w-[85%] flex flex-col gap-4 relative h-[1400px]">
@@ -166,56 +166,61 @@ const ManageProducts = () => {
           seteditproduct={setEditProduct}
         />
       )}
-      <div className="w-full flex p-2 items-center justify-between">
-        <Link className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl text-[13px]  px-4">
-          + New Products
-        </Link>
-        <button
-          onClick={handleExportToExcel}
-          className="p-2 bg-gradient-to-r from-[#a1c4fd] to-[#c2e9fb] rounded-2xl text-[14px] text-white px-4">
-          Export to Excel
-        </button>
-        <label
-          htmlFor="importExcel"
-          className="cursor-pointer p-2 bg-gradient-to-r from-[#ff9a9e] to-[#fecfef] rounded-2xl text-[14px] text-white px-4">
-          Import từ Excel
-        </label>
-        <input
-          id="importExcel"
-          type="file"
-          accept=".xlsx, .xls"
-          onChange={handleImportFromExcel}
-          className="hidden"
-        />
-        <div className="w-[25%]">
-          <Selectinput
-            className="bg-gradient-to-r from-[#d3b491] to-[#e07c93]"
-            changeValue={(value) => setSort(value)}
-            value={sort}
-            options={sortByDate}
+      <div className="w-full flex p-2 items-center flex-col">
+        <div className="w-full flex justify-between mb-5">
+          <Link className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl text-[13px]  px-4">
+            + New Products
+          </Link>
+          
+          <input
+            id="importExcel"
+            type="file"
+            accept=".xlsx, .xls"
+            onChange={handleImportFromExcel}
+            className="hidden"
           />
+          <button
+            onClick={handleExportToExcel}
+            className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl text-[14px]  px-4">
+            Export to Excel
+          </button>
+          <label
+            htmlFor="importExcel"
+            className="cursor-pointer p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl text-[14px]  px-4">
+            Import từ Excel
+          </label>
         </div>
-        <div className="w-[25%]">
-          <Selectinput
-            className="bg-gradient-to-r from-[#d3b491] to-[#e07c93]"
-            changeValue={(value) => setSelectedCategory(value)}
-            value={selectedCategory}
-            options={getallCategory.map((category) => ({
-              text: category.title,
-            }))}
-            placeholder="Select Category"
-          />
-        </div>
-        <div className="w-[25%]">
-          <Selectinput
-            className="bg-gradient-to-r from-[#d3b491] to-[#e07c93]"
-            changeValue={(value) => setSelectedBrand(value)}
-            value={selectedBrand}
-            options={getallCategory.map((category) => ({
-              text: category.brand,
-            }))}
-            placeholder="Select Brand"
-          />
+        <div className="w-full flex justify-between">
+          <div className="w-[25%]">
+            <Selectinput
+              className="bg-gradient-to-r from-[#979db6] to-gray-300"
+              changeValue={(value) => setSort(value)}
+              value={sort}
+              options={sortByDate}
+            />
+          </div>
+          <div className="w-[25%]">
+            <Selectinput
+              className="bg-gradient-to-r from-[#979db6] to-gray-300"
+              changeValue={(value) => setSelectedCategory(value)}
+              value={selectedCategory}
+              options={getallCategory.map((category) => ({
+                text: category.title,
+              }))}
+              placeholder="Select Category"
+            />
+          </div>
+          <div className="w-[25%]">
+            <Selectinput
+              className="bg-gradient-to-r from-[#979db6] to-gray-300"
+              changeValue={(value) => setSelectedBrand(value)}
+              value={selectedBrand}
+              options={getallCategory.map((category) => ({
+                text: category.brand,
+              }))}
+              placeholder="Select Brand"
+            />
+          </div>
         </div>
       </div>
 

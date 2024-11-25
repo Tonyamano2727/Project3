@@ -8,7 +8,7 @@ const Ourteam = ({title}) => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await apiGetEmployee(); // Gọi API
+      const response = await apiGetEmployee(); 
       if (response.success && response.staff) {
         setStaff(response.staff);
         console.log(response.staff);
@@ -44,7 +44,7 @@ const Ourteam = ({title}) => {
       <div className="flex flex-wrap w-[85%] justify-center items-center mt-20 gap-5 mb-20">
         {staff.map((employee) => (
           <div className="w-[30%] p-6 bg-white text-center leading-[50px]" key={employee._id} >
-            <img className="flex w-full" src={employee.avatar} alt={employee.name} />
+            <img className="flex w-full h-[240px] object-cover" src={employee.avatar} alt={employee.name} />
             <h2 className="text-[#00197e] text-[22px] font-semibold">{employee.name}</h2>
             <p className="text-[16px] font-light leading-[26px] text-[#3a4268]">{employee.job}</p>
           

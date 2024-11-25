@@ -31,6 +31,7 @@ import {
   Manageservices,
   Managehotdistric,
   Categoryservice,
+  Managecounsel,
 } from "./pages/admin";
 import {
   MemberLayout,
@@ -122,6 +123,7 @@ function App() {
             <Route path={path.MANAGE_BOOKING} element={<Managebooking />} />
             <Route path={path.MANAGE_BLOGS} element={<Manageblogs />} />
             <Route path={path.CREATE_BLOGS} element={<Createblogs />} />
+            <Route path={path.MANAGE_COUNSEL} element={<Managecounsel />} />
             <Route path={path.PROFILE_ADMIN} element={<ProfileAdmin />} />
             <Route path={path.MANAGE_SUPERVISE} element={<Managesupervise />} />
 

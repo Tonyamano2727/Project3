@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Serviceplan = require("../models/serviceplan");  // Đảm bảo bạn import đúng mô hình Serviceplan
+const Serviceplan = require("../models/planservice");  // Đảm bảo bạn import đúng mô hình Serviceplan
 const Employee = require("../models/employee");
 const HotDistrict = require("../models/hotdistric");
 

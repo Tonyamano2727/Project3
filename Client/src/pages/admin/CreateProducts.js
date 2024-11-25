@@ -149,16 +149,14 @@ const CreateProducts = () => {
         {products.map((product, index) => (
           <div
             key={index}
-            className="w-full flex flex-col items-start border rounded-lg p-4 mb-5 shadow-sm"
-          >
+            className="w-full flex flex-col items-start p-4 mb-5 shadow-sm">
             <div className="flex w-full justify-between items-center mb-4">
               <h2 className="font-semibold text-lg">Product {index + 1}</h2>
               {products.length > 1 && (
                 <button
                   type="button"
                   onClick={() => deleteProduct(index)}
-                  className="px-4 py-1 text-white bg-red-600 rounded-full"
-                >
+                  className="px-4 py-1 text-white bg-red-600 rounded-full">
                   Delete Product
                 </button>
               )}
@@ -166,7 +164,7 @@ const CreateProducts = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
               <input
-                className="border p-2 rounded w-full"
+                className="border p-2 rounded-3xl w-full"
                 type="text"
                 name="title"
                 placeholder="Title"
@@ -175,7 +173,7 @@ const CreateProducts = () => {
                 required
               />
               <input
-                className="border p-2 rounded w-full"
+                className="border p-2 rounded-3xl w-full"
                 type="number"
                 name="price"
                 placeholder="Price"
@@ -184,7 +182,7 @@ const CreateProducts = () => {
                 required
               />
               <input
-                className="border p-2 rounded w-full"
+                className="border p-2 rounded-3xl w-full"
                 type="number"
                 name="quantity"
                 placeholder="Quantity"
@@ -193,7 +191,7 @@ const CreateProducts = () => {
                 required
               />
               <input
-                className="border p-2 rounded w-full"
+                className="border p-2 rounded-3xl w-full"
                 type="text"
                 name="color"
                 placeholder="Color"
@@ -202,12 +200,11 @@ const CreateProducts = () => {
                 required
               />
               <select
-                className="border p-2 rounded w-full"
+                className="border p-2 rounded-3xl w-full"
                 name="category"
                 value={product.category}
                 onChange={(e) => handleChange(index, e)}
-                required
-              >
+                required>
                 <option value="">Select Category</option>
                 {categories.map((category) => (
                   <option key={category._id} value={category._id}>
@@ -216,12 +213,11 @@ const CreateProducts = () => {
                 ))}
               </select>
               <select
-                className="border p-2 rounded w-full"
+                className="border p-2  rounded-3xl w-full"
                 name="brand"
                 value={product.brand}
                 onChange={(e) => handleChange(index, e)}
-                required
-              >
+                required>
                 <option value="">Select Brand</option>
                 {brands[product.category]?.map((brand, i) => (
                   <option key={i} value={brand}>
@@ -232,7 +228,7 @@ const CreateProducts = () => {
             </div>
 
             <textarea
-              className="border p-2 rounded w-full mt-4"
+              className="border p-2  rounded-3xl w-full mt-4"
               name="description"
               placeholder="Description"
               value={product.description}
@@ -240,64 +236,64 @@ const CreateProducts = () => {
               required
             />
 
-            <div className="flex flex-col sm:flex-row sm:space-x-4 mt-4">
-              <label className="border rounded px-4 py-2 cursor-pointer text-center mb-2 sm:mb-0">
-                Thumbnail
-                <input
-                  type="file"
-                  name="thumb"
-                  onChange={(e) => handleFileChange(index, e)}
-                  className="hidden"
-                  required
-                />
-              </label>
-              {product.thumbPreview && (
-                <div className="flex flex-col items-center">
-                  <img
-                    src={product.thumbPreview}
-                    alt="Thumbnail Preview"
-                    className="w-24 h-24 object-cover rounded"
+            <div className="flex justify-around items-center w-full">
+              <div className="flex flex-col mt-4">
+                <label className="border  rounded-3xl px-4 py-2 cursor-pointer text-center mb-2 sm:mb-0">
+                  Thumbnail
+                  <input
+                    type="file"
+                    name="thumb"
+                    onChange={(e) => handleFileChange(index, e)}
+                    className="hidden"
+                    required
                   />
-                  <button
-                    type="button"
-                    onClick={() => deleteThumb(index)}
-                    className="text-red-600 mt-1"
-                  >
-                    Delete Thumb
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col sm:flex-row sm:space-x-4 mt-4">
-              <label className="border rounded px-4 py-2 cursor-pointer text-center">
-                Additional Images
-                <input
-                  type="file"
-                  name="images"
-                  multiple
-                  onChange={(e) => handleFileChange(index, e)}
-                  className="hidden"
-                  required
-                />
-              </label>
-              <div className="flex flex-wrap mt-2">
-                {product.imagePreviews.map((preview, i) => (
-                  <div key={i} className="relative mr-2 mb-2">
+                </label>
+                {product.thumbPreview && (
+                  <div className="flex flex-col items-center">
                     <img
-                      src={preview}
-                      alt={`Image Preview ${i + 1}`}
+                      src={product.thumbPreview}
+                      alt="Thumbnail Preview"
                       className="w-24 h-24 object-cover rounded"
                     />
                     <button
                       type="button"
-                      onClick={() => deleteImage(index, i)}
-                      className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center"
-                    >
-                      X
+                      onClick={() => deleteThumb(index)}
+                      className="text-red-600 mt-1">
+                      Delete Thumb
                     </button>
                   </div>
-                ))}
+                )}
+              </div>
+
+              <div className="flex flex-col  mt-4">
+                <label className="border rounded-3xl px-4 py-2 cursor-pointer text-center">
+                  Additional Images
+                  <input
+                    type="file"
+                    name="images"
+                    multiple
+                    onChange={(e) => handleFileChange(index, e)}
+                    className="hidden"
+                    required
+                  />
+                </label>
+                <div className="flex flex-wrap mt-2">
+                  {product.imagePreviews.map((preview, i) => (
+                    <div key={i} className="relative mr-2 mb-2">
+                      <img
+                        src={preview}
+                        alt={`Image Preview ${i + 1}`}
+                        className="w-24 h-24 object-cover rounded"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => deleteImage(index, i)}
+                        className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center">
+                        X
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -309,15 +305,13 @@ const CreateProducts = () => {
             fw
             style={
               "w-full p-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300"
-            }
-          >
+            }>
             Create Products
           </Button>
           <button
             type="button"
             onClick={addProduct}
-            className="w-full p-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300"
-          >
+            className="w-full p-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300">
             Add Another Product
           </button>
         </div>

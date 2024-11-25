@@ -32,6 +32,7 @@ const Products = ({ title }) => {
   const [activedclick, setactivedclick] = useState(null);
   const [getallCategory, setgetallCategory] = useState([]);
   const [params] = useSearchParams();
+  const [counts, setCounts] = useState(0);
   const [sort, setsort] = useState("");
   const navigate = useNavigate();
   const fetchProductsByCategory = async ({ queries }) => {
@@ -43,6 +44,7 @@ const Products = ({ title }) => {
     console.log(response);
     if (response.success) {
       setproducts(response);
+      setCounts(response.counts);
     }
   };
 
@@ -180,13 +182,13 @@ const Products = ({ title }) => {
           <span className="font-semibold text-sm">Sort by</span>
           <div className="w-full flex gap-5">
             <Selectinput
-              className="mt-2 rounded-full bg-gradient-to-r from-[#0f1c92] to-[#0e28d1]"
+              className="mt-2 rounded-full bg-gradient-to-r text-white from-[#0f1c92] to-[#0e28d1]"
               changeValue={changeValue}
               value={sort}
               options={sorts}
             />
             <Selectinput
-              className="mt-2 rounded-full bg-gradient-to-r from-[#0f1c92] to-[#0e28d1]"
+              className="mt-2 rounded-full bg-gradient-to-r text-white from-[#0f1c92] to-[#0e28d1]"
               changeValue={(value) => {
                 if (!value) {
                   setSelectedCategory(""); 
@@ -229,7 +231,7 @@ const Products = ({ title }) => {
         </Masonry>
       </div>
       <div className="xl:w-main m-auto my-4 flex justify-end">
-        <Pagination totalCount={products} />
+        <Pagination totalCount={counts} />
       </div>
     </div>
   );

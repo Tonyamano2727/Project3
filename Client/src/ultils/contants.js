@@ -153,11 +153,11 @@ export const navigation = [
     value: "Service",
     path: `/${path.OUR_SERVICES}`,
   },
-  {
-    id: 4,
-    value: "Serviceplan",
-    path: `/${path.SERVICES__PLAN}`,
-  },
+  // {
+  //   id: 4,
+  //   value: "Serviceplan",
+  //   path: `/${path.SERVICES__PLAN}`,
+  // },
   {
     id: 5,
     value: "Our Team",
@@ -182,10 +182,6 @@ export const Productinfortabs = [
   },
   {
     id: 2,
-    title: "WARRANTY",
-  },
-  {
-    id: 3,
     title: "CUSTOM REVIEW",
   },
 ];
@@ -438,6 +434,13 @@ export const AdminSidebar = [
   },
   {
     id: 9,
+    type: "SINGLE",
+    text: "Managecounsel",
+    path: `/${path.ADMIN}/${path.MANAGE_COUNSEL}`,
+    icon: <FaRegMoneyBillAlt />,
+  },
+  {
+    id: 10,
     type: "SINGLE",
     text: "Profile",
     path: `/${path.ADMIN}/${path.PROFILE_ADMIN}`,

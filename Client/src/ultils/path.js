@@ -28,6 +28,7 @@ const path = {
     MANAGE_SUPERVISE: 'manage-supervise',
     MANAGE_PRODUCTS: 'manage-products',
     MANAGE_ORDER: 'manage-order',
+    MANAGE_COUNSEL: 'manage-counsel',
     MANAGE_BOOKING: 'manage-booking',
     CREATE_PRODUCTS: 'create-products',
     CREATE_SUPERVISE: 'create-supervise',

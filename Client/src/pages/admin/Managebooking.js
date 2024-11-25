@@ -133,7 +133,7 @@ const ManageBooking = () => {
                   <td>{booking.email}</td>
                   <td>{booking.phoneNumber}</td>
                   <td>
-                    {booking.address}, {booking.district}, {booking.ward}
+                    {booking.address}
                   </td>
                   <td>{booking.date}</td>
                   <td>{booking.timeSlot}</td>
