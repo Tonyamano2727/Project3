@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { formatMoney } from "../../ultils/helper";
 import icons from "../../ultils/icons";
-import axios from "axios";
-
+import { fetchDistricts, fetchWards, fetchAddressSuggestions } from "../../apis/mapApi";
 import {
   apiGetDetailsServices,
   createbooking,
@@ -25,9 +24,10 @@ const Frombooking = ({ handleCloseForm }) => {
   const [notification, setNotification] = useState("");
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
-  const [error, setError] = useState(null);
-  const [mapCenter, setMapCenter] = useState({ lat: 10.7769, lng: 106.7009 });
-  const token = "a1ff5672-a6ed-11ef-8e53-0a00184fe694";
+
+  const [suggestions, setSuggestions] = useState([]);
+
+
   // const googleMapsApiKey = "YOUR_GOOGLE_MAPS_API_KEY";
   const [formData, setFormData] = useState({
     customerName: "",
@@ -56,85 +56,77 @@ const Frombooking = ({ handleCloseForm }) => {
     fetchServiceDetails();
   }, [sid]);
 
-  // Lấy danh sách quận/huyện
-  useEffect(() => {
-    const fetchDistricts = async () => {
-      try {
-        const response = await axios.post(
-          "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district",
-          { province_id: 202 },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              token: token,
-            },
-          }
-        );
-        setDistricts(response.data.data);
-      } catch (err) {
-        setError(
-          err.message || "An error occurred while retrieving the district list."
-        );
-      }
-    };
-    fetchDistricts();
-  }, []);
-
-  // Lấy danh sách phường/xã
-  const fetchWards = async (districtId) => {
+ // Lấy danh sách quận trong Hồ Chí Minh
+ useEffect(() => {
+  const loadDistricts = async () => {
     try {
-      const response = await axios.get(
-        `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${districtId}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            token: token,
-          },
-        }
-      );
-      setWards(response.data.data);
-      setError(null);
+      const districts = await fetchDistricts();
+      setDistricts(districts);
     } catch (err) {
-      setError("An error occurred while retrieving the ward/commune list.");
+      console.error(err.message);
     }
   };
+  loadDistricts();
+}, []);
 
-  // Xử lý chọn quận
-  const handleDistrictChange = async (e) => {
-    const selectedDistrictId = e.target.value;
-    const district = districts.find((d) => d.DistrictID === Number(selectedDistrictId));
-    if (!district) {
-      setError("No Supervisor found for this district");
-      setWards([]);
-      setFormData((prev) => ({ ...prev, district: "", ward: "" }));
-      return;
-    }
-    setFormData((prev) => ({
-      ...prev,
-      district: district.DistrictName,
-      ward: "",
-    }));
-    fetchWards(selectedDistrictId);
+// Lấy danh sách phường/xã khi chọn quận
+const handleDistrictChange = async (e) => {
+  const selectedDistrictId = e.target.value;
+  const district = districts.find((d) => d.code.toString() === selectedDistrictId);
+
+  if (!district) {
+    setWards([]);
+    setFormData((prev) => ({ ...prev, district: "", ward: "" }));
+    setIsHotDistrict(false);
+    setPercentage(0);
+    return;
+  }
+
+  setFormData((prev) => ({
+    ...prev,
+    district: district.name,
+    ward: "",
+  }));
+
+  try {
+    const wards = await fetchWards(selectedDistrictId);
+    setWards(wards);
 
     // Kiểm tra quận nóng
-    try {
-      const response = await gethotdistric(district.DistrictName);
-      if (response.success) {
-        const hotDistrict = response.data.find(
-          (d) => d.name === district.DistrictName
-        );
-        setIsHotDistrict(!!hotDistrict);
-        setPercentage(hotDistrict ? hotDistrict.percentage : 0);
-      } else {
-        setIsHotDistrict(false);
-        setPercentage(0);
-      }
-    } catch (err) {
+    const response = await gethotdistric(district.name);
+    if (response.success) {
+      const hotDistrict = response.data.find((d) => d.name === district.name);
+      setIsHotDistrict(!!hotDistrict);
+      setPercentage(hotDistrict ? hotDistrict.percentage : 0);
+    } else {
       setIsHotDistrict(false);
       setPercentage(0);
     }
-  };
+  } catch (err) {
+    console.error(err.message);
+  }
+};
 
+// Gợi ý địa chỉ tự động
+const handleAddressChange = async (e) => {
+  const value = e.target.value;
+  setFormData((prevData) => ({ ...prevData, address: value }));
+
+  if (value.length > 2) {
+    try {
+      const predictions = await fetchAddressSuggestions(value);
+      setSuggestions(predictions || []);
+    } catch (err) {
+      console.error(err.message);
+    }
+  } else {
+    setSuggestions([]);
+  }
+};
+const handleSuggestionClick = (suggestion) => {
+  setFormData((prevData) => ({ ...prevData, address: suggestion.description }));
+  setSuggestions([]); // Clear suggestions after selection
+};
   // Tính tổng giá
   useEffect(() => {
     const updatedPrice = isHotDistrict
@@ -216,7 +208,7 @@ const Frombooking = ({ handleCloseForm }) => {
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
               required
-              placeholder="Số điện thoại"
+              placeholder="tên khách sạn"
             />
           </div>
           {/* Email */}
@@ -240,7 +232,7 @@ const Frombooking = ({ handleCloseForm }) => {
             Phone number
             </label>
             <input
-              type="text"
+              type="number"
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleInputChange}
@@ -250,58 +242,71 @@ const Frombooking = ({ handleCloseForm }) => {
             />
           </div>
           {/* Địa chỉ */}
-          <div className="w-[45%]">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-            Address
-            </label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleInputChange}
-              className="w-full p-2 border border-gray-300 rounded"
-              required
-              placeholder="House number, street name"
-            />
-          </div>
-          {/* Quận */}
-          <div className="w-[45%]">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-            District
-            </label>
-            <select
-              onChange={handleDistrictChange}
-              className="w-full p-2 border border-gray-300 rounded"
-              required
-            >
-              <option value="">-- Select District --</option>
-              {districts.map((district) => (
-                <option key={district.DistrictID} value={district.DistrictID}>
-                  {district.DistrictName}
-                </option>
-              ))}
-            </select>
-          </div>
-          {/* Phường */}
-          <div className="w-[45%]">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-            Ward/Commune
-            </label>
-            <select
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, ward: e.target.value }))
-              }
-              className="w-full p-2 border border-gray-300 rounded"
-              required
-            >
-              <option value="">-- Select Ward/Commune--</option>
-              {wards.map((ward) => (
-                <option key={ward.WardCode} value={ward.WardName}>
-                  {ward.WardName}
-                </option>
-              ))}
-            </select>
-          </div>
+         {/* Address */}
+<div className="w-[45%] relative">
+  <label className="block text-gray-700 text-sm font-bold mb-2">
+    Address
+  </label>
+  <input
+    type="text"
+    name="address"
+    value={formData.address}
+    onChange={handleAddressChange}
+    className="w-full p-2 border border-gray-300 rounded"
+    required
+    placeholder="House number, street name"
+  />
+  {suggestions.length > 0 && (
+    <ul className="absolute z-10 bg-white border border-gray-300 rounded w-full max-h-40 overflow-y-auto mt-1">
+      {suggestions.map((suggestion, index) => (
+        <li
+          key={index}
+          className="p-2 cursor-pointer hover:bg-gray-100"
+          onClick={() => handleSuggestionClick(suggestion)}
+        >
+          {suggestion.description}
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+
+     {/* District */}
+<div className="w-[45%]">
+  <label className="block text-gray-700 text-sm font-bold mb-2">District</label>
+  <select
+    onChange={handleDistrictChange}
+    className="w-full p-2 border border-gray-300 rounded"
+    required
+  >
+    <option value="">-- Select District --</option>
+    {districts.map((district) => (
+      <option key={district.code} value={district.code}>
+        {district.name}
+      </option>
+    ))}
+  </select>
+</div>
+
+{/* Ward */}
+<div className="w-[45%]">
+  <label className="block text-gray-700 text-sm font-bold mb-2">Ward/Commune</label>
+  <select
+    onChange={(e) =>
+      setFormData((prev) => ({ ...prev, ward: e.target.value }))
+    }
+    className="w-full p-2 border border-gray-300 rounded"
+    required
+  >
+    <option value="">-- Select Ward/Commune --</option>
+    {wards.map((ward) => (
+      <option key={ward.code} value={ward.name}>
+        {ward.name}
+      </option>
+    ))}
+  </select>
+</div>
+
           {/* Ngày */}
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
