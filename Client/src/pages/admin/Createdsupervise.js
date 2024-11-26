@@ -3,12 +3,12 @@ import { apiCreatesupervise } from "../../apis";
 import { Button, InputForm, Selectinput } from "../../components";
 import { useSnackbar } from "notistack";
 import { useForm } from "react-hook-form";
-import { fetchDistricts } from "../../apis/mapApi"; // Import fetchDistricts
+import { fetchDistricts } from "../../apis/mapApi";
 
 const Createdsupervise = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [districts, setDistricts] = useState([]); // State cho danh sách quận
-  const [district, setDistrict] = useState(""); // State cho quận đã chọn
+  const [districts, setDistricts] = useState([]);
+  const [district, setDistrict] = useState("");
   const {
     register,
     handleSubmit,
@@ -16,12 +16,10 @@ const Createdsupervise = () => {
     reset,
   } = useForm();
 
-  // Lấy danh sách quận từ API khi component được mount
   useEffect(() => {
     const loadDistricts = async () => {
       try {
         const districtsData = await fetchDistricts();
-        // Định dạng dữ liệu cho Selectinput
         const formattedDistricts = districtsData.map((district) => ({
           id: district.code,
           value: district.name,
@@ -39,13 +37,13 @@ const Createdsupervise = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await apiCreatesupervise({ ...data, district }); // Gửi quận cùng với dữ liệu
+      const response = await apiCreatesupervise({ ...data, district });
       if (response.success) {
         enqueueSnackbar("Supervisor created successfully!", {
           variant: "success",
         });
         reset();
-        setDistrict(""); // Reset quận đã chọn
+        setDistrict("");
       } else {
         enqueueSnackbar(response.mes || "Failed to create supervisor.", {
           variant: "error",

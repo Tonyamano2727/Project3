@@ -1,163 +1,88 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-
-const styles = {
-  container: {
-    maxWidth: "500px",
-    margin: "0 auto",
-    padding: "2rem",
-    backgroundColor: "#ffffff",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-  },
-  title: {
-    textAlign: "center",
-    color: "#333",
-    marginBottom: "1.5rem",
-  },
-  formGroup: {
-    marginBottom: "0.5rem",
-  },
-  label: {
-    display: "block",
-    fontWeight: "600",
-    color: "#4a5568",
-    marginBottom: "0.5rem",
-  },
-  input: {
-    width: "100%",
-    padding: "0.75rem",
-    border: "1px solid #e2e8f0",
-    borderRadius: "8px",
-    fontSize: "1rem",
-    color: "#333",
-    backgroundColor: "#f7f7f9",
-  },
-  select: {
-    width: "100%",
-    padding: "0.75rem",
-    border: "1px solid #e2e8f0",
-    borderRadius: "8px",
-    fontSize: "1rem",
-    color: "#333",
-    backgroundColor: "#f7f7f9",
-    marginBottom: "0.5rem",
-  },
-  button: {
-    width: "100%",
-    padding: "0.75rem",
-    border: "none",
-    borderRadius: "8px",
-    backgroundColor: "#3182ce",
-    color: "#ffffff",
-    fontWeight: "bold",
-    fontSize: "1rem",
-    cursor: "pointer",
-    transition: "background-color 0.3s ease",
-  },
-};
-
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import { Button, InputForm, Selectinput } from "../../components";
+import { useSnackbar } from "notistack";
+import { useForm } from "react-hook-form";
 
 const Createdemployee = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    job: "",
-    mobile: "",
-    district: "",
-    avatar: null,
-    baseSalary: "",
-  });
+  const { enqueueSnackbar } = useSnackbar();
   const [jobCategories, setJobCategories] = useState([]);
   const [districts, setDistricts] = useState([]);
-  const [snackbarData, setSnackbarData] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
+  const [district, setDistrict] = useState("");
+  const [job, setJob] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
 
   useEffect(() => {
-    const fetchJobCategories = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/api/categoryservice"
-        );
-        if (response.data.success && Array.isArray(response.data.categories)) {
-          setJobCategories(response.data.categories);
-        }
-      } catch (error) {
-        console.error("Error fetching job categories:", error);
-      }
-    };
-
-    const fetchDistricts = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/api/supervisor/districts",
-          {
+        const [jobResponse, districtResponse] = await Promise.all([
+          axios.get("http://localhost:5000/api/categoryservice"),
+          axios.get("http://localhost:5000/api/supervisor/districts", {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
             },
-          }
-        );
-        if (response.data.success) {
-          setDistricts(response.data.districts);
-          if (response.data.districts && response.data.districts.length > 0) {
-            setFormData({
-              ...formData,
-              district: response.data.districts[0],
-            });
-          }
+          }),
+        ]);
+
+        if (jobResponse.data.success) {
+          setJobCategories(
+            jobResponse.data.categories.map((job) => ({
+              id: job._id,
+              value: job.title,
+              text: job.title,
+            }))
+          );
+        }
+
+        if (districtResponse.data.success) {
+          setDistricts(
+            districtResponse.data.districts.map((dist) => ({
+              id: dist,
+              value: dist,
+              text: dist,
+            }))
+          );
         }
       } catch (error) {
-        console.error("Error fetching districts:", error);
+        console.error("Error loading data:", error);
+        enqueueSnackbar("Failed to load data.", { variant: "error" });
       }
     };
 
-    fetchJobCategories();
-    fetchDistricts();
-  }, []);
+    fetchData();
+  }, [enqueueSnackbar]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
-      avatar: e.target.files[0],
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const selectedJobCategory = jobCategories.find(
-      (category) => category._id === formData.job
-    );
-
-    const data = new FormData();
-    data.append("name", formData.name);
-    data.append("email", formData.email);
-    data.append("job", selectedJobCategory ? selectedJobCategory.title : "");
-    data.append("mobile", formData.mobile);
-    data.append("district", formData.district);
-    data.append("baseSalary", formData.baseSalary);
-    data.append("avatar", formData.avatar);
-
+  const onSubmit = async (data) => {
     try {
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("email", data.email);
+      formData.append("mobile", data.mobile);
+      formData.append("baseSalary", data.baseSalary);
+      formData.append("district", district);
+      formData.append("job", job);
+      if (data.avatar && data.avatar[0]) {
+        formData.append("avatar", data.avatar[0]);
+      }
+
+      console.log("FormData:", {
+        name: data.name,
+        email: data.email,
+        mobile: data.mobile,
+        baseSalary: data.baseSalary,
+        district,
+        job,
+        avatar: data.avatar?.[0],
+      });
+
       const response = await axios.post(
         "http://localhost:5000/api/employee/registeremployee",
-        data,
+        formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -165,174 +90,112 @@ const Createdemployee = () => {
           },
         }
       );
-      if (response.data.success) {
-        setSnackbarData({
-          open: true,
-          message: "Employee created successfully",
-          severity: "success",
-        });
 
-        setFormData({
-          name: "",
-          email: "",
-          job: "",
-          mobile: "",
-          district: "",
-          avatar: null,
-          baseSalary: "",
+      if (response.data.success) {
+        enqueueSnackbar("Employee created successfully!", {
+          variant: "success",
+        });
+        reset();
+        setDistrict("");
+        setJob("");
+      } else {
+        enqueueSnackbar(response.data.mes || "Failed to create employee.", {
+          variant: "error",
         });
       }
     } catch (error) {
       const errorMessage =
-        error.response?.data?.mes || "Failed to create employee.";
-      setSnackbarData({
-        open: true,
-        message: errorMessage,
-        severity: "error",
+        error.response?.data?.message ||
+        "An error occurred while creating the employee.";
+      console.error("Error creating employee:", errorMessage);
+      enqueueSnackbar(errorMessage, {
+        variant: "error",
       });
     }
   };
 
-  const handleCloseSnackbar = () => {
-    setSnackbarData({ ...snackbarData, open: false });
-  };
-
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Create New Employee</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={styles.formGroup}>
-          <label style={styles.label} htmlFor="name">
-            Name
-          </label>
-          <input
-            style={styles.input}
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
+    <div className="w-[85%] p-10 rounded-2xl border bg-white mt-5">
+      <h2 className="text-lg font-semibold mb-4 text-center uppercase text-black">
+        Create Employee
+      </h2>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <InputForm
+          label="Name"
+          id="name"
+          register={register}
+          errors={errors}
+          validate={{ required: "Name is required" }}
+          placeholder="Name Employee"
+          style={"placeholder:text-[14px]"}
+        />
+        <InputForm
+          style={"placeholder:text-[14px]"}
+          label="Email"
+          type="email"
+          id="email"
+          register={register}
+          errors={errors}
+          placeholder="Email Employee"
+          validate={{ required: "Email is required" }}
+        />
+        <InputForm
+          label="Mobile"
+          type="tel"
+          id="mobile"
+          register={register}
+          errors={errors}
+          validate={{ required: "Mobile is required" }}
+          placeholder="Mobile Employee"
+        />
+        <InputForm
+          label="Base Salary"
+          type="number"
+          id="baseSalary"
+          register={register}
+          errors={errors}
+          validate={{ required: "Base Salary is required" }}
+          placeholder="Base Salary Employee"
+        />
+        <div className="mt-2">
+          <h2 className="text-[13px]">District</h2>
+          <Selectinput
+            className="bg-gradient-to-r from-[#979db6] to-gray-300"
+            value={district}
+            changeValue={setDistrict}
+            options={districts}
           />
         </div>
-
-        <div style={styles.formGroup}>
-          <label style={styles.label} htmlFor="email">
-            Email
-          </label>
-          <input
-            style={styles.input}
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
+        <div className="mt-2">
+          <h2 className="text-[13px]">Job Category</h2>
+          <Selectinput
+            className="bg-gradient-to-r from-[#979db6] to-gray-300"
+            value={job}
+            changeValue={setJob}
+            options={jobCategories}
           />
         </div>
-
-        <div style={styles.formGroup}>
-          <label style={styles.label}>Job Category</label>
-          <select
-            name="job"
-            style={styles.select}
-            value={formData.job}
-            onChange={handleChange}
-          >
-            <option value="">Select Job Category</option>
-            {Array.isArray(jobCategories) && jobCategories.length > 0 ? (
-              jobCategories.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.title}
-                </option>
-              ))
-            ) : (
-              <option disabled>Loading...</option>
-            )}
-          </select>
-        </div>
-
-        <div style={styles.formGroup}>
-          <label style={styles.label} htmlFor="mobile">
-            Mobile
-          </label>
+        <div className="mt-2">
+          <h2 className="text-[13px]">Avatar</h2>
           <input
-            style={styles.input}
-            type="text"
-            id="mobile"
-            name="mobile"
-            value={formData.mobile}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div style={styles.formGroup}>
-          <label style={styles.label} htmlFor="district">
-            District
-          </label>
-          <select
-            style={styles.select}
-            id="district"
-            name="district"
-            value={formData.district}
-            onChange={handleChange}
-            required
-          >
-            {districts.map((district) => (
-              <option key={district} value={district}>
-                {district}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={styles.formGroup}>
-          <label style={styles.label} htmlFor="avatar">
-            Avatar
-          </label>
-          <input
-            style={styles.input}
+            className="w-full p-2 rounded border bg-gray-100"
             type="file"
             id="avatar"
-            name="avatar"
-            onChange={handleFileChange}
+            {...register("avatar")}
           />
         </div>
-
-        <div style={styles.formGroup}>
-          <label style={styles.label} htmlFor="baseSalary">
-            Base Salary
-          </label>
-          <input
-            style={styles.input}
-            type="number"
-            id="baseSalary"
-            name="baseSalary"
-            value={formData.baseSalary}
-            onChange={handleChange}
-            required
-          />
+        <div className="mt-5">
+          <Button
+            fw
+            type="submit"
+            style={
+              "w-full p-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300"
+            }
+          >
+            Create Employee
+          </Button>
         </div>
-
-        <button type="submit" style={styles.button}>
-          Create Employee
-        </button>
       </form>
-
-      <Snackbar
-        open={snackbarData.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbarData.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbarData.message}
-        </Alert>
-      </Snackbar>
     </div>
   );
 };
