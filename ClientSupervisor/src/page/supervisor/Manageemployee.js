@@ -36,7 +36,6 @@ const Manageemployee = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
 
-  // Fetch employees data
   const fetchEmployees = async () => {
     try {
       const response = await apiGetemployee();
@@ -54,35 +53,30 @@ const Manageemployee = () => {
     }
   };
 
-  // Open modal for editing employee details
   const handleEdit = (employee) => {
     setSelectedEmployee(employee);
-    setAvatarFile(null); // Reset avatar file when editing a new employee
-    setOpen(true); // Open the modal
+    setAvatarFile(null);
+    setOpen(true);
   };
 
-  // Close modal
   const handleClose = () => {
-    setOpen(false); // Close the modal
-    setSelectedEmployee(null); // Clear selected employee data
+    setOpen(false);
+    setSelectedEmployee(null);
   };
 
-  // Handle input field changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setSelectedEmployee({
       ...selectedEmployee,
-      [name]: name === "baseSalary" ? Number(value) : value, // Handle numeric input for salary
+      [name]: name === "baseSalary" ? Number(value) : value,
     });
   };
 
-  // Handle avatar file change
   const handleAvatarChange = (e) => {
-    const file = e.target.files[0]; // Get the selected file
+    const file = e.target.files[0];
     setAvatarFile(file);
   };
 
-  // Save updated employee details
   const handleSave = async () => {
     const formData = new FormData();
     formData.append("name", selectedEmployee.name);
@@ -187,6 +181,7 @@ const Manageemployee = () => {
             label="Job"
             name="job"
             value={selectedEmployee?.job || ""}
+            InputProps={{ readOnly: true }}
             onChange={handleInputChange}
             fullWidth
             margin="normal"
