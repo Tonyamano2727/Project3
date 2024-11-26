@@ -1,13 +1,12 @@
-const express = require('express');
-const asyncHandler = require('express-async-handler');
-const Supervisor = require('../models/supervisor');
-const Employee = require('../models/employee');
+const express = require("express");
+const asyncHandler = require("express-async-handler");
+const Supervisor = require("../models/supervisor");
+const Employee = require("../models/employee");
 const {
   generrateAccessToken,
   generrateRefreshToken,
 } = require("../middlewares/jwt");
-const supervisor = require('../models/supervisor');
-
+const supervisor = require("../models/supervisor");
 
 const getSupervisors = asyncHandler(async (req, res) => {
   const queries = { ...req.query };
@@ -73,12 +72,13 @@ const getSupervisors = asyncHandler(async (req, res) => {
   });
 });
 
-
 const getSupervisorById = asyncHandler(async (req, res) => {
   try {
     const supervisor = await Supervisor.findById(req.params.id);
     if (!supervisor) {
-      return res.status(404).json({ success: false, mes: 'Supervisor not found' });
+      return res
+        .status(404)
+        .json({ success: false, mes: "Supervisor not found" });
     }
     return res.status(200).json({ success: true, data: supervisor });
   } catch (error) {
@@ -88,9 +88,15 @@ const getSupervisorById = asyncHandler(async (req, res) => {
 
 const updateSupervisor = asyncHandler(async (req, res) => {
   try {
-    const supervisor = await Supervisor.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const supervisor = await Supervisor.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
     if (!supervisor) {
-      return res.status(404).json({ success: false, mes: 'Supervisor not found' });
+      return res
+        .status(404)
+        .json({ success: false, mes: "Supervisor not found" });
     }
     return res.status(200).json({ success: true, data: supervisor });
   } catch (error) {
@@ -103,14 +109,17 @@ const deleteSupervisor = asyncHandler(async (req, res) => {
     const { spid } = req.params;
     const supervisor = await Supervisor.findByIdAndDelete(spid);
     if (!supervisor) {
-      return res.status(404).json({ success: false, mes: 'Supervisor not found' });
+      return res
+        .status(404)
+        .json({ success: false, mes: "Supervisor not found" });
     }
-    return res.status(200).json({ success: true, mes: 'Supervisor deleted successfully' });
+    return res
+      .status(200)
+      .json({ success: true, mes: "Supervisor deleted successfully" });
   } catch (error) {
     return res.status(500).json({ success: false, mes: error.message });
   }
 });
-
 
 const registerSupervisor = asyncHandler(async (req, res) => {
   const { name, email, password, district, phone } = req.body;
@@ -123,11 +132,19 @@ const registerSupervisor = asyncHandler(async (req, res) => {
   // Kiểm tra xem Supervisor đã tồn tại chưa
   const supervisorExists = await Supervisor.findOne({ email });
   if (supervisorExists) {
-    return res.status(400).json({ success: false, mes: "Supervisor already exists" });
+    return res
+      .status(400)
+      .json({ success: false, mes: "Supervisor already exists" });
   }
 
   // Tạo Supervisor mới
-  const supervisor = await Supervisor.create({ name, email, password, district, phone });
+  const supervisor = await Supervisor.create({
+    name,
+    email,
+    password,
+    district,
+    phone,
+  });
 
   if (supervisor) {
     // Tạo access token và refresh token
@@ -139,11 +156,13 @@ const registerSupervisor = asyncHandler(async (req, res) => {
       _id: supervisor._id,
       name: supervisor.name,
       email: supervisor.email,
-      accessToken,  // Gửi access token
+      accessToken, // Gửi access token
       refreshToken, // Gửi refresh token
     });
   } else {
-    return res.status(400).json({ success: false, mes: "Invalid Supervisor data" });
+    return res
+      .status(400)
+      .json({ success: false, mes: "Invalid Supervisor data" });
   }
 });
 
@@ -176,7 +195,28 @@ const loginSupervisor = asyncHandler(async (req, res) => {
   });
 });
 
+const getDistricts = asyncHandler(async (req, res) => {
+  try {
+    const supervisor = await Supervisor.findById(req.user._id);
 
+    if (!supervisor) {
+      return res.status(404).json({
+        success: false,
+        mes: "Supervisor not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      districts: [supervisor.district],
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      mes: error.message,
+    });
+  }
+});
 
 module.exports = {
   registerSupervisor,
@@ -185,4 +225,5 @@ module.exports = {
   updateSupervisor,
   getSupervisorById,
   deleteSupervisor,
+  getDistricts,
 };

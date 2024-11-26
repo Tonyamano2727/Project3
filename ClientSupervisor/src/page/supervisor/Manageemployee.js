@@ -36,6 +36,7 @@ const Manageemployee = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
 
+  // Fetch employees data
   const fetchEmployees = async () => {
     try {
       const response = await apiGetemployee();
@@ -45,53 +46,60 @@ const Manageemployee = () => {
         setError(response.message || "No staff found");
       }
     } catch (error) {
-      setError(error.message || "An error occurred while fetching employees.");
+      setError(
+        error.message || "An error occurred while fetching employee data."
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  // Open modal for editing employee details
   const handleEdit = (employee) => {
     setSelectedEmployee(employee);
-    setAvatarFile(null);
-    setOpen(true);
+    setAvatarFile(null); // Reset avatar file when editing a new employee
+    setOpen(true); // Open the modal
   };
 
+  // Close modal
   const handleClose = () => {
-    setOpen(false);
-    setSelectedEmployee(null);
+    setOpen(false); // Close the modal
+    setSelectedEmployee(null); // Clear selected employee data
   };
 
+  // Handle input field changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setSelectedEmployee({
       ...selectedEmployee,
-      [name]: name === "baseSalary" ? Number(value) : value, // Parse baseSalary as a number
+      [name]: name === "baseSalary" ? Number(value) : value, // Handle numeric input for salary
     });
   };
 
+  // Handle avatar file change
   const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]; // Get the selected file
     setAvatarFile(file);
   };
 
+  // Save updated employee details
   const handleSave = async () => {
     const formData = new FormData();
     formData.append("name", selectedEmployee.name);
     formData.append("email", selectedEmployee.email);
     formData.append("job", selectedEmployee.job);
     formData.append("mobile", selectedEmployee.mobile);
-    formData.append("baseSalary", selectedEmployee.baseSalary); // Ensure baseSalary is included
+    formData.append("baseSalary", selectedEmployee.baseSalary);
 
     if (avatarFile) {
-      formData.append("avatar", avatarFile);
+      formData.append("avatar", avatarFile); // Append avatar if changed
     }
 
     try {
       const response = await apiUpdateEmployee(selectedEmployee._id, formData);
       if (response.success) {
         setOpen(false);
-        fetchEmployees();
+        fetchEmployees(); // Reload the employee data
       } else {
         alert("Failed to update employee");
       }
@@ -100,6 +108,7 @@ const Manageemployee = () => {
     }
   };
 
+  // Fetch employees when component is mounted
   useEffect(() => {
     fetchEmployees();
   }, []);
@@ -139,16 +148,11 @@ const Manageemployee = () => {
                   <td className="p-2">{employee.job}</td>
                   <td className="p-2">{employee.email}</td>
                   <td className="p-2">{employee.mobile}</td>
-                  <td className="p-2">
-                    {employee.baseSalary
-                      ? employee.baseSalary.toLocaleString()
-                      : "N/A"}{" "}
-                    VND
-                  </td>
+                  <td className="p-2">{employee.baseSalary}</td>
                   <td className="p-2">
                     <button
+                      className="text-blue-600 hover:text-blue-800"
                       onClick={() => handleEdit(employee)}
-                      className="text-blue-500 hover:text-blue-700"
                     >
                       <FaEdit />
                     </button>
@@ -160,9 +164,10 @@ const Manageemployee = () => {
         </div>
       )}
 
+      {/* Modal for editing employee */}
       <Modal open={open} onClose={handleClose}>
         <Box sx={styles.modalStyle}>
-          <h2>Update Employee's Info</h2>
+          <h2>Edit Employee</h2>
           <TextField
             label="Name"
             name="name"
@@ -188,7 +193,7 @@ const Manageemployee = () => {
             margin="normal"
           />
           <TextField
-            label="Mobile"
+            label="Phone"
             name="mobile"
             value={selectedEmployee?.mobile || ""}
             onChange={handleInputChange}
@@ -204,21 +209,25 @@ const Manageemployee = () => {
             fullWidth
             margin="normal"
           />
-          <div className="mt-4">
-            <label>Avatar:</label>
-            <input type="file" onChange={handleAvatarChange} />
+          <div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="mt-2"
+            />
           </div>
-          <div className="flex justify-end mt-4">
-            <Button onClick={handleClose} color="secondary">
-              Cancel
+          <div className="mt-4">
+            <Button variant="contained" color="primary" onClick={handleSave}>
+              Save Changes
             </Button>
             <Button
-              onClick={handleSave}
-              variant="contained"
-              color="primary"
+              variant="outlined"
+              color="secondary"
+              onClick={handleClose}
               className="ml-2"
             >
-              Save
+              Cancel
             </Button>
           </div>
         </Box>
