@@ -121,20 +121,23 @@ export const cleaningData = [
   {
     id: 1,
     imgSrc: houseicon,
-    title: "House Cleaning",
-    description: "Competently repurpose clean conveniently target",
+    title: "Services Cleaning",
+    description: "Home cleaning solutions for busy people",
+    path: `/${path.OUR_SERVICES}`,
   },
   {
     id: 2,
     imgSrc: houseicon2,
-    title: "Window Cleaning",
-    description: "Competently repurpose clean conveniently target",
+    title: "Home Cleaning Products",
+    description: "Optimize home cleaning time for housewives",
+    path: `/${path.PRODUCTS}`,
   },
   {
     id: 3,
     imgSrc: houseicon3,
-    title: "Office Cleaning",
-    description: "Competently repurpose clean conveniently target",
+    title: "Home cleaning blogs",
+    description: "Detailed instructions on how to clean your home",
+    path: `/${path.BLOGS}`,
   },
 ];
 export const navigation = [

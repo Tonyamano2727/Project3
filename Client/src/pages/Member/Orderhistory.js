@@ -70,8 +70,8 @@ const Orderhistory = () => {
         </form>
       </div>
       <table className="w-[95%] mt-5">
-        <thead>
-          <tr className="border border-black">
+        <thead className="">
+          <tr className="border border-black ">
             <th className="p-5 gap-x-2 items-center py-5 px-6 text-red-500 hover:text-indigo-600 ">#</th>
             <th className="gap-x-2 items-center py-5 px-6 text-gray-500 hover:text-red-600 ">Products</th>
             <th className="gap-x-2 items-center py-5 px-6 text-gray-500 hover:text-red-600 ">Total</th>

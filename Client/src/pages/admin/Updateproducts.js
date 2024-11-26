@@ -90,44 +90,56 @@ const Updateproducts = ({ editproduct, render, seteditproduct }) => {
     const invalids = validate(payload, setInvalidFields);
     if (invalids === 0) {
       if (data.category)
-        data.category = categories?.find(
-          (el) => el.title === data.category
-        )?.title;
-
+        data.category = categories.find((el) => el.title === data.category)?.title;
+  
       const finalPayload = { ...data, ...payload };
+      
+      // Log dữ liệu để kiểm tra trước khi gửi
+      console.log('Final Payload:', finalPayload);
+  
       const formData = new FormData();
-      for (let i of Object.entries(finalPayload)) formData.append(i[0], i[1]);
-
-      // Xử lý thumbnail
-      if (watch("thumb") && watch("thumb").length > 0) {
+      for (let [key, value] of Object.entries(finalPayload)) {
+        formData.append(key, value);
+      }
+  
+      // Kiểm tra và log trước khi gửi ảnh thumbnail
+      if (watch("thumb")?.[0]) {
+        console.log('Appending thumb:', watch("thumb")[0]);
         formData.append("thumb", watch("thumb")[0]);
       } else {
-        // Nếu không có hình mới, giữ hình cũ
+        console.log('Using previous thumb:', preview.thumb);
         formData.append("thumb", preview.thumb);
       }
-
-      // Xử lý hình ảnh khác
-      if (watch("images") && watch("images").length > 0) {
-        for (let image of watch("images")) {
-          formData.append("images", image);
+  
+      // Kiểm tra và log trước khi gửi ảnh khác
+      if (watch("images")?.length > 0) {
+        for (let file of watch("images")) {
+          console.log('Appending image:', file);
+          formData.append("images", file);
         }
       } else {
-        // Nếu không có hình mới, giữ hình cũ
-        for (let image of preview.images) {
+        preview.images.forEach((image, index) => {
+          console.log('Using previous image:', image);
           formData.append("images", image);
+        });
+      }
+  
+      try {
+        // Gọi API để cập nhật sản phẩm
+        const response = await apiUpdateproduct(formData, editproduct._id);
+        console.log('API Response:', response);
+  
+        if (response.success) {
+          enqueueSnackbar("Product updated successfully!", { variant: "success" });
+          render();
+          seteditproduct(null);
+        } else {
+          enqueueSnackbar(response.mes, { variant: "error" });
         }
+      } catch (error) {
+        console.error("Update failed:", error);
+        enqueueSnackbar("Error updating product!", { variant: "error" });
       }
-
-      const response = await apiUpdateproduct(formData, editproduct._id);
- 
-      if (response.success) {
-        enqueueSnackbar(response.mes, { variant: "success" }); 
-        render();
-        seteditproduct(null);
-      } else {
-        enqueueSnackbar(response.mes, { variant: "error" }); 
-      }
-
     }
   };
 

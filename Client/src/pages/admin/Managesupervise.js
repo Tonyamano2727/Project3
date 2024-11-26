@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { apiGetsupervise, apiDeletesupervise } from "../../apis/supervise";
-import { sortsupervisor, sortByDate } from "../../ultils/contants";
+import { sortByDate } from "../../ultils/contants";
 import { Button, Inputfields, Pagination, Selectinput } from "../../components";
 import useDebounce from "../../hooks/useDebounce";
 import { useSearchParams } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import { fetchDistricts } from "../../apis/mapApi"; 
 
 const Managesupervise = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [invalidFields, setInvalidFields] = useState(null);
+  const [districts, setDistricts] = useState([]); 
   const [supervisors, setSupervisors] = useState([]);
   const [queries, setQueries] = useState({
     q: "",
@@ -34,6 +36,26 @@ const Managesupervise = () => {
       }
     }
   }, []);
+
+  useEffect(() => {
+    const loadDistricts = async () => {
+      try {
+        const districtsData = await fetchDistricts();
+        // Định dạng dữ liệu cho Selectinput
+        const formattedDistricts = districtsData.map((district) => ({
+          id: district.code,
+          value: district.name,
+          text: district.name,
+        }));
+        setDistricts(formattedDistricts);
+      } catch (error) {
+        console.error("Error fetching districts:", error);
+        enqueueSnackbar("Failed to fetch districts.", { variant: "error" });
+      }
+    };
+
+    loadDistricts();
+  }, [enqueueSnackbar]);
 
   const fetchSupervisors = async (params) => {
     try {
@@ -107,7 +129,7 @@ const Managesupervise = () => {
             className='bg-gradient-to-r from-[#979db6] to-gray-300'
             changeValue={(value) => changeValue(value, "district")}
             value={queries.district}
-            options={sortsupervisor}
+            options={districts}
           />
           <Selectinput
            className='bg-gradient-to-r from-[#979db6] to-gray-300'

@@ -20,7 +20,6 @@ const Home = () => {
         </div>
         <div className="flex flex-col gap-5 w-[100%] flex-auto ">
           <Cleaning/>
-          {/* <Dealdaily /> */}
         </div>
         <div className="mt-20">
           <Aboutus/>
