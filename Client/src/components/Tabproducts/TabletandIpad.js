@@ -4,7 +4,7 @@ import Product from "../Product/Product";
 import Slider from "react-slick";
 
 const tabs = [
-  { id: 1, name: "Vacuum cleaner" },
+  { id: 1, name: "Hot products" },
   { id: 2, name: "Test" },
 ];
 var settings = {
@@ -46,7 +46,7 @@ const TabletandIpad = () => {
     const fectchProducts = async () => {
       const [laptopResponse, tabletResponse] =
         await Promise.all([
-        apiGetProducts({ sort: "category",category: "Test"}),
+        apiGetProducts({ sort: "-createdAt"}),
         apiGetProducts({ sort: "category",category: "Test"}),
         ]);
       if (laptopResponse?.success) {

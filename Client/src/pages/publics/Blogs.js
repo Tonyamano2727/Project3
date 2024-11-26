@@ -65,7 +65,7 @@ const Blogs = ({ title }) => {
       <div className="flex w-[85%] gap-6 justify-center p-8">
         <div className="w-[60%] flex flex-wrap">
           {currentBlogs.map((blog) => (
-            <div key={blog._id} className="border rounded-xl relative mb-5">
+            <div key={blog._id} className="border rounded-xl relative mb-5 bg-white">
               <img
                 className="flex h-[auto] w-full object-cover"
                 src={blog.thumb}
