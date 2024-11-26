@@ -74,10 +74,12 @@ const Createdemployee = () => {
     baseSalary: "",
   });
   const [jobCategories, setJobCategories] = useState([]);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-
-  const districts = ["District 11"];
+  const [districts, setDistricts] = useState([]);
+  const [snackbarData, setSnackbarData] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   useEffect(() => {
     const fetchJobCategories = async () => {
@@ -85,13 +87,41 @@ const Createdemployee = () => {
         const response = await axios.get(
           "http://localhost:5000/api/categoryservice"
         );
-        setJobCategories(response.data);
+        if (response.data.success && Array.isArray(response.data.categories)) {
+          setJobCategories(response.data.categories);
+        }
       } catch (error) {
         console.error("Error fetching job categories:", error);
       }
     };
 
+    const fetchDistricts = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/supervisor/districts",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+        if (response.data.success) {
+          setDistricts(response.data.districts);
+          // Gán district tự động từ danh sách districts
+          if (response.data.districts && response.data.districts.length > 0) {
+            setFormData({
+              ...formData,
+              district: response.data.districts[0], // Giả sử chỉ có 1 district và gán nó vào form
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching districts:", error);
+      }
+    };
+
     fetchJobCategories();
+    fetchDistricts();
   }, []);
 
   const handleChange = (e) => {
@@ -111,7 +141,6 @@ const Createdemployee = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const data = new FormData();
     data.append("name", formData.name);
     data.append("email", formData.email);
@@ -119,7 +148,9 @@ const Createdemployee = () => {
     data.append("mobile", formData.mobile);
     data.append("district", formData.district);
     data.append("baseSalary", formData.baseSalary);
-    if (formData.avatar) data.append("avatar", formData.avatar);
+    data.append("avatar", formData.avatar);
+
+    console.log("Form Data:", formData);
 
     try {
       const response = await axios.post(
@@ -132,138 +163,172 @@ const Createdemployee = () => {
           },
         }
       );
-
       if (response.data.success) {
-        setOpenSnackbar(true);
+        setSnackbarData({
+          open: true,
+          message: "Employee created successfully",
+          severity: "success",
+        });
+
+        setFormData({
+          name: "",
+          email: "",
+          job: "",
+          mobile: "",
+          district: "",
+          avatar: null,
+          baseSalary: "",
+        });
       }
     } catch (error) {
-      console.error("Error creating employee:", error);
-      alert("Failed to create employee.");
+      const errorMessage =
+        error.response?.data?.mes || "Failed to create employee.";
+      setSnackbarData({
+        open: true,
+        message: errorMessage,
+        severity: "error",
+      });
     }
   };
 
   const handleCloseSnackbar = () => {
-    setOpenSnackbar(false);
+    setSnackbarData({ ...snackbarData, open: false });
   };
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Create Employee</h2>
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
+      <h2 style={styles.title}>Create New Employee</h2>
+      <form onSubmit={handleSubmit}>
         <div style={styles.formGroup}>
-          <label style={styles.label}>Name:</label>
+          <label style={styles.label} htmlFor="name">
+            Name
+          </label>
           <input
-            type="text"
-            name="name"
             style={styles.input}
+            type="text"
+            id="name"
+            name="name"
             value={formData.name}
             onChange={handleChange}
             required
           />
         </div>
+
         <div style={styles.formGroup}>
-          <label style={styles.label}>Email:</label>
+          <label style={styles.label} htmlFor="email">
+            Email
+          </label>
           <input
-            type="email"
-            name="email"
             style={styles.input}
+            type="email"
+            id="email"
+            name="email"
             value={formData.email}
             onChange={handleChange}
             required
           />
         </div>
+
         <div style={styles.formGroup}>
-          <label style={styles.label}>Job:</label>
+          <label style={styles.label}>Job Category</label>
           <select
             name="job"
             style={styles.select}
             value={formData.job}
             onChange={handleChange}
-            required
           >
-            <option value="">Select Job</option>
-            {jobCategories.map((category) => (
-              <option key={category._id} value={category.title}>
-                {category.title}
-              </option>
-            ))}
+            <option value="">Select Job Category</option>
+            {Array.isArray(jobCategories) && jobCategories.length > 0 ? (
+              jobCategories.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.title}
+                </option>
+              ))
+            ) : (
+              <option disabled>Loading...</option>
+            )}
           </select>
         </div>
+
         <div style={styles.formGroup}>
-          <label style={styles.label}>Mobile:</label>
+          <label style={styles.label} htmlFor="mobile">
+            Mobile
+          </label>
           <input
-            type="text"
-            name="mobile"
             style={styles.input}
+            type="text"
+            id="mobile"
+            name="mobile"
             value={formData.mobile}
             onChange={handleChange}
             required
           />
         </div>
+
         <div style={styles.formGroup}>
-          <label style={styles.label}>District:</label>
+          <label style={styles.label} htmlFor="district">
+            District
+          </label>
           <select
-            name="district"
             style={styles.select}
+            id="district"
+            name="district"
             value={formData.district}
             onChange={handleChange}
             required
           >
-            <option value="">Select District</option>
-            {districts.map((district, index) => (
-              <option key={index} value={district}>
+            {districts.map((district) => (
+              <option key={district} value={district}>
                 {district}
               </option>
             ))}
           </select>
         </div>
+
         <div style={styles.formGroup}>
-          <label style={styles.label}>Avatar:</label>
+          <label style={styles.label} htmlFor="avatar">
+            Avatar
+          </label>
           <input
-            type="file"
-            name="avatar"
             style={styles.input}
+            type="file"
+            id="avatar"
+            name="avatar"
             onChange={handleFileChange}
           />
         </div>
+
         <div style={styles.formGroup}>
-          <label style={styles.label}>Base Salary:</label>
+          <label style={styles.label} htmlFor="baseSalary">
+            Base Salary
+          </label>
           <input
-            type="number"
-            name="baseSalary"
             style={styles.input}
+            type="number"
+            id="baseSalary"
+            name="baseSalary"
             value={formData.baseSalary}
             onChange={handleChange}
-            onInput={(e) => {
-              if (e.target.value > 4000000) {
-                e.target.value = 4000000;
-              }
-            }}
             required
-            max="4000000"
           />
         </div>
-        <button
-          type="submit"
-          style={{
-            ...styles.button,
-            backgroundColor: isHovered ? "#2b6cb0" : "#3182ce",
-          }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
+
+        <button type="submit" style={styles.button}>
           Create Employee
         </button>
       </form>
 
       <Snackbar
-        open={openSnackbar}
-        autoHideDuration={1500}
+        open={snackbarData.open}
+        autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert onClose={handleCloseSnackbar} severity="success">
-          Employee created successfully!
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarData.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarData.message}
         </Alert>
       </Snackbar>
     </div>

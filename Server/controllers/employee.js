@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Employee = require("../models/employee");
 const Supervisor = require("../models/supervisor");
+const Servicecategory = require("../models/servicecategory");
 
 const Registeremployee = asyncHandler(async (req, res) => {
   try {
@@ -95,7 +96,7 @@ const updateEmployee = asyncHandler(async (req, res) => {
 
 const DeleteEmployee = asyncHandler(async (req, res) => {
   try {
-    const { eid } = req.params; // Lấy ID từ params
+    const { eid } = req.params;
 
     const deletedEmployee = await Employee.findByIdAndDelete(eid);
     if (!deletedEmployee) {
@@ -145,7 +146,6 @@ const getAllEmployees = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const supervisor = await Supervisor.findById(_id);
 
-  // Kiểm tra nếu không tìm thấy supervisor
   if (!supervisor) {
     return res.status(404).json({
       success: false,
@@ -153,10 +153,8 @@ const getAllEmployees = asyncHandler(async (req, res) => {
     });
   }
 
-  // Tìm kiếm nhân viên theo quận mà supervisor phụ trách
   const staff = await Employee.find({ district: supervisor.district });
 
-  // Trả về danh sách nhân viên nếu tìm thấy
   return res.status(200).json({
     success: true,
     staff,
@@ -165,10 +163,8 @@ const getAllEmployees = asyncHandler(async (req, res) => {
 
 const getAllEmployee = asyncHandler(async (req, res) => {
   try {
-    // Lấy tất cả nhân viên từ cơ sở dữ liệu
     const staff = await Employee.find();
 
-    // Trả về danh sách nhân viên nếu tìm thấy
     if (staff.length > 0) {
       return res.status(200).json({
         success: true,
@@ -181,7 +177,6 @@ const getAllEmployee = asyncHandler(async (req, res) => {
       });
     }
   } catch (error) {
-    // Xử lý lỗi nếu có vấn đề xảy ra
     return res.status(500).json({
       success: false,
       mes: "Server error",
