@@ -92,14 +92,14 @@ const Manageemployee = () => {
     formData.append("baseSalary", selectedEmployee.baseSalary);
 
     if (avatarFile) {
-      formData.append("avatar", avatarFile); // Append avatar if changed
+      formData.append("avatar", avatarFile);
     }
 
     try {
       const response = await apiUpdateEmployee(selectedEmployee._id, formData);
       if (response.success) {
         setOpen(false);
-        fetchEmployees(); // Reload the employee data
+        fetchEmployees();
       } else {
         alert("Failed to update employee");
       }
@@ -108,7 +108,6 @@ const Manageemployee = () => {
     }
   };
 
-  // Fetch employees when component is mounted
   useEffect(() => {
     fetchEmployees();
   }, []);

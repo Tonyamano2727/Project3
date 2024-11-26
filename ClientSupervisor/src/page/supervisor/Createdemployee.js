@@ -107,11 +107,10 @@ const Createdemployee = () => {
         );
         if (response.data.success) {
           setDistricts(response.data.districts);
-          // Gán district tự động từ danh sách districts
           if (response.data.districts && response.data.districts.length > 0) {
             setFormData({
               ...formData,
-              district: response.data.districts[0], // Giả sử chỉ có 1 district và gán nó vào form
+              district: response.data.districts[0],
             });
           }
         }
@@ -141,16 +140,19 @@ const Createdemployee = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const selectedJobCategory = jobCategories.find(
+      (category) => category._id === formData.job
+    );
+
     const data = new FormData();
     data.append("name", formData.name);
     data.append("email", formData.email);
-    data.append("job", formData.job);
+    data.append("job", selectedJobCategory ? selectedJobCategory.title : "");
     data.append("mobile", formData.mobile);
     data.append("district", formData.district);
     data.append("baseSalary", formData.baseSalary);
     data.append("avatar", formData.avatar);
-
-    console.log("Form Data:", formData);
 
     try {
       const response = await axios.post(
