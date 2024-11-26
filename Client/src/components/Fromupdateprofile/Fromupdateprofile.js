@@ -52,7 +52,7 @@ const Fromupdateprofile = ({ onClose }) => {
         <div className="flex justify-between items-center w-full">
           <p>Update information</p>
           <button
-            className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+            className="mt-4  bg-gradient-to-r from-[#0f1c92] to-[#0e28d1]  text-white px-4 py-2 rounded-3xl"
             onClick={onClose}>
             Close
           </button>

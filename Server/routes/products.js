@@ -2,6 +2,13 @@ const router = require("express").Router();
 const ctrls = require("../controllers/products");
 const { verifyToken, isAdmin } = require("../middlewares/verifyToken");
 const uploader = require("../config/cloudinary.cofig");
+const uploadexcel = require("../config/excel.js");
+
+router.post(
+  "/import-excel",
+  uploadexcel.fields([{ name: "excel", maxCount: 1 }]), 
+  ctrls.createproductswithexcel
+);
 
 router.post(
   "/",

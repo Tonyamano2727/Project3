@@ -20,6 +20,12 @@ export const apiGetbooking = (data) =>
     method: "get",
     data,
   });
+  export const apiGetbookingplan = (data) =>
+    axios({
+      url: "/bookingplan/getallbookingplan",
+      method: "get",
+      data,
+    });
 
 export const apiupdatebooking = (data, bkid) =>
   axios({

@@ -5,10 +5,11 @@ import {
   deletedhotdistric,
   apicreatehotdistric,
 } from "../../apis";
-import { districtsHCM } from "../../ultils/contants";
+import { fetchDistricts } from './../../apis/mapApi';
 
 const ManageHotDistrict = () => {
-  const [hotDistricts, setHotDistricts] = useState([]);
+  const [hotDistricts, setHotDistricts] = useState([]); // Danh sách quận nóng
+  const [districts, setDistricts] = useState([]); // Danh sách quận lấy từ API
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingId, setEditingId] = useState(null);
@@ -18,40 +19,42 @@ const ManageHotDistrict = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const inputRef = useRef(null);
 
+  // Lấy danh sách API quận 
   useEffect(() => {
+    const loadDistricts = async () => {
+      try {
+        const districts = await fetchDistricts();
+        setDistricts(districts);
+      } catch (err) {
+        console.error(err.message);
+        setError("Failed to fetch districts.");
+      }
+    };
+
     const fetchHotDistricts = async () => {
       try {
-        const response = await gethotdistric();
+        const response = await gethotdistric(); // Gọi API quận nóng
         if (response.success) {
           setHotDistricts(response.data);
         } else {
-          setError("Failed to fetch hot districts");
+          setError("Failed to fetch hot districts.");
         }
       } catch (err) {
-        setError("Error fetching hot districts: " + err.message);
+        console.error("Error fetching hot districts:", err);
+        setError("Error fetching hot districts.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchHotDistricts();
+    loadDistricts(); // Gọi API lấy quận
+    fetchHotDistricts(); // Gọi API quận nóng
   }, []);
 
+  // Xử lý các chức năng khác (giữ nguyên như ban đầu)
   const handleUpdate = async (did) => {
     if (newPercentage < 0 || newPercentage > 100) {
       console.log("Please enter a valid percentage between 0 and 100.");
-      return;
-    }
-
-    const currentDistrict = hotDistricts.find(
-      (district) => district._id === did
-    );
-
-    if (currentDistrict && currentDistrict.percentage === newPercentage) {
-      console.log(
-        "No changes detected. Please modify the percentage to update."
-      );
-      setEditingId(null);
       return;
     }
 
@@ -60,8 +63,6 @@ const ManageHotDistrict = () => {
         { percentage: newPercentage },
         did
       );
-      console.log("API response:", response);
-
       if (response.success) {
         setHotDistricts((prev) =>
           prev.map((district) =>
@@ -73,28 +74,25 @@ const ManageHotDistrict = () => {
         setEditingId(null);
         setNewPercentage(0);
       } else {
-        console.log("Update failed: Unknown error");
+        console.error("Failed to update hot district.");
       }
-    } catch (error) {
-      console.log("Error updating district:", error.message || "Unknown error");
+    } catch (err) {
+      console.error("Error updating hot district:", err);
     }
   };
 
   const handleDelete = async (did) => {
     try {
       const response = await deletedhotdistric(did);
-      console.log("Delete API response:", response);
-
       if (response.success) {
         setHotDistricts((prev) =>
           prev.filter((district) => district._id !== did)
         );
-        console.log("District deleted successfully");
       } else {
-        console.log("Delete failed: Unknown error");
+        console.error("Failed to delete hot district.");
       }
-    } catch (error) {
-      console.log("Error deleting district:", error.message || "Unknown error");
+    } catch (err) {
+      console.error("Error deleting hot district:", err);
     }
   };
 
@@ -113,19 +111,16 @@ const ManageHotDistrict = () => {
         name: newDistrictName,
         percentage: newDistrictPercentage,
       });
-      console.log("Create API response:", response);
-
       if (response.success) {
         setHotDistricts((prev) => [...prev, response.data]);
         setNewDistrictName("");
         setNewDistrictPercentage(0);
         setShowCreateForm(false);
-        console.log("District created successfully");
       } else {
-        console.log("Create failed: Unknown error");
+        console.error("Failed to create new hot district.");
       }
-    } catch (error) {
-      console.log("Error creating district:", error.message || "Unknown error");
+    } catch (err) {
+      console.error("Error creating new hot district:", err);
     }
   };
 
@@ -150,15 +145,15 @@ const ManageHotDistrict = () => {
       </div>
 
       {showCreateForm && (
-        <div className=" w-[85%] mt-5">
+        <div className="w-[85%] mt-5">
           <select
             value={newDistrictName}
             onChange={(e) => setNewDistrictName(e.target.value)}
             className="border p-2 w-full mb-2 rounded-2xl">
             <option value="">Chọn Quận/Huyện</option>
-            {districtsHCM.map((district, index) => (
-              <option key={index} value={district}>
-                {district}
+            {districts.map((district) => (
+              <option key={district.code} value={district.name}>
+                {district.name}
               </option>
             ))}
           </select>

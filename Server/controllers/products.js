@@ -4,6 +4,9 @@ const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const User = require("../models/user");
 const redisClient = require("../config/redis");
+const fs = require("fs");
+const path = require("path");
+const XLSX = require("xlsx");
 
 const createproducts = asyncHandler(async (req, res) => {
   const { title, price, description, brand, category, color } = req.body;
@@ -72,11 +75,63 @@ const createmanyproducts = asyncHandler(async (req, res) => {
 
   return res.status(200).json({
     success: newProducts.length > 0,
-    mes: newProducts.length > 0 ? "Đã tạo các sản phẩm thành công" : "Không thể tạo sản phẩm",
+    mes:
+      newProducts.length > 0
+        ? "Đã tạo các sản phẩm thành công"
+        : "Không thể tạo sản phẩm",
     products: newProducts,
   });
 });
 
+const createproductswithexcel = async (req, res) => {
+  try {
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "uploads",
+      req.files.excel[0].filename
+    );
+
+    if (fs.existsSync(filePath)) {
+      const workbook = XLSX.readFile(filePath);
+      const sheet_name_list = workbook.SheetNames;
+      const xlData = XLSX.utils.sheet_to_json(
+        workbook.Sheets[sheet_name_list[0]]
+      );
+
+      console.log("Data file Excel:", xlData);
+
+      const productsToInsert = xlData.map((item) => ({
+        title: item.Title,
+        brand: item.Brand,
+        category: item.Category,
+        price: item.Price,
+        slug: item.Title.toLowerCase().split(" ").join("-"),
+        color: item.Color,
+        quantity: item.Quantity || 0,
+        sold: item.Sold || 0,
+        thumb: item.Thumb || "",
+        images: item.Images || [],
+      }));
+
+      const savedProducts = await Product.insertMany(productsToInsert);
+
+      res.status(200).json({
+        success: true,
+        message: "File uploaded and processed successfully!",
+        data: savedProducts,
+      });
+    } else {
+      res.status(400).json({ message: "File not found" });
+    }
+  } catch (error) {
+    console.error("Error processing file:", error);
+    res.status(500).json({
+      message: "Error processing the file.",
+      error: error.message,
+    });
+  }
+};
 
 const getproduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
@@ -271,4 +326,5 @@ module.exports = {
   ratings,
   uploadImagesProduct,
   createmanyproducts,
+  createproductswithexcel,
 };

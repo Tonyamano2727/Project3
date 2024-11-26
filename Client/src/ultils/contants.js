@@ -121,20 +121,23 @@ export const cleaningData = [
   {
     id: 1,
     imgSrc: houseicon,
-    title: "House Cleaning",
-    description: "Competently repurpose clean conveniently target",
+    title: "Services Cleaning",
+    description: "Home cleaning solutions for busy people",
+    path: `/${path.OUR_SERVICES}`,
   },
   {
     id: 2,
     imgSrc: houseicon2,
-    title: "Window Cleaning",
-    description: "Competently repurpose clean conveniently target",
+    title: "Home Cleaning Products",
+    description: "Optimize home cleaning time for housewives",
+    path: `/${path.PRODUCTS}`,
   },
   {
     id: 3,
     imgSrc: houseicon3,
-    title: "Office Cleaning",
-    description: "Competently repurpose clean conveniently target",
+    title: "Home cleaning blogs",
+    description: "Detailed instructions on how to clean your home",
+    path: `/${path.BLOGS}`,
   },
 ];
 export const navigation = [
@@ -153,18 +156,23 @@ export const navigation = [
     value: "Service",
     path: `/${path.OUR_SERVICES}`,
   },
+  // {
+  //   id: 4,
+  //   value: "Serviceplan",
+  //   path: `/${path.SERVICES__PLAN}`,
+  // },
   {
-    id: 4,
+    id: 5,
     value: "Our Team",
     path: `/${path.OUR_TEAM}`,
   },
   {
-    id: 5,
+    id: 6,
     value: "Blogs",
     path: `/${path.BLOGS}`,
   },
   {
-    id: 6,
+    id: 7,
     value: "Contact",
     path: `/${path.FAQ}`,
   },
@@ -177,10 +185,6 @@ export const Productinfortabs = [
   },
   {
     id: 2,
-    title: "WARRANTY",
-  },
-  {
-    id: 3,
     title: "CUSTOM REVIEW",
   },
 ];
@@ -433,6 +437,13 @@ export const AdminSidebar = [
   },
   {
     id: 9,
+    type: "SINGLE",
+    text: "Managecounsel",
+    path: `/${path.ADMIN}/${path.MANAGE_COUNSEL}`,
+    icon: <FaRegMoneyBillAlt />,
+  },
+  {
+    id: 10,
     type: "SINGLE",
     text: "Profile",
     path: `/${path.ADMIN}/${path.PROFILE_ADMIN}`,

@@ -111,24 +111,7 @@ const ProfileAdmin = () => {
             <img className="h-[100px] object-contain" src={iconprofile} />
           </div>
         </div>
-        <div className="flex flex-col justify-center items-start mt-5">
-          <p>Password</p>
-          <div className="flex gap-5 mt-5">
-            <button
-              className="cursor-pointer text-[13px] text-black font-semibold tracking-wide bg-[#eef0f3] px-6 py-2 rounded-3xl flex items-center gap-2"
-              onClick={toggleFormChangePassword}>
-              Change Password
-            </button>
-            {showFormChangePassword && (
-              <div className="absolute min-h-screen bg-box inset-0 bg-overplay z-50 flex">
-                <Fromchangepassword onClose={toggleFormChangePassword} />
-              </div>
-            )}
-            <button className="cursor-pointer text-[13px] text-black font-semibold tracking-wide bg-[#eef0f3] px-6 py-2 rounded-3xl flex items-center gap-2">
-              Forgot Password
-            </button>
-          </div>
-        </div>
+       
       </div>
     </div>
   );

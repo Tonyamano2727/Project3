@@ -38,3 +38,13 @@ export const apiRateProduct = ({ star, comment, pid }) =>
     method: "put",
     data: { star, comment, pid },
 });
+
+
+export const apiImportProductsFromExcel = (formData) =>
+  axios({
+    url: "/products/import-excel",
+    method: "post",
+    data: formData,
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+

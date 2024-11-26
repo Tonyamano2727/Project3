@@ -18,7 +18,7 @@ const createserviceplan = asyncHandler(async (req, res) => {
     if (thumb) req.body.thumb = thumb;
     if (images) req.body.images = images;
 
-    const newServiceData = {
+    const newServiceplanData = {
       title,
       description,
       thumb,
@@ -27,12 +27,12 @@ const createserviceplan = asyncHandler(async (req, res) => {
       images,
     };
 
-    const newService = await Serviceplan.create(newServiceplanData);
+    const newServicePlan = await Serviceplan.create(newServiceplanData);
 
     return res.status(200).json({
       success: true,
       mes: "Serviceplan added successfully",
-      service: newServiceplan,
+      service: newServicePlan,
     });
   } catch (error) {
     return res.status(500).json({

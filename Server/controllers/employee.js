@@ -26,7 +26,7 @@ const Registeremployee = asyncHandler(async (req, res) => {
     if (employee) {
       return res.status(400).json({
         success: false,
-        mes: "User already exists",
+        mes: "Employee already exists",
       });
     }
 
@@ -162,28 +162,68 @@ const getAllEmployees = asyncHandler(async (req, res) => {
 });
 
 const getAllEmployee = asyncHandler(async (req, res) => {
-  try {
-    const staff = await Employee.find();
+  let queries = { ...req.query };
 
-    if (staff.length > 0) {
-      return res.status(200).json({
-        success: true,
-        staff,
-      });
-    } else {
-      return res.status(404).json({
-        success: false,
-        mes: "No employees found",
-      });
-    }
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      mes: "Server error",
-      error: error.message,
-    });
+  // Tách các trường dặt biệt không phải là phần lọc
+  const excludeFields = ["limit", "sort", "page", "fields"];
+  excludeFields.forEach((el) => delete queries[el]);
+
+  // Format lại các operator cho đúng cú pháp mongoose (gte, lte, gt, lt)
+  let queryString = JSON.stringify(queries);
+  queryString = queryString.replace(
+    /\b(gte|gt|lt|lte)\b/g,
+    (matchedEl) => `$${matchedEl}`
+  );
+  const formatedQueries = JSON.parse(queryString);
+
+  // Lọc theo tên nếu có
+  if (queries?.name) {
+    formatedQueries.name = { $regex: queries.name, $options: "i" };
   }
+
+  // Nếu có query "q" (tìm kiếm chung), lọc theo nhiều trường
+  if (req.query.q) {
+    delete formatedQueries.q;
+    formatedQueries["$or"] = [
+      { name: { $regex: req.query.q, $options: "i" } },
+      { district: { $regex: req.query.q, $options: "i" } },
+      { job: { $regex: req.query.q, $options: "i" } },
+      { mobile: { $regex: req.query.q, $options: "i" } },
+    ];
+  }
+
+  let queryConmmand = Employee.find(formatedQueries);
+
+  // Sắp xếp nếu có tham số sort
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    queryConmmand = queryConmmand.sort(sortBy);
+  }
+
+  // Lấy trường cụ thể nếu có tham số fields
+  if (req.query.fields) {
+    const fields = req.query.fields.split(",").join(" ");
+    queryConmmand = queryConmmand.select(fields);
+  }
+
+  // Phân trang (pagination)
+  const page = +req.query.page || 1;
+  const limit = +req.query.limit || process.env.LIMIT_PRODUCTS;
+  const skip = (page - 1) * limit;
+  queryConmmand.skip(skip).limit(limit);
+
+  queryConmmand.exec(async (err, response) => {
+    if (err) throw new Error(err.message);
+    const counts = await Employee.find(formatedQueries).countDocuments();
+    return res.status(200).json({
+      success: response ? true : false,
+      counts,
+      staff: response ? response : "Cant not get staff",
+    });
+  });
 });
+
+
 
 module.exports = {
   Registeremployee,

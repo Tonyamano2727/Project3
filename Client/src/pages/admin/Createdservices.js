@@ -26,21 +26,19 @@ const Createdservices = () => {
     const fetchCategories = async () => {
       try {
         const response = await apigetallcategoryservice();
-        if (Array.isArray(response) && response.length > 0) {
-          setCategories(response);
-        } else {
-          console.log("Failed to fetch categories");
+        console.log("Fetched categories:", response); // Log the response
+        if (Array.isArray(response.categories) && response.categories.length > 0) {
+          setCategories(response.categories); // Set categories
         }
-      } catch (error) {
-        enqueueSnackbar("Đã xảy ra lỗi khi lấy danh mục.", {
-          variant: "error",
-        });
+      } catch (err) {
+        console.log("Error fetching categories: " + err.message);
+      } finally {
+        console.log(false);
       }
     };
-
+  
     fetchCategories();
   }, []);
-
   const handleThumbFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {

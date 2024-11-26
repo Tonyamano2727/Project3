@@ -20,7 +20,6 @@ const Home = () => {
         </div>
         <div className="flex flex-col gap-5 w-[100%] flex-auto ">
           <Cleaning/>
-          {/* <Dealdaily /> */}
         </div>
         <div className="mt-20">
           <Aboutus/>
@@ -31,19 +30,18 @@ const Home = () => {
         </div>
         <div className="flex flex-col gap-5 w-[100%] flex-auto ">
           <Stepwork/>
-          {/* <TabletandIpad /> */}
+      
         </div>
-        <div className="flex flex-col gap-5 w-[100%] flex-auto mt-20">
+        <div className="flex flex-col gap-5 w-[100%] flex-auto mt-5">
+       
+          <TabletandIpad />
+        </div>
+        <div className="flex flex-col gap-5 w-[100%] flex-auto mt-10">
           <Workgalary/>
-          {/* <TabletandIpad /> */}
+       
         </div>
       </div>
-      {/* <div className='my-8'>
-        <Featureproducts/>
-      </div> */}
-      {/* <div className='my-8'>
-        <Blog/>
-      </div> */}
+      
     </div>
   );
 };

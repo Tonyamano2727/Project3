@@ -46,6 +46,7 @@ export {default as Infomanage} from './Infomanage/Infomanage'
 export {default as Rightoverview} from './Rightoverview/Rightoverview'
 export {default as Fromupdateprofile} from './Fromupdateprofile/Fromupdateprofile'
 export {default as Fromchangepassword} from './Fromchangepassword/Fromchangepassword'
+export {default as Frombookingplan} from './Frombooking/Frombookingplan'
 
 
 

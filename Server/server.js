@@ -5,6 +5,7 @@ const initRoutes = require("./routes");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
+
 const app = express();
 app.use(
   cors({
@@ -12,11 +13,13 @@ app.use(
       process.env.CLIENT_URL,
       process.env.SUPERVISOR,
       process.env.CLIENT_MOBILE,
+      process.env.CONNECTION_MOBILE,
     ],
     methods: ["POST", "PUT", "GET", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
 app.use(cookieParser());
 const port = process.env.PORT || 8888;

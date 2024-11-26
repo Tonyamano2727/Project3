@@ -12,7 +12,7 @@ const { MdPhone, FaFacebook, FaTelegram, FaInstagram, IoIosArrowForward , AiOutl
   icons;
 const Footer = () => {
   return (
-    <div className="w-full flex items-center justify-center bg-[#00197D] flex-col relative z-0">
+    <div className="w-full flex items-center justify-center bg-[#00197D] flex-col relative z-0 mt-[150px]">
       <div className="absolute top-0 w-[90%]">
         <img className="w-full" src={backgroundfooter} />
       </div>

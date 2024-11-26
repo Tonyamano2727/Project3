@@ -28,8 +28,8 @@ const getSupervisors = asyncHandler(async (req, res) => {
   if (req.query.q) {
     delete formatedQueries.q;
     formatedQueries["$or"] = [
-      { firstname: { $regex: req.query.q, $options: "i" } },
-      { lastname: { $regex: req.query.q, $options: "i" } },
+      { district: { $regex: req.query.q, $options: "i" } },
+      { name: { $regex: req.query.q, $options: "i" } },
       { email: { $regex: req.query.q, $options: "i" } },
       { phone: { $regex: req.query.q, $options: "i" } },
     ];

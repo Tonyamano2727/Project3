@@ -12,16 +12,16 @@ const Categoryservice = () => {
   const [error, setError] = useState(null);
   const [newCategoryTitle, setNewCategoryTitle] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const inputRef = useRef(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await apigetallcategoryservice();
-        if (Array.isArray(response) && response.length > 0) {
-          setCategories(response);
-        } else {
-          setError("Failed to fetch categories");
+        console.log("Fetched categories:", response); // Log the response
+        if (Array.isArray(response.categories) && response.categories.length > 0) {
+          setCategories(response.categories); // Set categories
         }
       } catch (err) {
         setError("Error fetching categories: " + err.message);
@@ -29,29 +29,30 @@ const Categoryservice = () => {
         setLoading(false);
       }
     };
-
+  
     fetchCategories();
   }, []);
+  
 
+  // Handle delete category
   const handleDelete = async (id) => {
     try {
       const response = await apideletecategoryservice(id);
-      console.log("Delete API response:", response);
-
       if (response && response.message === "Category deleted successfully") {
         setCategories((prev) => prev.filter((category) => category._id !== id));
-        console.log("Category deleted successfully");
+        setSuccessMessage("Category deleted successfully");
       } else {
-        console.log("Delete failed: Unknown error");
+        setError("Delete failed: Unknown error");
       }
     } catch (error) {
-      console.log("Error deleting category:", error.message || "Unknown error");
+      setError("Error deleting category: " + error.message || "Unknown error");
     }
   };
 
+  // Handle create category
   const handleCreate = async () => {
     if (newCategoryTitle.trim() === "") {
-      console.log("Please enter a valid category title.");
+      setError("Please enter a valid category title.");
       return;
     }
 
@@ -59,20 +60,19 @@ const Categoryservice = () => {
       const response = await apicreatecategoryservice({
         title: newCategoryTitle,
       });
-      console.log("Create API response:", response);
-
       if (response && response._id) {
         setCategories((prev) => [...prev, response]);
         setNewCategoryTitle("");
         setShowCreateForm(false);
-        console.log("Category created successfully");
+        setSuccessMessage("Category created successfully");
       } else {
-        console.log("Create failed: Unknown error");
+        setError("Create failed: Unknown error");
       }
     } catch (error) {
-      console.log("Error creating category:", error.message || "Unknown error");
+      setError("Error creating category: " + error.message || "Unknown error");
     }
   };
+
   return (
     <div className="flex flex-col w-full items-center">
       <div className="flex w-[85%] justify-start items-start">
@@ -84,6 +84,11 @@ const Categoryservice = () => {
         </button>
       </div>
 
+      {/* Show success or error message */}
+      {successMessage && <div className="text-green-500">{successMessage}</div>}
+      {error && <div className="text-red-500">{error}</div>}
+
+      {/* Category creation form */}
       {showCreateForm && (
         <div className="w-[85%] mt-4">
           <input
@@ -108,8 +113,11 @@ const Categoryservice = () => {
         </div>
       )}
 
+      {/* Category list */}
       <div className="border rounded-2xl mt-4 p-5 bg-white z-1 w-[85%] flex flex-col items-center">
-        {categories.length > 0 ? (
+        {loading ? (
+          <p>Loading categories...</p>
+        ) : categories.length > 0 ? (
           <ul className="w-full ">
             {categories.map((category) => (
               <li key={category._id} className="flex justify-between p-2">
@@ -129,7 +137,7 @@ const Categoryservice = () => {
             ))}
           </ul>
         ) : (
-          <p>No categories</p>
+          <p>No categories available</p>
         )}
       </div>
     </div>

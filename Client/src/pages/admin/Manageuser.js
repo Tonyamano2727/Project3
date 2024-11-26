@@ -10,7 +10,7 @@ import { useSearchParams } from "react-router-dom";
 import { IoMdCreate } from "react-icons/io";
 
 const ManageUser = () => {
-  const { enqueueSnackbar } = useSnackbar(); // Initialize Notistack
+  const { enqueueSnackbar } = useSnackbar(); 
   const [invalidFields, setInvalidFields] = useState(null);
   const {
     handleSubmit,
