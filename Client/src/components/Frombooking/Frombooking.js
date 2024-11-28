@@ -28,6 +28,7 @@ const Frombooking = ({ handleCloseForm }) => {
 
   const [suggestions, setSuggestions] = useState([]);
 
+  
 
   // const googleMapsApiKey = "YOUR_GOOGLE_MAPS_API_KEY";
   const [formData, setFormData] = useState({
@@ -174,6 +175,33 @@ const handleSuggestionClick = (suggestion) => {
     }
   };
 
+  const getAvailableTimeSlots = () => {
+    if (!formData.date) return []; // Nếu chưa chọn ngày, không hiển thị time slot
+  
+    const selectedDate = new Date(formData.date); // Ngày được chọn
+    const currentDate = new Date(); // Ngày hiện tại
+  
+    // Nếu ngày được chọn là hôm nay, lọc các time slot dựa trên giờ hiện tại
+    if (selectedDate.toDateString() === currentDate.toDateString()) {
+      return timeSlots.filter((slot) => {
+        const [hours, minutes] = slot.value.split(":").map(Number); // Parse giờ và phút từ time slot
+        const slotTime = new Date(); // Tạo thời gian cho time slot
+        slotTime.setHours(hours, minutes, 0, 0);
+  
+        return slotTime > currentDate; // Chỉ lấy các time slot trong tương lai
+      });
+    }
+  
+    // Nếu ngày được chọn trong tương lai, hiển thị tất cả time slot
+    if (selectedDate > currentDate) {
+      return timeSlots;
+    }
+  
+    // Nếu ngày trong quá khứ, không hiển thị time slot
+    return [];
+  };
+  
+  
   const today = new Date().toISOString().split("T")[0];
   const maxDate = new Date();
   maxDate.setDate(maxDate.getDate() + 10);
@@ -326,24 +354,25 @@ const handleSuggestionClick = (suggestion) => {
           </div>
           {/* Thời gian */}
           <div className="w-[45%]">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Time
-            </label>
-            <select
-              name="timeSlot"
-              value={formData.timeSlot}
-              onChange={handleInputChange}
-              className="w-full p-2 border border-gray-300 rounded"
-              required
-            >
-              <option value="">-- Select time --</option>
-              {timeSlots.map((slot) => (
-                <option key={slot.value} value={slot.value}>
-                  {slot.label}
-                </option>
-              ))}
-            </select>
-          </div>
+  <label className="block text-gray-700 text-sm font-bold mb-2">
+    Time
+  </label>
+  <select
+    name="timeSlot"
+    value={formData.timeSlot}
+    onChange={handleInputChange}
+    className="w-full p-2 border border-gray-300 rounded"
+    required
+  >
+    <option value="">-- Select time --</option>
+    {getAvailableTimeSlots().map((slot) => (
+      <option key={slot.value} value={slot.value}>
+        {slot.label}
+      </option>
+    ))}
+  </select>
+</div>
+
           {/* Số lượng */}
           <div className="w-[90%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
