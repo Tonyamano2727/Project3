@@ -19,7 +19,7 @@ const Adminsidebar = () => {
   };
 
   return (
-    <div className=" py-4 border-r overflow-y-auto">
+    <div className=" py-4 border-r h-[700px]">
       <div className="p-3 leading-[40px]">
         <h1 className="text-gray-500 text-[15px] px-4">MENU</h1>
         {SuperSidebar.map((el) => (

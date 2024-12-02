@@ -26,9 +26,9 @@ const Createdservices = () => {
     const fetchCategories = async () => {
       try {
         const response = await apigetallcategoryservice();
-        console.log("Fetched categories:", response); // Log the response
+        console.log("Fetched categories:", response); 
         if (Array.isArray(response.categories) && response.categories.length > 0) {
-          setCategories(response.categories); // Set categories
+          setCategories(response.categories);
         }
       } catch (err) {
         console.log("Error fetching categories: " + err.message);

@@ -2,13 +2,20 @@ import React, { useEffect, useState } from "react";
 import payment from "../../assets/payment.svg";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
+import backgroundservice from "../../assets/backgroundservice.png";
 import { formatMoney } from "../../ultils/helper";
-import { Conguration, InputForm, Paypal } from "../../components";
+import { Conguration, InputForm, Paypal, Breadcrumb } from "../../components";
 import { useDispatch } from "react-redux";
 import { getCurrent } from "../../store/user/asyncAction";
+import {
+  fetchDistricts,
+  fetchWards,
+  fetchAddressSuggestions,
+} from "../../apis/mapApi";
 
-const Checkout = () => {
+const Checkout = ({ category }) => {
   const { currentCart, current } = useSelector((state) => state.user);
+  const [addressSuggestions, setAddressSuggestions] = useState([]);
   const dispatch = useDispatch();
   const [isSuccess, setIsSuccess] = useState(false);
   const {
@@ -26,20 +33,48 @@ const Checkout = () => {
     if (isSuccess) dispatch(getCurrent());
   }, [isSuccess]);
 
+  useEffect(() => {
+    const loadSuggestions = async () => {
+      if (address && address.length > 1) {
+        try {
+          const suggestions = await fetchAddressSuggestions(address);
+          setAddressSuggestions(suggestions || []);
+        } catch (error) {
+          console.error("Error fetching address suggestions:", error);
+        }
+      } else {
+        setAddressSuggestions([]);
+      }
+    };
+    loadSuggestions();
+  }, [address]);
+
   return (
-    <div className="flex justify-center">
-      <div className="max-auto p-8 w-full gap-6 flex ">
+    <div className="flex justify-center flex-col items-center">
+      <div className="flex justify-center w-full ">
+        <div className="w-full">
+          <img
+            className="relative"
+            src={backgroundservice}
+            alt="backgroundservice"
+          />
+        </div>
+        <div className="flex absolute flex-col text-white left-20 top-[200px] p-4">
+          <h2 className="text-[45px] mb-[8px] font-bold tracking-wide">
+            Check out
+          </h2>
+          <Breadcrumb category={category} />
+        </div>
+      </div>
+      <div className="max-auto p-8 w-main gap-6 flex justify-center bg-white mt-8 rounded-3xl">
         {isSuccess && <Conguration />}
-        <div className="w-[40%] flex  justify-center">
+        <div className="w-[40%] flex  justify-center items-center">
           <img
             src={payment}
             alt="payment"
             className="h-[70%] object-contain"></img>
         </div>
-        <div className="w-[60%] flex flex-col">
-          <h2 className="text-2xl font-bold text-center mb-10">
-            Checkout your order
-          </h2>
+        <div className="w-[80%] flex flex-col">
           <table className="table-auto w-full mb-10">
             <thead>
               <tr className="border bg-gray-200">
@@ -73,17 +108,32 @@ const Checkout = () => {
           </div>
           <div className="mt-9 mb-3">
             <InputForm
-              label="Your address : "
+              label="Your address :"
               register={register}
               errors={errors}
               id="address"
               validate={{
                 required: "Need fill this field",
               }}
-              style="flex-auto"
               placeholder="Please fill the address first"
               fullwith={true}
+              setValue={setValue}
             />
+            {addressSuggestions.length > 0 && (
+             <ul  className="absolute z-10 bg-white border border-gray-300 rounded w-[52%] mt-1">
+                {addressSuggestions.map((suggestion, index) => (
+                  <li
+                    key={index}
+                    className="p-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      setValue("address", suggestion.description);
+                      setAddressSuggestions([]);
+                    }}>
+                    {suggestion.description}{" "}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <div className="mb-9">
             <InputForm
@@ -113,7 +163,6 @@ const Checkout = () => {
                     ) / 23500
                   ),
                   address,
-                 
                 }}
                 setIsSuccess={setIsSuccess}
                 amount={Math.round(

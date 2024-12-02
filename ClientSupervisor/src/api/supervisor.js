@@ -20,12 +20,12 @@ export const apiGetbooking = (data) =>
     method: "get",
     data,
   });
-  export const apiGetbookingplan = (data) =>
-    axios({
-      url: "/bookingplan/getallbookingplan",
-      method: "get",
-      data,
-    });
+export const apiGetbookingplan = (data) =>
+  axios({
+    url: "/bookingplan/getallbookingplan",
+    method: "get",
+    data,
+  });
 
 export const apiupdatebooking = (data, bkid) =>
   axios({
@@ -53,9 +53,14 @@ export const apiGetAllSalaries = () =>
     method: "get",
   });
 
-export const apiCalculateSalary = (employeeId, data) =>
+  export const apiCalculateSalary = (employeeId, data) =>
+    axios({
+      url: `/salary/salary/${employeeId}`,
+      method: "post",
+      data,
+    });
+export const apiDeletedemployee = (employeeId) =>
   axios({
-    url: `/salary/salary/${employeeId}`,
-    method: "post",
-    data,
+    url: `/employee/deletedemployee/${employeeId}`,
+    method: "delete",
   });

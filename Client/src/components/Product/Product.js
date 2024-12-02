@@ -158,10 +158,10 @@ const Product = ({ productData, pid }) => {
           <img
             src={productData?.thumb || ""}
             alt=""
-            className="h-[303px] object-contain"
+            className="h-[203px] object-contain"
           />
         </div>
-        <div className="flex flex-col items-center gap-1 w-full leading-10">
+        <div className="flex flex-col items-center gap-1 w-full leading-8">
           <span className="line-clamp-1 font-semibold text-[20px] mt-4">
             {productData?.title}
           </span>
@@ -169,6 +169,12 @@ const Product = ({ productData, pid }) => {
             {renderStarFromNumber(productData?.totalRatings)}
           </span>
           <span>{`${formatMoney(productData?.price)} VNĐ `}</span>
+          {productData?.quantity === 0 && (
+            <span className="text-red-500 text-sm mt-2">Out of stock</span>
+          )}
+          {productData?.quantity >= 1 && (
+            <span className="text-red-500 text-sm mt-2">In stock</span>
+          )}
         </div>
       </div>
     </div>

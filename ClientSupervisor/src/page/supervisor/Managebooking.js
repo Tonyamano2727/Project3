@@ -105,6 +105,20 @@ const Managebooking = () => {
     e.preventDefault();
     if (!selectedBooking) return;
 
+    // Kiểm tra xem nhân viên đã được chọn chưa
+    if (!selectedBooking.employeeDetails || selectedBooking.employeeDetails.length === 0) {
+      setUpdateError("Please select an employee before updating.");
+      return;
+    }
+
+    // Kiểm tra xem có thể cập nhật booking thành "Completed" không (chưa đến ngày/giờ của khách hàng)
+    const currentDateTime = new Date();
+    const bookingDateTime = new Date(`${selectedBooking.date} ${selectedBooking.timeSlot}`);
+    if (selectedBooking.status === "Completed" && bookingDateTime > currentDateTime) {
+      setUpdateError("You cannot mark this booking as Completed before the scheduled date and time.");
+      return;
+    }
+
     try {
       const response = await apiupdatebooking(
         selectedBooking,
@@ -226,127 +240,84 @@ const Managebooking = () => {
                   <td className="p-2">{booking.customerName}</td>
                   <td className="p-2">{booking.category}</td>
                   <td className="p-2">{booking.email}</td>
-                  <td className="p-2">{booking.phoneNumber}</td>
-                  <td className="p-2">
-                    {booking.address}, {booking.district}, {booking.ward}
-                  </td>
-                  <td className="p-2">
-                    {new Date(booking.date).toLocaleDateString()}
-                  </td>
+                  <td className="p-2">{booking.phone}</td>
+                  <td className="p-2">{booking.address}</td>
+                  <td className="p-2">{booking.date}</td>
                   <td className="p-2">{booking.timeSlot}</td>
-                  <td className="p-2">
-                    {booking.employeeDetails.map((employee) => (
-                      <div key={employee.employeeId}>{employee.name}</div>
-                    ))}
-                  </td>
+                  <td className="p-2">{booking.employeeDetails?.map(e => e.name).join(", ")}</td>
                   <td className="p-2">{booking.status}</td>
-                  <td className="p-2">
-                    {booking.totalPrice.toLocaleString()} VND
-                  </td>
+                  <td className="p-2">{booking.totalPrice}</td>
                   <td className="p-2">
                     <button
-                      type="button"
-                      className="bg-blue-500 text-white p-1 rounded"
                       onClick={() => handleOpenModal(booking._id)}
+                      className="bg-blue-500 text-white p-2 rounded"
                     >
-                      Update
+                      Edit
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+
+          {/* Modal */}
+          <Dialog open={openModal} onClose={handleCloseModal}>
+            <DialogTitle>Edit Booking</DialogTitle>
+            <DialogContent>
+              {updateError && (
+                <div className="text-red-500 mb-2">{updateError}</div>
+              )}
+              <div className="mb-4">
+                <label className="block">Employee</label>
+                <select
+                  onChange={handleEmployeeChange}
+                  value={selectedBooking?.employeeDetails[0]?.employeeId || ""}
+                  className="border p-2 w-full"
+                >
+                  <option value="">Select Employee</option>
+                  {employees.map((employee) => (
+                    <option key={employee._id} value={employee._id}>
+                      {employee.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block">Quantity</label>
+                <input
+                  type="number"
+                  value={selectedBooking?.quantity || ""}
+                  onChange={handleQuantityChange}
+                  className="border p-2 w-full"
+                />
+              </div>
+              <div className="mb-4">
+                <button
+                  onClick={handleSubmitUpdate}
+                  className="bg-green-500 text-white p-2 rounded"
+                >
+                  Save
+                </button>
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseModal} color="primary">
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={3000}
+            onClose={handleSnackbarClose}
+          >
+            <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
         </>
       )}
-
-      <Dialog
-        open={openModal}
-        onClose={handleCloseModal}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>Update Booking</DialogTitle>
-        <DialogContent>
-          {updateError && (
-            <div className="text-red-500 mb-2">{updateError}</div>
-          )}
-          <div>
-            <label>Status</label>
-            <select
-              value={selectedBooking?.status || ""}
-              onChange={(e) =>
-                setSelectedBooking({
-                  ...selectedBooking,
-                  status: e.target.value,
-                })
-              }
-              className="border p-2 rounded w-full mb-2"
-            >
-              <option value="Pending">Pending</option>
-              <option value="Confirmed">Confirmed</option>
-              <option value="In-progress">In-progress</option>
-              <option value="Completed">Completed</option>
-              <option value="Canceled">Canceled</option>
-            </select>
-          </div>
-          <div>
-            <label>Employee</label>
-            <select
-              value={selectedBooking?.employeeDetails[0]?.employeeId || ""}
-              onChange={handleEmployeeChange}
-              className="border p-2 rounded w-full mb-2"
-            >
-              <option value="">Select Employee</option>
-              {employees.map((employee) => (
-                <option key={employee._id} value={employee._id}>
-                  {employee.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label>Price</label>
-            <div>{selectedBooking?.price || 0} VND</div>
-          </div>
-          <div>
-            <label>Quantity</label>
-            <input
-              type="number"
-              value={selectedBooking?.quantity || ""}
-              onChange={handleQuantityChange}
-              className="border p-2 rounded w-full mb-2"
-            />
-          </div>
-          <div>
-            <label>Total Price</label>
-            <input
-              type="number"
-              value={selectedBooking?.totalPrice || ""}
-              className="border p-2 rounded w-full mb-2"
-              disabled
-            />
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="error">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmitUpdate} color="primary">
-            Save Changes
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </div>
   );
 };

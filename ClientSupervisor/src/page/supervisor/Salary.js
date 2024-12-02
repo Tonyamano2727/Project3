@@ -1,18 +1,4 @@
 import React, { useState, useEffect } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-  Typography,
-} from "@mui/material";
 import { apiGetemployee, apiGetAllSalaries } from "../../api/supervisor";
 
 const Salary = () => {
@@ -29,13 +15,17 @@ const Salary = () => {
     const fetchEmployees = async () => {
       try {
         const response = await apiGetemployee();
-        if (response.success) {
+        if (response.success && response.staff) {
           setEmployees(response.staff);
+          console.log(response);
+        } else {
+          console.warn("Invalid employee data:", response);
         }
       } catch (error) {
         console.error("Error fetching employees:", error);
       }
     };
+
     fetchEmployees();
     fetchSalaries();
   }, []);
@@ -43,10 +33,13 @@ const Salary = () => {
   const fetchSalaries = async () => {
     try {
       const response = await apiGetAllSalaries();
-      if (response.success) {
+      console.log("Salaries API response:", response); // Log kết quả API
+      if (response.success && response.data) {
         const uniqueSalaries = removeDuplicateSalaries(response.data);
         setSalaries(uniqueSalaries);
         setFilteredSalaries(uniqueSalaries);
+      } else {
+        console.warn("Invalid salary data:", response);
       }
     } catch (error) {
       console.error("Error fetching salaries:", error);
@@ -57,10 +50,14 @@ const Salary = () => {
     const uniqueEntries = [];
     const uniqueKeys = new Set();
     salaryList.forEach((salary) => {
-      const key = `${salary.employee._id}-${salary.month}-${salary.year}`;
-      if (!uniqueKeys.has(key)) {
-        uniqueKeys.add(key);
-        uniqueEntries.push(salary);
+      if (salary.employee && salary.employee._id) {
+        const key = `${salary.employee._id}-${salary.month}-${salary.year}`;
+        if (!uniqueKeys.has(key)) {
+          uniqueKeys.add(key);
+          uniqueEntries.push(salary);
+        }
+      } else {
+        console.warn("Missing employee data:", salary);
       }
     });
     return uniqueEntries;
@@ -80,74 +77,75 @@ const Salary = () => {
   }, [filterMonth, filterYear, salaries]);
 
   return (
-    <div style={{ padding: "20px" }}>
-      <Typography variant="h4" gutterBottom>
-        Salary Management
-      </Typography>
+    <div className="p-6 bg-gray-100 w-full">
+      <div className="bg-white p-4 shadow-md rounded-lg mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Month</label>
+            <select
+              value={filterMonth}
+              onChange={(e) => setFilterMonth(e.target.value)}
+              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All</option>
+              {months.map((month) => (
+                <option key={month} value={month}>
+                  {month}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      <Paper style={{ padding: "20px", marginBottom: "20px" }}>
-        <Typography variant="h6" gutterBottom>
-          Salary Filter
-        </Typography>
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Month</InputLabel>
-          <Select
-            value={filterMonth}
-            onChange={(e) => setFilterMonth(e.target.value)}
-            label="Month"
-          >
-            <MenuItem value="">All</MenuItem>
-            {months.map((month) => (
-              <MenuItem key={month} value={month}>
-                {month}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+            <select
+              value={filterYear}
+              onChange={(e) => setFilterYear(e.target.value)}
+              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All</option>
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
 
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Year</InputLabel>
-          <Select
-            value={filterYear}
-            onChange={(e) => setFilterYear(e.target.value)}
-            label="Year"
-          >
-            <MenuItem value="">All</MenuItem>
-            {years.map((year) => (
-              <MenuItem key={year} value={year}>
-                {year}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Paper>
-
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Employee's Name</TableCell>
-              <TableCell>Month</TableCell>
-              <TableCell>Year</TableCell>
-              <TableCell>Base Salary</TableCell>
-              <TableCell>Commission</TableCell>
-              <TableCell>Total Salary</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+      <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <table className="table-auto w-full">
+          <thead className="bg-gray-200 text-gray-600 text-sm">
+            <tr>
+              <th className="px-4 py-2 text-left">Employee's Name</th>
+              <th className="px-4 py-2 text-left">Month</th>
+              <th className="px-4 py-2 text-left">Year</th>
+              <th className="px-4 py-2 text-left">Base Salary</th>
+              <th className="px-4 py-2 text-left">Commission</th>
+              <th className="px-4 py-2 text-left">Total Salary</th>
+            </tr>
+          </thead>
+          <tbody className="text-gray-700 text-sm">
             {filteredSalaries.map((salary) => (
-              <TableRow key={salary._id}>
-                <TableCell>{salary.employee?.name}</TableCell>
-                <TableCell>{salary.month}</TableCell>
-                <TableCell>{salary.year}</TableCell>
-                <TableCell>{salary.baseSalary.toLocaleString()} VND</TableCell>
-                <TableCell>{salary.commission.toLocaleString()} VND</TableCell>
-                <TableCell>{salary.totalSalary.toLocaleString()} VND</TableCell>
-              </TableRow>
+              <tr key={salary._id} className="border-b">
+                <td className="px-4 py-2">{salary.employee?.name || "Unknown"}</td>
+                <td className="px-4 py-2">{salary.month}</td>
+                <td className="px-4 py-2">{salary.year}</td>
+                <td className="px-4 py-2">
+                  {salary.baseSalary ? salary.baseSalary.toLocaleString() : "0"} VND
+                </td>
+                <td className="px-4 py-2">
+                  {salary.commission ? salary.commission.toLocaleString() : "0"} VND
+                </td>
+                <td className="px-4 py-2">
+                  {salary.totalSalary ? salary.totalSalary.toLocaleString() : "0"} VND
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

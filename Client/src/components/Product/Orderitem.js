@@ -62,13 +62,13 @@ const Orderitem = ({ el, defaultQuantity = 1, availableQuantity }) => {
   }, [quantity, dispatch, el, defaultQuantity]);
 
   return (
-    <div className="w-main flex border py-3">
+    <div className="w-main flex border py-3 bg-white">
       <span className="w-[50%] flex justify-center">
         <div className="flex w-full items-center justify-center gap-10">
           <img
             src={el.product.thumb}
             alt="thumb"
-            className="w-28 h-28 object-cover"
+            className="w-[100px] h-[100px] object-contain"
           />
           <div className="flex flex-col text-center">
             <div className="flex justify-between items-center w-full">

@@ -12,12 +12,12 @@ const SupervisorLayout = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       <div className="w-[20%]">
         <Sidebar />
       </div>
-      <div className="w-[80%] p-4">
-        <header className="flex justify-end mb-4">
+      <div className="w-[80%] p-4 bg-[#f3f4f6] items-center flex flex-col">
+        <header className="flex justify-end w-full">
           <button
             className="flex items-center gap-2 text-gray-700 hover:text-red-600"
             onClick={handleLogout}
