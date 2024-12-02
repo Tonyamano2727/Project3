@@ -111,11 +111,12 @@ const Manageservices = () => {
       <div className="w-full flex p-2 gap-10 flex-col justify-start">
         <Link
           to="/admin/create-services" // Thay đổi đường dẫn cho dịch vụ
-          className="p-2 bg-gradient-to-r from-[#e0a96a] to-[#e07c93] rounded-2xl w-[15%] text-[14px] text-white text-center">
+          className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl w-[15%] text-[14px] text-black text-center">
           + New Service
         </Link>
         <div className="flex gap-10">
           <Selectinput
+          className={'bg-gradient-to-r from-[#979db6] to-gray-300'}
             changeValue={(value) => {
               setSelectedCategory(value);
               if (!value) {
@@ -133,6 +134,7 @@ const Manageservices = () => {
             ]}
           />
           <Selectinput
+          className={'bg-gradient-to-r from-[#979db6] to-gray-300'}
             changeValue={changeValue}
             value={sort}
             options={sortByDate} // Sử dụng cùng một constant cho sorting

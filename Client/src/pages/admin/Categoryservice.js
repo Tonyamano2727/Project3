@@ -78,7 +78,7 @@ const Categoryservice = () => {
       <div className="flex w-[85%] justify-start items-start">
         <button
           onClick={() => setShowCreateForm((prev) => !prev)}
-          className="p-2 bg-gradient-to-r from-[#e0a96a] to-[#e07c93] rounded-2xl w-[15%] text-[14px] text-white text-center"
+          className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl w-[15%] text-[14px] text-black text-center"
         >
           + New Category
         </button>

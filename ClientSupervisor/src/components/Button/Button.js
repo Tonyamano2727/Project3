@@ -23,3 +23,4 @@ const Button = ({children, handleOnclick, style, fw ,name , type = 'button'}) =>
 };
 
 export default Button;
+
