@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 
-import { SuperSidebar } from "../../ultils/contant"; // Đổi sang SuperSidebar
+import { SuperSidebar } from "../../ultils/contant";
 import { NavLink, Link } from "react-router-dom";
 import clsx from "clsx";
 
@@ -34,7 +34,8 @@ const Adminsidebar = () => {
             {el.type === "PARENT" && (
               <div
                 onClick={() => handleShowTab(el.id)}
-                className="flex flex-col mt-3">
+                className="flex flex-col mt-3"
+              >
                 <div className="hover:bg-[#ebebeb] transition duration-200 ease-in cursor-pointer flex items-center justify-between rounded-2xl px-4 text-[15px] text-gray-600 font-medium">
                   <div className="flex items-center gap-2">
                     <span>{el.text}</span>
@@ -52,7 +53,8 @@ const Adminsidebar = () => {
                             isActive && activedStyle,
                             !isActive && notactivedStyle
                           )
-                        }>
+                        }
+                      >
                         {item.text}
                       </NavLink>
                     ))}
