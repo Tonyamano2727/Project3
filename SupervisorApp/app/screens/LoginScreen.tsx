@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/types';
+import { apiLogin, setAuthToken } from '../config/apiService';
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -13,17 +14,16 @@ const LoginScreen = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
 
   const handleLogin = async () => {
-    const endpoint = 'http://192.168.2.243:5000/api/supervisor/login';
 
     try {
-      const response = await axios.post(endpoint, { email, password });
+      const response = await apiLogin(email, password);
       console.log('Login response:', response.data);
 
       if (response.data.success) {
         console.log('Navigating to HomePage...');
         if (response.data.supervisor.role === "1969") { 
           const { accessToken } = response.data;
-          axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+          setAuthToken(accessToken); 
           navigation.navigate('HomePage');
           console.log('Navigation complete.');
         } else {
