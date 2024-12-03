@@ -101,7 +101,7 @@ const Manageemployee = () => {
   }, []);
 
   return (
-    <div className="w-full flex justify-center items-center flex-col p-6 border rounded-3xl bg-white">
+    <div className="w-full flex justify-center items-center flex-col p-6 border rounded-3xl bg-white mt-8">
       <table className="w-full rounded-3xl leading-10 ">
         <thead>
           <tr className="text-[13px] ">
@@ -117,7 +117,7 @@ const Manageemployee = () => {
         <tbody className="text-center">
           {staff.map((employee) => (
             <tr key={employee._id} className="text-[11px]">
-              <td className="p-2 flex items-center">
+              <td className="p-2 flex items-center justify-center">
                 <img
                   className="h-[50px] w-[50px] object-cover rounded-full"
                   src={employee.avatar}

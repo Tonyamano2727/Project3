@@ -25,7 +25,7 @@ const Adminsidebar = () => {
         {SuperSidebar.map((el) => (
           <Fragment key={el.id}>
             {el.type === "SINGLE" && (
-              <NavLink to={el.path} className="px-4 mt-3">
+              <NavLink to={el.path} className="px-4 mt-3 flex  flex-col">
                 <span className="text-[15px] text-gray-600 font-semibold">
                   {el.text}
                 </span>

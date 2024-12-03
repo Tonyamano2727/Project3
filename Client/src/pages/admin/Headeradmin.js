@@ -10,7 +10,7 @@ const Headeradmin = () => {
     ? moment(current.createdAt).format("DD/MM/YYYY")
     : "N/A";
   return (
-    <div className="flex justify-between items-center  mt-4 mb-4 w-[85%]">
+    <div className="flex justify-between items-center  mt-4 mb-4 w-[95%]">
       <div className="flex items-center w-[30%]">
         <h1 className="text-[24px] font-semibold tracking-tight textnameadmin">
           {current?.firstname} {current?.lastname} !

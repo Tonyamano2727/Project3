@@ -158,7 +158,7 @@ const ManageProducts = () => {
   };
 
   return (
-    <div className="w-[85%] flex flex-col gap-4 relative h-[1400px]">
+    <div className="w-[95%] flex flex-col gap-4 relative h-[1000px]">
       {editProduct && (
         <Updateproducts
           editproduct={editProduct}
@@ -168,7 +168,7 @@ const ManageProducts = () => {
       )}
       <div className="w-full flex p-2 items-center flex-col">
         <div className="w-full flex justify-between mb-5">
-          <Link className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl text-[13px]  px-4">
+          <Link className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-full text-[13px]  px-4 w-[25%]">
             + New Products
           </Link>
           
@@ -181,13 +181,13 @@ const ManageProducts = () => {
           />
           <button
             onClick={handleExportToExcel}
-            className="p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl text-[14px]  px-4">
+            className="cursor-pointer p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-full text-[14px]  px-4 w-[25%] text-left">
             Export to Excel
           </button>
           <label
             htmlFor="importExcel"
-            className="cursor-pointer p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-2xl text-[14px]  px-4">
-            Import từ Excel
+            className="cursor-pointer p-2 bg-gradient-to-r from-[#979db6] to-gray-300 rounded-full text-[14px]  px-4 w-[25%]">
+            Import to Excel
           </label>
         </div>
         <div className="w-full flex justify-between">
@@ -253,7 +253,7 @@ const ManageProducts = () => {
           </thead>
           <tbody className="text-center">
             {products?.map((el, idx) => (
-              <tr className="text-[13px]" key={el._id}>
+              <tr className="text-[11px]" key={el._id}>
                 <td>{idx + 1}</td>
                 <td className="flex justify-center items-center flex-col">
                   <img

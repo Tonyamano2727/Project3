@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { apiCreateProduct, apiGetCategories } from "../../apis";
 import { Button } from "../../components";
+import { useSnackbar } from "notistack";
 
-const CreateProducts = () => {
+const CreateProducts = (render) => {
+  const { enqueueSnackbar } = useSnackbar();
   const [products, setProducts] = useState([
     {
       title: "",
@@ -136,14 +138,17 @@ const CreateProducts = () => {
 
     try {
       const response = await apiCreateProduct(formData);
-      console.log(response.data);
+      enqueueSnackbar("Product created successfully!", { variant: "success" });
     } catch (error) {
-      console.error("Error creating products:", error.response.data);
+      enqueueSnackbar(
+        error.response?.data?.message || "Failed to create product(s).",
+        { variant: "error" }
+      );
     }
   };
 
   return (
-    <div className="w-[85%] border bg-white rounded-2xl p-5 flex flex-col items-center">
+    <div className="w-[95%] border bg-white rounded-2xl p-5 flex flex-col items-center">
       <h1 className="font-bold text-2xl mb-5">Create Products</h1>
       <form onSubmit={handleSubmit} className="w-full space-y-6">
         {products.map((product, index) => (

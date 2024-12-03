@@ -16,8 +16,8 @@ const ManageOrder = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [sort, setSort] = useState("");
   const [totalAmount, setTotalAmount] = useState(0);
-  const [isEditing, setIsEditing] = useState(null); // State to track which order is being edited
-  const [tempStatus, setTempStatus] = useState(""); // State to hold the temporary status
+  const [isEditing, setIsEditing] = useState(null); 
+  const [tempStatus, setTempStatus] = useState("");
 
   const {
     register,
@@ -95,18 +95,18 @@ const ManageOrder = () => {
     }
   };
 
-  // Change value function for status and sorting
+
   const changeValue = useCallback((value, type) => {
     if (type === "status") {
-      setSelectedStatus(value); // Update selected status
-      setTempStatus(""); // Reset temp status when changing status
+      setSelectedStatus(value);
+      setTempStatus(""); 
     } else if (type === "sortByDate") {
       setSort(value);
     }
   }, []);
 
   return (
-    <div className="flex w-[85%] flex-col">
+    <div className="flex w-[90%] flex-col">
       <div className="flex w-full justify-end items-center">
         <form className="w-[100%] justify-end">
           <InputForm
@@ -122,11 +122,13 @@ const ManageOrder = () => {
 
       <div className="w-full flex justify-end items-center mb-4 gap-5 mt-3">
         <Selectinput
+        className={'bg-gradient-to-r from-[#979db6] to-gray-300'}
           options={statusOptions}
           changeValue={(value) => changeValue(value, "status")}
           value={selectedStatus}
         />
         <Selectinput
+         className={'bg-gradient-to-r from-[#979db6] to-gray-300'}
           options={sortByDate}
           changeValue={(value) => changeValue(value, "sortByDate")}
           value={sort}
@@ -146,7 +148,7 @@ const ManageOrder = () => {
               <th className="">Actions</th> {/* Thêm cột cho Actions */}
             </tr>
           </thead>
-          <tbody className="text-[13px]">
+          <tbody className="text-[11px]">
             {Order.map((el, idx) => (
               <tr key={el._id}>
                 <td className="text-center">{idx + 1}</td>

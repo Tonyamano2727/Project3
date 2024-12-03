@@ -93,16 +93,14 @@ const Updateproducts = ({ editproduct, render, seteditproduct }) => {
         data.category = categories.find((el) => el.title === data.category)?.title;
   
       const finalPayload = { ...data, ...payload };
-      
-      // Log dữ liệu để kiểm tra trước khi gửi
-      console.log('Final Payload:', finalPayload);
+    
   
       const formData = new FormData();
       for (let [key, value] of Object.entries(finalPayload)) {
         formData.append(key, value);
       }
   
-      // Kiểm tra và log trước khi gửi ảnh thumbnail
+   
       if (watch("thumb")?.[0]) {
         console.log('Appending thumb:', watch("thumb")[0]);
         formData.append("thumb", watch("thumb")[0]);
@@ -111,23 +109,23 @@ const Updateproducts = ({ editproduct, render, seteditproduct }) => {
         formData.append("thumb", preview.thumb);
       }
   
-      // Kiểm tra và log trước khi gửi ảnh khác
+      
       if (watch("images")?.length > 0) {
         for (let file of watch("images")) {
-          console.log('Appending image:', file);
+         
           formData.append("images", file);
         }
       } else {
         preview.images.forEach((image, index) => {
-          console.log('Using previous image:', image);
+        
           formData.append("images", image);
         });
       }
   
       try {
-        // Gọi API để cập nhật sản phẩm
+        
         const response = await apiUpdateproduct(formData, editproduct._id);
-        console.log('API Response:', response);
+        
   
         if (response.success) {
           enqueueSnackbar("Product updated successfully!", { variant: "success" });
@@ -159,11 +157,10 @@ const Updateproducts = ({ editproduct, render, seteditproduct }) => {
   };
 
   return (
-    <div className="w-full flex flex-col gap-4 text-start absolute z-50 bg-white p-10">
-      <div className="p-4 border-b w-full flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight ">Update products</h1>
+    <div className="w-full flex flex-col gap-4 text-start absolute z-50 bg-white p-10 rounded-3xl">
+      <div className="w-full flex justify-between items-center">
         <span
-          className="cursor-pointer text-main"
+          className="cursor-pointer text-main flex justify-end text-end w-full"
           onClick={() => seteditproduct(null)}>
           Cancel
         </span>
@@ -257,7 +254,7 @@ const Updateproducts = ({ editproduct, render, seteditproduct }) => {
             <div className="flex flex-col w-[40%] text-center mt-10 items-center">
               <label
                   htmlFor="thumb"
-                  className="mt-2 inline-block text-center bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:opacity-90 transition-opacity">
+                  className="border  rounded-3xl px-4 py-2 cursor-pointer text-center mb-2 sm:mb-0">
                   Upload thumb
                 </label>
               <input
@@ -286,7 +283,7 @@ const Updateproducts = ({ editproduct, render, seteditproduct }) => {
               <div className="flex items-center mt-2 flex-col text-center w-full">
                 <label
                   htmlFor="images"
-                  className="mt-2 inline-block text-center bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer hover:opacity-90 transition-opacity">
+                  className="border  rounded-3xl px-4 py-2 cursor-pointer text-center mb-2 sm:mb-0">
                   Upload Images
                 </label>
                 <input

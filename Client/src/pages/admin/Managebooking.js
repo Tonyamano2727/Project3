@@ -72,7 +72,7 @@ const ManageBooking = () => {
   }, [params, queriesDebounce, selectedStatus, selectedSortByDate]);
 
   return (
-    <div className="w-[90%]">
+    <div className="w-[98%] ">
       <div className="flex w-full mb-4 flex-col">
         <Inputfields
           style={"inputsearcadmin"}
@@ -85,13 +85,13 @@ const ManageBooking = () => {
         />
         <div className="flex gap-5">
           <Selectinput
-          className={'bg-gradient-to-r from-[#979db6] to-gray-300'}
+            className={"bg-gradient-to-r from-[#979db6] to-gray-300"}
             options={statusOptionsBooking}
             changeValue={setSelectedStatus}
             value={selectedStatus}
           />
           <Selectinput
-           className={'bg-gradient-to-r from-[#979db6] to-gray-300'}
+            className={"bg-gradient-to-r from-[#979db6] to-gray-300"}
             options={[...new Set(categories)].map((category) => ({
               value: category,
               text: category,
@@ -100,7 +100,7 @@ const ManageBooking = () => {
             value={selectedCategory}
           />
           <Selectinput
-           className={'bg-gradient-to-r from-[#979db6] to-gray-300'}
+            className={"bg-gradient-to-r from-[#979db6] to-gray-300"}
             options={sortByDate}
             changeValue={setSelectedSortByDate}
             value={selectedSortByDate}
@@ -123,35 +123,31 @@ const ManageBooking = () => {
             </tr>
           </thead>
           <tbody className="text-center">
-            {(selectedCategory ? filteredBookings : bookings).map(
-              (
-                booking // Use filtered bookings if a category is selected
-              ) => (
-                <tr key={booking._id} className="text-[11px]">
-                  <td>{booking.customerName}</td>
-                  <td>{booking.category}</td>
-                  <td>{booking.email}</td>
-                  <td>{booking.phoneNumber}</td>
-                  <td>
-                    {booking.address}
-                  </td>
-                  <td>{booking.date}</td>
-                  <td>{booking.timeSlot}</td>
-                  <td>{booking.status}</td>
-                  <td>{booking.totalPrice.toLocaleString()} VND</td>
-                </tr>
-              )
-            )}
+            {(selectedCategory ? filteredBookings : bookings).map((booking) => (
+              <tr key={booking._id} className="text-[10px] border-b">
+                <td>{booking.customerName}</td>
+                <td>{booking.category}</td>
+                <td>{booking.email}</td>
+                <td>{booking.phoneNumber}</td>
+                <td>{booking.address}</td>
+                <td>{booking.date}</td>
+                <td>{booking.timeSlot}</td>
+                <td>{booking.status}</td>
+                <td>{booking.totalPrice.toLocaleString()} VND</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </form>
-      <div className="mt-4 justify-end flex">
-        <h2 className="text-lg font-bold">
-          Total : {totalPrice.toLocaleString()} VND
-        </h2>
-      </div>
-      <div className="w-full flex justify-end mt-5">
-        <Pagination totalCount={counts} />
+      <div className="flex justify-between">
+        <div className="mt-4 justify-end flex text-center w-[20%]">
+          <h2 className="text-lg font-bold">
+            Total : {totalPrice.toLocaleString()} VND
+          </h2>
+        </div>
+        <div className="w-full flex justify-end mt-5">
+          <Pagination totalCount={counts} />
+        </div>
       </div>
     </div>
   );

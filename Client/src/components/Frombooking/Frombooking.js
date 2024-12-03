@@ -293,7 +293,7 @@ const Frombooking = ({ handleCloseForm }) => {
               </ul>
             )}
           </div>
-          {/* District */}
+      
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               District
@@ -310,7 +310,7 @@ const Frombooking = ({ handleCloseForm }) => {
               ))}
             </select>
           </div>
-          {/* Ward */}
+  
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Ward/Commune
@@ -329,7 +329,7 @@ const Frombooking = ({ handleCloseForm }) => {
               ))}
             </select>
           </div>
-          {/* Ngày */}
+      
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Date
@@ -345,7 +345,7 @@ const Frombooking = ({ handleCloseForm }) => {
               max={formattedMaxDate}
             />
           </div>
-          {/* Thời gian */}
+ 
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Time
@@ -364,7 +364,7 @@ const Frombooking = ({ handleCloseForm }) => {
               ))}
             </select>
           </div>
-          {/* Số lượng */}
+
           <div className="w-[90%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Quantity
@@ -379,7 +379,7 @@ const Frombooking = ({ handleCloseForm }) => {
               required
             />
           </div>
-          {/* Ghi chú */}
+         
           <div className="w-[90%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Note
@@ -391,7 +391,7 @@ const Frombooking = ({ handleCloseForm }) => {
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
-          {/* Tổng giá */}
+        
           <div className="w-[90%] flex items-center justify-between">
             <h3>Total price:</h3>
             <span>{`${formatMoney(totalPrice)} VNĐ`}</span>
@@ -399,7 +399,6 @@ const Frombooking = ({ handleCloseForm }) => {
           {notification && (
             <div className="text-[13px] text-right w-[90%]">{notification}</div>
           )}
-          {/* Nút submit */}
           <button
             type="submit"
             className="bg-[#FFC704] p-3 rounded w-[90%] font-medium mt-2">

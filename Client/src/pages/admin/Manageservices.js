@@ -72,15 +72,15 @@ const Manageservices = () => {
     });
 
     if (result.isConfirmed) {
-      const response = await apiDeleteService(sid); // Gọi API xóa dịch vụ
+      const response = await apiDeleteService(sid); 
       if (response.success) {
-        // Kiểm tra xem message có phải là chuỗi không
+     
         const message =
           typeof response.message === "string"
             ? response.message
             : "Service deleted successfully";
         enqueueSnackbar(message, { variant: "success" });
-        fetchServices(Object.fromEntries([...params])); // Gọi lại hàm fetchServices sau khi xóa
+        fetchServices(Object.fromEntries([...params])); 
       } else {
         const errorMessage =
           typeof response.message === "string"
@@ -100,7 +100,7 @@ const Manageservices = () => {
   }, [update]);
 
   return (
-    <div className="w-[90%] flex flex-col gap-4 relative h-[1060px]">
+    <div className="w-[95%] flex flex-col gap-4 relative h-[800px]">
       {editService && (
         <Updateservices
           editService={editService}
@@ -159,9 +159,8 @@ const Manageservices = () => {
               <th>STT</th>
               <th>Title</th>
               <th>Category</th>
-              <th>Price</th> {/* Thay đổi tiêu đề cho dịch vụ */}
+              <th>Price</th>
               <th>Created At</th>
-              <th>Author</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -175,9 +174,9 @@ const Manageservices = () => {
                   <span className="font-medium">{service.title}</span>
                 </td>
                 <td>{service.category}</td>
-                <td>{service.price}</td> {/* Hiển thị giá dịch vụ */}
+                <td>{service.price.toLocaleString()} VND</td>
+                
                 <td>{new Date(service.createdAt).toLocaleDateString()}</td>
-                <td>{service.author || "Unknown"}</td>
                 <td>
                   <div className="flex items-center justify-center">
                     <span

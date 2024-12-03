@@ -5,17 +5,7 @@ import {
   apigetdetailbooking,
   apiGetemployee,
 } from "../../api/supervisor";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
-
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import { FaEdit } from "react-icons/fa";
 
 const Managebooking = () => {
   const [bookings, setBookings] = useState([]);
@@ -106,16 +96,25 @@ const Managebooking = () => {
     if (!selectedBooking) return;
 
     // Kiểm tra xem nhân viên đã được chọn chưa
-    if (!selectedBooking.employeeDetails || selectedBooking.employeeDetails.length === 0) {
+    if (
+      !selectedBooking.employeeDetails ||
+      selectedBooking.employeeDetails.length === 0
+    ) {
       setUpdateError("Please select an employee before updating.");
       return;
     }
 
-    // Kiểm tra xem có thể cập nhật booking thành "Completed" không (chưa đến ngày/giờ của khách hàng)
     const currentDateTime = new Date();
-    const bookingDateTime = new Date(`${selectedBooking.date} ${selectedBooking.timeSlot}`);
-    if (selectedBooking.status === "Completed" && bookingDateTime > currentDateTime) {
-      setUpdateError("You cannot mark this booking as Completed before the scheduled date and time.");
+    const bookingDateTime = new Date(
+      `${selectedBooking.date} ${selectedBooking.timeSlot}`
+    );
+    if (
+      selectedBooking.status === "Completed" &&
+      bookingDateTime > currentDateTime
+    ) {
+      setUpdateError(
+        "You cannot mark this booking as Completed before the scheduled date and time."
+      );
       return;
     }
 
@@ -196,127 +195,134 @@ const Managebooking = () => {
   };
 
   return (
-    <div className="w-full flex justify-center items-center flex-col bg-gray-100 p-6">
-      <h1 className="text-2xl font-bold mb-6">Manage Bookings</h1>
-      {loading ? (
-        <div className="text-lg">Loading...</div>
-      ) : error ? (
-        <div className="text-red-500">{error}</div>
-      ) : (
-        <>
-          <div className="mb-4">
-            <select
-              value={filterStatus}
-              onChange={(e) => handleFilterChange(e.target.value)}
-              className="border p-2 rounded"
-            >
-              <option value="">All Status</option>
-              <option value="Pending">Pending</option>
-              <option value="Confirmed">Confirmed</option>
-              <option value="In-progress">In-progress</option>
-              <option value="Completed">Completed</option>
-              <option value="Canceled">Canceled</option>
-            </select>
-          </div>
-          <table className="w-full rounded-3xl overflow-hidden leading-10">
-            <thead>
-              <tr className="text-[13px] bg-gray-200">
-                <th className="p-2">Customer Name</th>
-                <th className="p-2">Service</th>
-                <th className="p-2">Email</th>
-                <th className="p-2">Phone</th>
-                <th className="p-2">Address</th>
-                <th className="p-2">Date</th>
-                <th className="p-2">Time Slot</th>
-                <th className="p-2">Employee</th>
-                <th className="p-2">Status</th>
-                <th className="p-2">Total Price</th>
-                <th className="p-2">Action</th>
-              </tr>
-            </thead>
-            <tbody className="text-center">
-              {filteredBookings.map((booking) => (
-                <tr key={booking._id} className="text-[11px] border-b">
-                  <td className="p-2">{booking.customerName}</td>
-                  <td className="p-2">{booking.category}</td>
-                  <td className="p-2">{booking.email}</td>
-                  <td className="p-2">{booking.phone}</td>
-                  <td className="p-2">{booking.address}</td>
-                  <td className="p-2">{booking.date}</td>
-                  <td className="p-2">{booking.timeSlot}</td>
-                  <td className="p-2">{booking.employeeDetails?.map(e => e.name).join(", ")}</td>
-                  <td className="p-2">{booking.status}</td>
-                  <td className="p-2">{booking.totalPrice}</td>
-                  <td className="p-2">
-                    <button
-                      onClick={() => handleOpenModal(booking._id)}
-                      className="bg-blue-500 text-white p-2 rounded"
-                    >
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {/* Modal */}
-          <Dialog open={openModal} onClose={handleCloseModal}>
-            <DialogTitle>Edit Booking</DialogTitle>
-            <DialogContent>
-              {updateError && (
-                <div className="text-red-500 mb-2">{updateError}</div>
-              )}
-              <div className="mb-4">
-                <label className="block">Employee</label>
-                <select
-                  onChange={handleEmployeeChange}
-                  value={selectedBooking?.employeeDetails[0]?.employeeId || ""}
-                  className="border p-2 w-full"
-                >
-                  <option value="">Select Employee</option>
-                  {employees.map((employee) => (
-                    <option key={employee._id} value={employee._id}>
-                      {employee.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
-                <label className="block">Quantity</label>
-                <input
-                  type="number"
-                  value={selectedBooking?.quantity || ""}
-                  onChange={handleQuantityChange}
-                  className="border p-2 w-full"
-                />
-              </div>
-              <div className="mb-4">
+    <div className="w-full flex justify-center items-center flex-col bg-gray-100 mt-8">
+      <div className="w-full mb-8">
+        <select
+          value={filterStatus}
+          onChange={(e) => handleFilterChange(e.target.value)}
+          className="bg-gradient-to-r from-[#979db6] to-gray-300 p-2 rounded-full  w-full text-[14px]  px-4">
+          <option value="">All Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="In-progress">In-progress</option>
+          <option value="Completed">Completed</option>
+          <option value="Canceled">Canceled</option>
+        </select>
+      </div>
+      <table className=" border bg-white rounded-3xl overflow-hidden w-full leading-10">
+        <thead>
+          <tr className="text-[13px] text-center">
+            <th>Name</th>
+            <th>Service</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Date</th>
+            <th>Time Slot</th>
+            <th>Employee</th>
+            <th>Status</th>
+            <th>Total Price</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody className="text-center">
+          {filteredBookings.map((booking) => (
+            <tr key={booking._id} className="text-[10px] border-b">
+              <td className="p-2">{booking.customerName}</td>
+              <td className="p-2">{booking.category}</td>
+              <td className="p-2">{booking.email}</td>
+              <td className="p-2">{booking.phoneNumber}</td>
+              <td className="p-2">{booking.address}</td>
+              <td className="p-2">{booking.date}</td>
+              <td className="p-2">{booking.timeSlot}</td>
+              <td className="p-2">
+                {booking.employeeDetails?.map((e) => e.name).join(", ")}
+              </td>
+              <td className="p-2">{booking.status}</td>
+              <td className="p-2">{booking.totalPrice}</td>
+              <td className="p-2">
                 <button
-                  onClick={handleSubmitUpdate}
-                  className="bg-green-500 text-white p-2 rounded"
-                >
-                  Save
+                  onClick={() => handleOpenModal(booking._id)}
+                 >
+                   <FaEdit />
                 </button>
-              </div>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseModal} color="primary">
-                Cancel
-              </Button>
-            </DialogActions>
-          </Dialog>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-          <Snackbar
-            open={snackbarOpen}
-            autoHideDuration={3000}
-            onClose={handleSnackbarClose}
-          >
-            <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
-              {snackbarMessage}
-            </Alert>
-          </Snackbar>
-        </>
+      {openModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6">
+            <h2 className="text-xl font-semibold mb-4">Edit Booking</h2>
+            {updateError && (
+              <div className="text-red-500 mb-2">{updateError}</div>
+            )}
+
+            {/* Select Employee */}
+            <div className="mb-4">
+              <label className="block font-medium mb-1">Employee</label>
+              <select
+                onChange={handleEmployeeChange}
+                value={selectedBooking?.employeeDetails[0]?.employeeId || ""}
+                className="border border-gray-300 p-2 rounded w-full">
+                <option value="">Select Employee</option>
+                {employees.map((employee) => (
+                  <option key={employee._id} value={employee._id}>
+                    {employee.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Input Quantity */}
+            <div className="mb-4">
+              <label className="block font-medium mb-1">Quantity</label>
+              <input
+                type="number"
+                value={selectedBooking?.quantity || ""}
+                onChange={handleQuantityChange}
+                className="border border-gray-300 p-2 rounded w-full"
+              />
+            </div>
+
+            {/* Select Status */}
+            <div className="mb-4">
+              <label className="block font-medium mb-1">Status</label>
+              <select
+                value={selectedBooking?.status || ""}
+                onChange={(e) =>
+                  setSelectedBooking((prev) => ({
+                    ...prev,
+                    status: e.target.value,
+                  }))
+                }
+                className="border border-gray-300 p-2 rounded w-full">
+                <option value="">Select Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="In-progress">In-progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Canceled">Canceled</option>
+              </select>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={handleCloseModal}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmitUpdate}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

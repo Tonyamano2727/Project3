@@ -100,7 +100,7 @@ const Createdservices = () => {
   };
 
   return (
-    <div className="w-[85%] bg-white rounded-2xl">
+    <div className="w-[95%] bg-white rounded-2xl">
       <div className="p-10">
         <form onSubmit={handleSubmit(handleCreateService)}>
           <InputForm
@@ -161,11 +161,11 @@ const Createdservices = () => {
             setisfousdescription={setIsFocusDescription}
           />
 
-          <div className="flex items-center justify-around mb-5">
+          <div className="flex items-center justify-around mb-5 mt-5">
             <div className="flex flex-col justify-center items-center">
               <label
                 htmlFor="thumbImage"
-                className="mt-2 bg-white px-4 py-2 rounded-lg cursor-pointer">
+                className="border  rounded-3xl px-4 py-2 cursor-pointer text-center mb-2 sm:mb-0">
                 Thumb Image
               </label>
               <input
@@ -194,7 +194,7 @@ const Createdservices = () => {
             <div className="flex flex-col justify-center items-center">
               <label
                 htmlFor="otherImages"
-                className="mt-2 bg-white px-4 py-2 rounded-lg cursor-pointer">
+                className="border  rounded-3xl px-4 py-2 cursor-pointer text-center mb-2 sm:mb-0">
                 Other Images
               </label>
               <input

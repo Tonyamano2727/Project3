@@ -78,68 +78,72 @@ const Salary = () => {
 
   return (
     <div className="p-6 bg-gray-100 w-full">
-      <div className="bg-white p-4 shadow-md rounded-lg mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Month</label>
-            <select
-              value={filterMonth}
-              onChange={(e) => setFilterMonth(e.target.value)}
-              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">All</option>
-              {months.map((month) => (
-                <option key={month} value={month}>
-                  {month}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-            <select
-              value={filterYear}
-              onChange={(e) => setFilterYear(e.target.value)}
-              className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">All</option>
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Month
+          </label>
+          <select
+            value={filterMonth}
+            onChange={(e) => setFilterMonth(e.target.value)}
+            className="bg-gradient-to-r from-[#979db6] to-gray-300 p-2 rounded-full  w-full text-[14px]  px-4">
+            <option value="">All</option>
+            {months.map((month) => (
+              <option key={month} value={month}>
+                {month}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Year
+          </label>
+          <select
+            value={filterYear}
+            onChange={(e) => setFilterYear(e.target.value)}
+            className="bg-gradient-to-r from-[#979db6] to-gray-300 p-2 rounded-full  w-full text-[14px]  px-4">
+            <option value="">All</option>
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <table className="table-auto w-full">
-          <thead className="bg-gray-200 text-gray-600 text-sm">
-            <tr>
-              <th className="px-4 py-2 text-left">Employee's Name</th>
-              <th className="px-4 py-2 text-left">Month</th>
-              <th className="px-4 py-2 text-left">Year</th>
-              <th className="px-4 py-2 text-left">Base Salary</th>
-              <th className="px-4 py-2 text-left">Commission</th>
-              <th className="px-4 py-2 text-left">Total Salary</th>
+      <div className="w-[100%] border rounded-2xl bg-white p-5">
+        <table className="rounded-3xl overflow-hidden w-full leading-10">
+          <thead className="text-center">
+            <tr className="text-[13px] text-center">
+              <th>Employee's Name</th>
+              <th>Month</th>
+              <th>Year</th>
+              <th>Base Salary</th>
+              <th>Commission</th>
+              <th>Total Salary</th>
             </tr>
           </thead>
-          <tbody className="text-gray-700 text-sm">
+          <tbody className="text-[13px] text-center">
             {filteredSalaries.map((salary) => (
-              <tr key={salary._id} className="border-b">
-                <td className="px-4 py-2">{salary.employee?.name || "Unknown"}</td>
-                <td className="px-4 py-2">{salary.month}</td>
-                <td className="px-4 py-2">{salary.year}</td>
-                <td className="px-4 py-2">
-                  {salary.baseSalary ? salary.baseSalary.toLocaleString() : "0"} VND
+              <tr key={salary._id}>
+                <td>{salary.employee?.name}</td>
+                <td>{salary.month}</td>
+                <td>{salary.year}</td>
+                <td>
+                  {salary.baseSalary ? salary.baseSalary.toLocaleString() : "0"}{" "}
+                  VND
                 </td>
-                <td className="px-4 py-2">
-                  {salary.commission ? salary.commission.toLocaleString() : "0"} VND
+                <td>
+                  {salary.commission ? salary.commission.toLocaleString() : "0"}{" "}
+                  VND
                 </td>
-                <td className="px-4 py-2">
-                  {salary.totalSalary ? salary.totalSalary.toLocaleString() : "0"} VND
+                <td>
+                  {salary.totalSalary
+                    ? salary.totalSalary.toLocaleString()
+                    : "0"}{" "}
+                  VND
                 </td>
               </tr>
             ))}

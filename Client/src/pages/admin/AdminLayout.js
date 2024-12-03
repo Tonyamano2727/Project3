@@ -10,10 +10,10 @@ const AdminLayout = () => {
   if(!isLoggedIn || !current || +current.role !==1945) return <Navigate to={`/${path.LOGIN}`} replace={true}/>
   return (
     <div className=' flex min-h-screen'>
-      <div className='w-[18%] top-0 bottom-0 flex-none bg-gradient-to-t from-[#f9f9f9] to-gray-300'>
+      <div className='w-[16%] top-0 bottom-0 flex-none bg-gradient-to-t from-[#f9f9f9] to-gray-300'>
         <Adminsidebar/>
       </div>
-      <div className='w-[82%] items-center flex   bg-gray-100  flex-col'>
+      <div className='w-[84%] items-center flex   bg-gray-100  flex-col'>
         <Headeradmin/>
         <Outlet/>
       </div>
