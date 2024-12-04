@@ -13,7 +13,7 @@ import {
   TextInput, 
   Button 
 } from 'react-native';
-import { apiGetEmployeeList, apiUpdateEmployee, axiosInstance } from '../config/apiService';
+import { apiGetEmployeeList, apiUpdateEmployee } from '../config/apiService';
 
 interface Employee {
   _id: string;
@@ -92,7 +92,7 @@ const EmployeeList = () => {
       try {
         const response = await apiUpdateEmployee(currentEmployee._id, updatedEmployee);
         if (response.status === 200 && response.data.success) {
-          fetchEmployees(); // Reload employee list after successful update
+          fetchEmployees(); 
           setModalVisible(false);
           Alert.alert('Success', 'Employee updated successfully.');
         } else {

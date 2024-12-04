@@ -39,7 +39,10 @@ const HomePage = () => {
               >
                 <Text style={styles.dropdownButtonText}>Employee List</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.dropdownButton} onPress={() => {}}>
+              <TouchableOpacity
+                style={styles.dropdownButton}
+                onPress={() => handleNavigate('CreateEmployee')}
+              >
                 <Text style={styles.dropdownButtonText}>Create Employee</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.dropdownButton} onPress={() => {}}>

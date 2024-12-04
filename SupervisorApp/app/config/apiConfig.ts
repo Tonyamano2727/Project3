@@ -9,6 +9,7 @@ const API_CONFIG = {
       MANAGE_BOOKING: '/booking/getbooking',
       UPDATE_BOOKING: '/booking/updatebooking',
       GET_DETAIL_BOOKING: '/booking/getbooking',
+      GET_SUPERVISOR_DISTRICT: '/supervisor/districts',
     },
   };
   
