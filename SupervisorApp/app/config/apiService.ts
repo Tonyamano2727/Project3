@@ -25,9 +25,21 @@ export const apiGetEmployeeList = () => {
   };
 
 // Hàm tạo nhân viên mới
-export const apiCreateEmployee = (employeeData: any) => {
-  const url = `${API_CONFIG.ENDPOINTS.CREATE_EMPLOYEE}`;
-  return axiosInstance.post(url, employeeData);
+export const apiCreateEmployee = async (employeeData: any) => {
+  const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CREATE_EMPLOYEE}`;
+  
+  try {
+    const response = await axiosInstance.post(url, employeeData, {
+      headers: {
+        'Content-Type': 'multipart/form-data', 
+        'Accept': 'application/json',
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error during employee creation:", error);
+    throw error;
+  }
 };
 
 // Hàm cập nhật thông tin nhân viên
@@ -60,3 +72,8 @@ export const apiGetDetailBooking = (bkid: string) => {
   return axiosInstance.get(url);
 };
 
+// Hàm lấy địa chỉ của giám sát
+export const apiGetSupervisorDistrict = () => {
+  const url = `${API_CONFIG.ENDPOINTS.GET_SUPERVISOR_DISTRICT}`;
+  return axiosInstance.get(url)
+}
