@@ -63,16 +63,14 @@ const CreateEmployee = () => {
 
   const pickAvatar = async () => {
     try {
-      // Yêu cầu quyền truy cập ảnh
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("Permission required", "You need to grant permission to access the camera roll.");
         return;
       }
 
-      // Chọn ảnh từ thư viện
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images, // Sửa mediaType thành mediaTypes
+        mediaTypes: ImagePicker.MediaTypeOptions.Images, 
         allowsEditing: true,
         aspect: [1, 1],
         quality: 1,
@@ -80,7 +78,7 @@ const CreateEmployee = () => {
 
       console.log("Picker Result:", result);
 
-      if (result.canceled) { // Sửa từ cancelled thành canceled
+      if (result.canceled) { 
         Alert.alert("Cancelled", "You cancelled the image picker.");
         return;
       }
@@ -107,18 +105,18 @@ const CreateEmployee = () => {
       formData.append("name", data.name);
       formData.append("email", data.email);
       formData.append("mobile", data.mobile);
-      formData.append("baseSalary", String(Number(data.baseSalary))); // Xử lý baseSalary thành kiểu số
+      formData.append("baseSalary", String(Number(data.baseSalary)));
       formData.append("district", district);
       formData.append("job", job);
-
+  
       if (avatarFile) {
-        formData.append("avatar", {
-          uri: avatarFile.uri,
-          name: avatarFile.name,
-          type: avatarFile.type,
-        } as any); // Cần cast as any để tương thích React Native
+        const avatarBlob = await fetch(avatarFile.uri)
+          .then((res) => res.blob())
+          .then((blob) => blob);
+  
+        formData.append("avatar", avatarBlob, avatarFile.name);
       }
-
+  
       console.log("Form Data Sent to API:", {
         name: data.name,
         email: data.email,
@@ -128,9 +126,9 @@ const CreateEmployee = () => {
         job,
         avatar: avatarFile,
       });
-
+  
       const response = await apiCreateEmployee(formData);
-
+  
       if (response.data.success) {
         Alert.alert("Success", "Employee created successfully!");
         reset();
@@ -150,14 +148,14 @@ const CreateEmployee = () => {
       });
     }
   };
-
+  
+  
   return (
     <ScrollView contentContainerStyle={{ padding: 16 }}>
       <Text style={{ fontSize: 24, textAlign: "center", marginBottom: 20 }}>
         Create Employee
       </Text>
 
-      {/* Name Input */}
       <Text>Name</Text>
       <Controller
         control={control}

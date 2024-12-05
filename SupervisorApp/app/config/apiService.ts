@@ -29,15 +29,23 @@ export const apiCreateEmployee = async (employeeData: any) => {
   const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CREATE_EMPLOYEE}`;
   
   try {
+    console.log("Sending request to:", url);
+    console.log("Request Data:", employeeData);
+
     const response = await axiosInstance.post(url, employeeData, {
       headers: {
         'Content-Type': 'multipart/form-data', 
         'Accept': 'application/json',
       },
     });
+
+    console.log("Response:", response.data); // Kiểm tra kết quả trả về
     return response;
   } catch (error) {
     console.error("Error during employee creation:", error);
+    if (axios.isAxiosError(error)) {
+      console.error("Axios error details:", error.response?.data);
+    }
     throw error;
   }
 };

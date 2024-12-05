@@ -45,14 +45,14 @@ const HomePage = () => {
               >
                 <Text style={styles.dropdownButtonText}>Create Employee</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.dropdownButton} onPress={() => {}}>
+              <TouchableOpacity style={styles.dropdownButton} onPress={() => handleNavigate('Salary')}>
                 <Text style={styles.dropdownButtonText}>Salary</Text>
               </TouchableOpacity>
             </View>
           )}
         </View>
 
-        <TouchableOpacity style={styles.mainButton} onPress={() => {}}>
+        <TouchableOpacity style={styles.mainButton} onPress={() => handleNavigate('ManageBooking')}>
           <Text style={styles.buttonText}>Manage Booking</Text>
         </TouchableOpacity>
       </View>

@@ -4,20 +4,24 @@ import LoginScreen from '../screens/LoginScreen';
 import HomePage from '../screens/HomePage';
 import EmployeeList from '../screens/EmployeeList';
 import CreateEmployee from '../screens/CreateEmployee';
+import Salary from '../screens/Salary';
 import { NavigationContainer } from '@react-navigation/native';
+import ManageBooking from '../screens/ManageBooking';
 
 const Stack = createStackNavigator();
 
 const Tabs = () => {
   return (
-    <NavigationContainer>
+    // <NavigationContainer>
     <Stack.Navigator initialRouteName="Login">
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="HomePage" component={HomePage} />
       <Stack.Screen name="EmployeeList" component={EmployeeList} />
       <Stack.Screen name="CreateEmployee" component={CreateEmployee} />
+      <Stack.Screen name="Salary" component={Salary}/>
+      <Stack.Screen name="ManageBooking" component={ManageBooking}/>
     </Stack.Navigator>
-    </NavigationContainer>
+    // </NavigationContainer>
   );
 };
 
