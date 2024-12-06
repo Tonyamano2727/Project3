@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Button, Alert } from 'react-native';
-import { apiGetEmployeeList, apiGetSalary } from '../config/apiService'; // Make sure to import the API functions
+import { View, Text, FlatList, StyleSheet, Button, RefreshControl } from 'react-native';
+import { apiGetEmployeeList, apiGetSalary } from '../config/apiService'; // Ensure the correct API import
 import { Picker } from '@react-native-picker/picker';
 
 const Salary = () => {
@@ -9,24 +9,22 @@ const Salary = () => {
   const [filteredSalaries, setFilteredSalaries] = useState<any[]>([]);
   const [filterMonth, setFilterMonth] = useState<string>('');
   const [filterYear, setFilterYear] = useState<string>('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
   const years = Array.from({ length: 7 }, (_, i) => (2024 + i).toString());
 
-  useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const response = await apiGetEmployeeList();
-        if (response.data.success) {
-          setEmployees(response.data.staff);
-        }
-      } catch (error) {
-        console.error('Error fetching employees:', error);
+  // Fetch employees and salary data
+  const fetchEmployees = async () => {
+    try {
+      const response = await apiGetEmployeeList();
+      if (response.data.success) {
+        setEmployees(response.data.staff);
       }
-    };
-    fetchEmployees();
-    fetchSalaries();
-  }, []);
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+    }
+  };
 
   const fetchSalaries = async () => {
     try {
@@ -46,10 +44,12 @@ const Salary = () => {
     const uniqueKeys = new Set();
     
     salaryList.forEach((salary) => {
-      const key = `${salary.employee._id}-${salary.month}-${salary.year}`;
-      if (!uniqueKeys.has(key)) {
-        uniqueKeys.add(key);
-        uniqueEntries.push(salary);
+      if (salary.employee && salary.employee._id) {
+        const key = `${salary.employee._id}-${salary.month}-${salary.year}`;
+        if (!uniqueKeys.has(key)) {
+          uniqueKeys.add(key);
+          uniqueEntries.push(salary);
+        }
       }
     });
   
@@ -59,19 +59,31 @@ const Salary = () => {
   const handleFilterChange = () => {
     const filtered = salaries.filter(
       (salary) =>
-        (filterMonth ? salary.month === filterMonth : true) &&
-        (filterYear ? salary.year === filterYear : true)
+        (filterMonth ? salary.month === parseInt(filterMonth) : true) &&
+        (filterYear ? salary.year === parseInt(filterYear) : true)
     );
     setFilteredSalaries(filtered);
   };
 
   useEffect(() => {
+    fetchEmployees();
+    fetchSalaries();
+  }, []);
+
+  useEffect(() => {
     handleFilterChange();
   }, [filterMonth, filterYear, salaries]);
 
+  const onRefresh = () => {
+    setIsRefreshing(true);
+    fetchEmployees(); // Reload employee data
+    fetchSalaries(); // Reload salary data
+    setIsRefreshing(false); // Stop refreshing
+  };
+
   const renderSalaryItem = ({ item }: { item: any }) => (
     <View style={styles.salaryItem}>
-      <Text style={styles.text}>Employee: {item.employee?.name}</Text>
+      <Text style={styles.text}>Employee: {item.employee?.name || 'N/A'}</Text>
       <Text style={styles.text}>Month: {item.month}</Text>
       <Text style={styles.text}>Year: {item.year}</Text>
       <Text style={styles.text}>Base Salary: {item.baseSalary?.toLocaleString()} VND</Text>
@@ -125,7 +137,14 @@ const Salary = () => {
       <FlatList
         data={filteredSalaries}
         renderItem={renderSalaryItem}
-        keyExtractor={(item) => item._id || item.employee._id}
+        keyExtractor={(item) => item._id || item.employee?._id}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+          />
+        }
+        contentContainerStyle={styles.flatListContainer}
       />
     </View>
   );
@@ -133,6 +152,7 @@ const Salary = () => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1, 
     padding: 20,
     backgroundColor: '#fff',
   },
@@ -164,12 +184,16 @@ const styles = StyleSheet.create({
   salaryItem: {
     padding: 15,
     marginBottom: 10,
+    marginTop: 10,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
   },
   text: {
     fontSize: 16,
+  },
+  flatListContainer: {
+    paddingBottom: 20, 
   },
 });
 
