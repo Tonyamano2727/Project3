@@ -255,8 +255,11 @@ const ManageBooking = () => {
             />
           </View>
 
-          <Button title="Save" onPress={handleSubmitUpdate} />
-          <Button title="Close" onPress={handleCloseModal} />
+            <View style={{ justifyContent: 'space-between', padding: 20 }}>
+                <Button title="Save" onPress={handleSubmitUpdate} />
+                <View style={{ height: 15 }} />
+                <Button title="Close" onPress={handleCloseModal} />
+            </View>
         </View>
       </Modal>
 
