@@ -26,7 +26,7 @@ const breakpointColumnsObj = {
   500: 1,
 };
 
-const Products = ({ title }) => {
+const Products = ({ title}) => {
   const [products, setproducts] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [activedclick, setactivedclick] = useState(null);
@@ -154,67 +154,76 @@ const Products = ({ title }) => {
             id="q"
             register={register}
             errors={errors}
-            style={"p-6 w-full xl:w-[96%] flex justify-center items-center"}
+            style={"p-6 w-full xl:w-[98%] flex justify-center items-center"}
             placeholder="Search product by title"
           />
         </form>
       </div>
       <div className="xl:w-main rounded-3xl border p-4 flex justify-between mt-8 m-auto flex-wrap">
-        <div className="w-[30%]">
+        <div className="lg:w-[40%] w-full">
           <span className="font-semibold text-sm">Filter by</span>
-          <div className="flex items-center gap-4 mt-2">
-            <Search
-              name="price"
-              activedclick={activedclick}
-              ChangeActiveFilter={ChangeActiveFilter}
-              type="input"
-            />
-            <Search
-              name="color"
-              activedclick={activedclick}
-              ChangeActiveFilter={ChangeActiveFilter}
-            />
+          <div className="flex items-center gap-4 mt-2 flex-wrap">
+            <div className="w-[100%] lg:w-[40%]">
+              <Search
+                name="price"
+                activedclick={activedclick}
+                ChangeActiveFilter={ChangeActiveFilter}
+                type="input"
+              />
+            </div>
+            <div className="w-[100%] lg:w-[40%]">
+              <Search
+                name="color"
+                activedclick={activedclick}
+                ChangeActiveFilter={ChangeActiveFilter}
+              />
+            </div>
           </div>
         </div>
-        <div className="w-[40%]">
+        <div className="lg:w-[40%] w-full">
           <span className="font-semibold text-sm">Sort by</span>
-          <div className="w-full flex gap-5">
-            <Selectinput
-              className="mt-2 rounded-full bg-gradient-to-r text-white from-[#0f1c92] to-[#0e28d1]"
-              changeValue={changeValue}
-              value={sort}
-              options={sorts}
-            />
-            <Selectinput
-              className="mt-2 rounded-full bg-gradient-to-r text-white from-[#0f1c92] to-[#0e28d1]"
-              changeValue={(value) => {
-                if (!value) {
-                  setSelectedCategory(""); 
-                  const newParams = { ...Object.fromEntries(params) };
-                  delete newParams.category;
-                  navigate({
-                    search: createSearchParams(newParams).toString(),
-                  });
-                } else {
-                  
-                  setSelectedCategory(value);
-                  navigate({
-                    search: createSearchParams({
-                      ...Object.fromEntries(params),
-                      category: value,
-                    }).toString(),
-                  });
-                }
-              }}
-              value={selectedCategory}
-              options={[
-                ...getallCategory.map((category) => ({
-                  text: category.title,
-                  value: category.title,
-                })),
-              ]}
-              placeholder="Select Category"
-            />
+          <div className="w-full flex gap-5 flex-wrap">
+            <div className="w-[100%] lg:w-[40%]">
+              <Selectinput
+                className="mt-2 rounded-full bg-gradient-to-r text-white from-[#0f1c92] to-[#0e28d1]"
+                changeValue={changeValue}
+                value={sort }
+                texts = "Sort by date"
+                options={sorts}
+              />
+            </div>
+            <div className="w-[100%] lg:w-[40%]">
+              <Selectinput
+                className="mt-2 rounded-full bg-gradient-to-r text-white from-[#0f1c92] to-[#0e28d1]"
+                texts = "Category"
+                changeValue={(value) => {
+                  if (!value) {
+                    setSelectedCategory("");
+                    const newParams = { ...Object.fromEntries(params) };
+                    delete newParams.category;
+                    navigate({
+                      search: createSearchParams(newParams).toString(),
+                    });
+                  } else {
+                    setSelectedCategory(value);
+                    navigate({
+                      search: createSearchParams({
+                        ...Object.fromEntries(params),
+                        category: value,
+                      }).toString(),
+                    });
+                  }
+                }}
+                value={selectedCategory}
+                options={[
+                  ...getallCategory.map((category) => ({
+                    text: category.title,
+                    value: category.title,
+                  })),
+                ]}
+                placeholder="Select Category"
+              />
+            </div>
           </div>
         </div>
       </div>

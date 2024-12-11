@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { apigetorder, apigetorderyuser } from "../../apis";
-import { InputForm, Pagination } from "../../components";
+import { Breadcrumb, InputForm, Pagination } from "../../components";
 import { useForm } from "react-hook-form";
 import { formatMoney } from "../../ultils/helper";
 import moment from "moment";
+import backgroundservice from "../../assets/backgroundservice.png";
 import useDebounce from "../../hooks/useDebounce";
 import { useSearchParams } from "react-router-dom";
 
-const Orderhistory = () => {
+const Orderhistory = ({ title }) => {
   const [Order, setorder] = useState(null);
   const [counts, setcounts] = useState(0);
   const [params] = useSearchParams();
@@ -51,14 +52,22 @@ const Orderhistory = () => {
     }
   }, [Order]);
   return (
-    <div className="flex justify-center w-full  flex-col p-5 items-center">
-      <div className="h-[75px] flex text-start text-3xl font-bold px-6 w-full">
-     
-        <span>Orderhistory</span>
-    
+    <div className="w-full flex justify-center items-center flex-col bg-[#E7E7E7]">
+      <div className="w-full relative flex justify-center items-center flex-col bg-[#E7E7E7]">
+        <img
+          className="w-full object-cover h-[200px] md:h-[350px]"
+          src={backgroundservice}
+          alt="backgroundservice"
+        />
+        <div className="absolute text-white flex flex-col items-center md:items-start md:left-20 p-4">
+          <h2 className="text-[24px] md:text-[45px] font-bold tracking-wide">
+            History
+          </h2>
+          <Breadcrumb title={title} />
+        </div>
       </div>
       <div className="flex w-full justify-center items-center">
-        <form className="w-[96%] mt-2">
+        <form className="w-[96%] mt-4">
           <InputForm
             style={"w500"}
             id="q"

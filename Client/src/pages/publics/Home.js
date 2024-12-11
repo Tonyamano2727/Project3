@@ -26,7 +26,6 @@ const Home = () => {
         </div>
         <div className="flex flex-col gap-5 w-[100%] flex-auto ">
           <Booking/>
-          {/* <TabletandIpad /> */}
         </div>
         <div className="flex flex-col gap-5 w-[100%] flex-auto ">
           <Stepwork/>
@@ -38,7 +37,7 @@ const Home = () => {
         </div>
         <div className="flex flex-col gap-5 w-[100%] flex-auto mt-10">
           <Workgalary/>
-       
+
         </div>
       </div>
       

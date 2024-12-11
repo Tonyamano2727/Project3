@@ -1,14 +1,14 @@
 import React from "react";
 
-const Selectinput = ({ value, changeValue, options, className }) => {
+const Selectinput = ({ value, changeValue, options, className , texts}) => {
   return (
     <select
       className={`p-2 rounded-2xl  w-full text-[14px]  px-4 ${className}`}
       value={value}
       onChange={(e) => changeValue(e.target.value)}
     >
-      <option className="text-black" value="">
-        Choose option
+       <option className="text-black" value="">
+        {texts || "Choose option"}
       </option>
       {options &&
         Array.isArray(options) &&
