@@ -128,7 +128,7 @@ const Manageemployee = () => {
               <td className="p-2">{employee.job}</td>
               <td className="p-2">{employee.email}</td>
               <td className="p-2">{employee.mobile}</td>
-              <td className="p-2">{employee.baseSalary}</td>
+              <td className="p-2">{employee.baseSalary.toLocaleString()} VND</td>
               <td className="p-2 gap-2">
                 <button
                   className="text-blue-600 hover:text-blue-800 text-center "

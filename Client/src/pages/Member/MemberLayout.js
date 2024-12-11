@@ -7,7 +7,6 @@ const MemberLayout = () => {
   const {isLoggedIn , current} = useSelector(state => state.user)
 
   if(!isLoggedIn || !current) return <Navigate to={`/${path.LOGIN}`} replace={true}/>
-  // console.log(current);
   return (
     <div className='flex '>
       <div className='w-[327px]'>

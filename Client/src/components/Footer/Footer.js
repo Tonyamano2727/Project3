@@ -8,53 +8,54 @@ import footershape1 from "../../assets/footer-shape.png";
 import footershape2 from "../../assets/footer-shape1.png";
 import { TfiEmail } from "react-icons/tfi";
 
-const { MdPhone, FaFacebook, FaTelegram, FaInstagram, IoIosArrowForward , AiOutlineEnvironment} =
-  icons;
+const { MdPhone, FaFacebook, FaTelegram, FaInstagram, IoIosArrowForward, AiOutlineEnvironment } = icons;
+
 const Footer = () => {
   return (
     <div className="w-full flex items-center justify-center bg-[#00197D] flex-col relative z-0 mt-[150px]">
-      <div className="absolute top-0 w-[90%]">
-        <img className="w-full" src={backgroundfooter} />
+      <div className="absolute top-0 w-full">
+        <img className="w-full h-[100px] lg:h-[120px]" src={backgroundfooter} alt="footer background" />
       </div>
       <div className='absolute left-[-50px] top-20 animate-zoom-background'>
-      <img src={footershape1} />
+        <img src={footershape1} alt="footer shape 1" />
       </div>
       <div className='absolute right-[-50px] top-20 animate-zoom-background'>
-      <img src={footershape2} />
+        <img src={footershape2} alt="footer shape 2" />
       </div>
-      <div className="z-50 w-[90%] flex justify-center items-center mt-8">
-        <div className="flex justify-start items-center w-[40%] gap-5">
+      <div className="z-50 w-[90%] flex flex-col lg:flex-row justify-between items-center lg:mt-6 mt-4">
+        <div className="flex justify-start items-center w-full lg:w-[40%] gap-5">
           <div className="h-[60px] w-[60px] rounded-full bg-white flex justify-center items-center text-[22px] text-[#2f6eff]">
             <MdPhone />
           </div>
-          <div>
-            <h4 className="text-[15px] text-[#00197e] font-light mb-1 leading-[30px]">
+          <div className="left-[50%] flex absolute flex-col lg:left-[10%]">
+            <h4 className="text-[15px] text-white lg:text-[#00197e] font-light mb-1 leading-[30px]">
               Call Us Now
             </h4>
-            <p className="text-[22px] text-[#00197e] font-semibold leading-[28px]">
+            <p className="text-[22px] text-white lg:text-[#00197e] font-semibold leading-[28px]">
               +980 765 (546) 900
             </p>
           </div>
         </div>
-        <div className="flex justify-start items-center gap-10 w-[55%]">
-          <h2 className="text-[27px] font-semibold text-white w-[35%]">
+        <div className="flex justify-start items-center flex-wrap gap-10 w-full lg:w-[55%] mt-5 lg:mt-0">
+          <h2 className="lg:text-[24px] text-[20px] font-semibold text-white w-full lg:w-[28%] mt-5 lg:mt-0">
             Subscribe Now
           </h2>
-          <div className="flex w-[65%]">
+          <div className="flex w-full lg:w-[65%]">
             <input
               className="p-3 w-[90%] rounded-tl-lg rounded-bl-lg placeholder:text-[14px] placeholder:pl-[10px]"
-              placeholder="Enter E-Mail*"></input>
+              placeholder="Enter E-Mail*"
+            />
             <button className="bg-[#00197D] p-3 text-white rounded-tr-lg rounded-br-lg">
               Subscribe
             </button>
           </div>
         </div>
       </div>
-      <div className="mt-20 flex w-[90%] p-3">
-        <div className="w-[50%] flex justify-center gap-5">
-          <div className="flex flex-col justify-start w-[50%]">
+      <div className="mt-20 flex w-[90%] p-3 flex-col lg:flex-row">
+        <div className="w-full lg:w-[50%] flex flex-col lg:flex-row gap-5">
+          <div className="flex flex-col justify-start w-full lg:w-[50%]">
             <div className="flex mb-5">
-              <img src={logofooter} />
+              <img src={logofooter} alt="footer logo" />
             </div>
             <div className="text-white mb-5">
               <p>
@@ -72,14 +73,11 @@ const Footer = () => {
               <div className="h-[40px] w-[40px] rounded-full border-white border-[1px] flex justify-center items-center">
                 <FaInstagram />
               </div>
-              <div className="h-[40px] w-[40px] rounded-full border-white border-[1px] flex justify-center items-center">
-                <FaInstagram />
-              </div>
             </div>
           </div>
-          <div className="flex flex-col text-white w-[50%]">
+          <div className="flex flex-col text-white w-full lg:w-[50%]">
             <div>
-              <h3 className="text-[24px] text-whit font-semibold mb-3">Company</h3>
+              <h3 className="text-[24px] text-white font-semibold mb-3">Company</h3>
             </div>
             <div className="flex flex-col leading-8">
               <Link className="flex items-center gap-2 text-[16px] font-normal mb-2">
@@ -100,10 +98,10 @@ const Footer = () => {
             </div>
           </div>
         </div>
-        <div className="w-[50%] flex">
-          <div className="flex flex-col">
+        <div className="w-full lg:w-[50%] flex flex-col lg:flex-row gap-5">
+          <div className="flex flex-col w-full lg:w-[50%]">
             <div>
-              <h3 className="text-[24px] text-whit font-semibold text-white mb-3">
+              <h3 className="text-[24px] text-white font-semibold  mb-3">
                 Latest Blogs
               </h3>
             </div>
@@ -113,6 +111,7 @@ const Footer = () => {
                   <img
                     className="w-[130px] h-[80px] object-cover rounded-2xl "
                     src={workgalary}
+                    alt="blog image"
                   />
                 </div>
                 <div className="flex flex-col">
@@ -129,6 +128,7 @@ const Footer = () => {
                   <img
                     className="w-[130px] h-[80px] object-cover rounded-2xl "
                     src={workgalary}
+                    alt="blog image"
                   />
                 </div>
                 <div className="flex flex-col">
@@ -142,9 +142,9 @@ const Footer = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col w-full lg:w-[50%]">
             <div>
-              <h3 className="text-[24px] text-whit font-semibold text-white mb-3">
+              <h3 className="text-[24px] text-white font-semibold  mb-3">
                 Contact Us
               </h3>
             </div>
@@ -158,7 +158,7 @@ const Footer = () => {
                     Address
                   </span>
                   <p className="text-[#B9BBD2] font-normal mt-1">
-                  18 / 3, Long Thoi commune, Nha Be district, Ho Chi Minh City
+                    18 / 3, Long Thoi commune, Nha Be district, Ho Chi Minh City
                   </p>
                 </div>
               </div>

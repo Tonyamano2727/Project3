@@ -24,11 +24,14 @@ const Checkout = ({ category }) => {
     watch,
     setValue,
   } = useForm();
+
   useEffect(() => {
     setValue("address", current?.address);
     setValue("mobile", current?.mobile);
   }, [current]);
+
   const address = watch("address");
+
   useEffect(() => {
     if (isSuccess) dispatch(getCurrent());
   }, [isSuccess]);
@@ -51,30 +54,31 @@ const Checkout = ({ category }) => {
 
   return (
     <div className="flex justify-center flex-col items-center">
-      <div className="flex justify-center w-full ">
-        <div className="w-full">
-          <img
-            className="relative"
-            src={backgroundservice}
-            alt="backgroundservice"
-          />
-        </div>
-        <div className="flex absolute flex-col text-white left-20 top-[200px] p-4">
-          <h2 className="text-[45px] mb-[8px] font-bold tracking-wide">
-            Check out
+      <div className="w-full relative flex justify-center items-center flex-col bg-[#E7E7E7]">
+        <img
+          className="w-full object-cover h-[200px] md:h-[350px]"
+          src={backgroundservice}
+          alt="backgroundservice"
+        />
+        <div className="absolute text-white flex flex-col items-center md:items-start md:left-20 p-4">
+          <h2 className="text-[24px] md:text-[45px] font-bold tracking-wide">
+            Checkout
           </h2>
           <Breadcrumb category={category} />
         </div>
       </div>
-      <div className="max-auto p-8 w-main gap-6 flex justify-center bg-white mt-8 rounded-3xl">
+
+      <div className="max-auto p-4 md:p-8 w-full md:w-main gap-6 flex justify-center bg-white mt-8 rounded-3xl">
         {isSuccess && <Conguration />}
-        <div className="w-[40%] flex  justify-center items-center">
+        <div className="w-full md:w-[40%] justify-center items-center mb-8 md:mb-0 lg:block hidden">
           <img
             src={payment}
             alt="payment"
-            className="h-[70%] object-contain"></img>
+            className="h-[70%] object-contain"
+          />
         </div>
-        <div className="w-[80%] flex flex-col">
+
+        <div className="w-full md:w-[80%] flex flex-col">
           <table className="table-auto w-full mb-10">
             <thead>
               <tr className="border bg-gray-200">
@@ -87,28 +91,30 @@ const Checkout = ({ category }) => {
               {currentCart?.map((el) => (
                 <tr key={el._id} className="border">
                   <td className="text-left p-2">{el.product?.title}</td>
-                  <td className=" text-center p-2">{el.quantity}</td>
-                  <td className=" text-right p-2">
-                    {formatMoney(el.product?.price) + "  VND"}
+                  <td className="text-center p-2">{el.quantity}</td>
+                  <td className="text-right p-2">
+                    {formatMoney(el.product?.price) + " VND"}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+
           <div className="flex items-center mt-4 justify-between pt-4 border-t border-black">
-            <span>Subtotal : </span>
+            <span>Subtotal: </span>
             <span className="text-red-500 font-bold">
               {formatMoney(
                 currentCart?.reduce(
                   (sum, el) => sum + Number(el.product?.price) * el.quantity,
                   0
                 )
-              ) + "VND"}
+              ) + " VND"}
             </span>
           </div>
+
           <div className="mt-9 mb-3">
             <InputForm
-              label="Your address :"
+              label="Your address:"
               register={register}
               errors={errors}
               id="address"
@@ -120,7 +126,7 @@ const Checkout = ({ category }) => {
               setValue={setValue}
             />
             {addressSuggestions.length > 0 && (
-             <ul  className="absolute z-10 bg-white border border-gray-300 rounded w-[52%] mt-1">
+              <ul className="absolute z-10 bg-white border border-gray-300 rounded w-[92%] lg:w-[55%] mt-1">
                 {addressSuggestions.map((suggestion, index) => (
                   <li
                     key={index}
@@ -128,13 +134,15 @@ const Checkout = ({ category }) => {
                     onClick={() => {
                       setValue("address", suggestion.description);
                       setAddressSuggestions([]);
-                    }}>
-                    {suggestion.description}{" "}
+                    }}
+                  >
+                    {suggestion.description}
                   </li>
                 ))}
               </ul>
             )}
           </div>
+
           <div className="mb-9">
             <InputForm
               label="Phone"
@@ -150,6 +158,7 @@ const Checkout = ({ category }) => {
               }}
             />
           </div>
+
           {address && address?.length > 10 && (
             <div className="w-full flex justify-center">
               <Paypal

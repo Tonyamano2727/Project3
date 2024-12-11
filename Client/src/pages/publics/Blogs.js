@@ -4,7 +4,7 @@ import backgroundservice from "../../assets/backgroundservice.png";
 import { getallblogs } from "../../apis";
 import { Link } from "react-router-dom";
 import icons from "../../ultils/icons";
-const { BiSolidTimeFive, FaUserShield , FaEye } = icons;
+const { BiSolidTimeFive, FaUserShield, FaEye } = icons;
 
 const Blogs = ({ title }) => {
   const [blogs, setBlogs] = useState([]);
@@ -47,63 +47,72 @@ const Blogs = ({ title }) => {
 
   return (
     <div className="w-full flex justify-center items-center flex-col">
-      <div className="flex justify-center w-full">
-        <div className="w-full">
-          <img
-            className="relative"
-            src={backgroundservice}
-            alt="backgroundservice"
-          />
-        </div>
-        <div className="flex absolute flex-col text-white left-20 top-[200px] p-4">
-          <h2 className="text-[45px] mb-[8px] font-bold tracking-wide">
+      <div className="w-full relative flex justify-center items-center flex-col bg-[#E7E7E7]">
+        <img
+          className="w-full object-cover h-[200px] md:h-[350px]"
+          src={backgroundservice}
+          alt="backgroundservice"
+        />
+        <div className="absolute text-white flex flex-col items-center md:items-start md:left-20 p-4">
+          <h2 className="text-[24px] md:text-[45px] font-bold tracking-wide">
             Blogs
           </h2>
           <Breadcrumb title={title} />
         </div>
       </div>
-      <div className="flex w-[85%] gap-6 justify-center p-8">
-        <div className="w-[60%] flex flex-wrap">
-          {currentBlogs.map((blog) => (
-            <div key={blog._id} className="border rounded-xl relative mb-5 bg-white">
-              <img
-                className="flex h-[auto] w-full object-cover"
-                src={blog.thumb}
-                alt={blog.title}
-              />
-              <div className="flex gap-2 flex-col p-5 justify-start items-start">
-                <div className="flex gap-4">
-                  <p className="text-[#007bff] text-[14px] font-normal flex items-center justify-center gap-2">
-                    <FaUserShield /> By: {blog.author}
+      <div className="flex flex-col md:flex-row w-[90%] gap-6 justify-center p-4">
+        <div className="w-full md:w-[60%]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {currentBlogs.map((blog) => (
+              <div
+                key={blog._id}
+                className="border rounded-xl bg-white shadow-lg overflow-hidden">
+                <img
+                  className="w-full h-[200px] object-cover"
+                  src={blog.thumb}
+                  alt={blog.title}
+                />
+
+                <div className="p-4">
+                  <div className="flex flex-wrap gap-2 text-sm text-blue-600 mb-2">
+                    <span className="flex items-center gap-1">
+                      <FaUserShield /> {blog.author}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <BiSolidTimeFive />
+                      {new Date(blog.createdAt).toLocaleDateString()}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <FaEye /> {blog.numberView}
+                    </span>
+                    <button
+                      onClick={handleShare}
+                      className="text-[#007bff] flex items-center gap-1 cursor-pointer">
+                      Share
+                    </button>
+                  </div>
+
+                  <h2 className="text-[20px] font-bold text-gray-800 hover:text-[#007bff] mb-2">
+                    {blog.title}
+                  </h2>
+
+                  <p className="absolute top-4 left-4 bg-[#007bff] text-white px-2 py-1 text-sm rounded-lg">
+                    {blog.category}
                   </p>
-                  <p className="text-[#007bff] text-[14px] font-normal flex items-center justify-center gap-2">
-                    <BiSolidTimeFive />
-                    {new Date(blog.createdAt).toLocaleDateString()}
+
+                  <p className="text-gray-600 text-sm mb-3">
+                    {blog.description[0]}
                   </p>
-                  <p className="text-sm flex justify-center items-center gap-1 text-blue-600">
-                    <FaEye />: {blog.numberView}
-                  </p>
-                  <button
-                    onClick={handleShare}
-                    className="text-[#007bff] text-[14px] font-normal flex items-center justify-center gap-2 cursor-pointer">
-                    Share
-                  </button>
+
+                  <Link
+                    to={`/blogs/${blog._id}/${blog.title}`}
+                    className="inline-block bg-[#007bff] text-white px-4 py-2 text-sm font-medium rounded-md hover:bg-[#0056b3]">
+                    Read more
+                  </Link>
                 </div>
-                <h2 className="text-[25px] font-semibold hover:text-[text-#007bff]">
-                  {blog.title}
-                </h2>
-                <p className="absolute flex top-4 bg-[#007bff] p-2 text-white rounded-lg">
-                  {blog.category}
-                </p>
-                <p>{blog.description[0]}</p>
-                <Link
-                  to={`/blogs/${blog._id}/${blog.title}`}
-                  className="flex mt-3 mb-3 bg-[#007bff] p-3 text-white w-[20%] text-[15px] text-center justify-center font-medium rounded-lg">
-                  Read more
-                </Link>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
 
           <div className="flex justify-center mt-6">
             {Array.from({ length: totalPages }, (_, i) => (
@@ -120,16 +129,17 @@ const Blogs = ({ title }) => {
             ))}
           </div>
         </div>
-        <div className="w-[35%] top-20">
-          <div className="flex flex-col bg-[#f7f6ee] rounded-lg p-10">
-            <h3 className="mt-[11px] font-bold text-[#00197e] text-[20px]">
+
+        <div className="w-full md:w-[35%]">
+          <div className="bg-[#f7f6ee] rounded-lg p-6 shadow-lg">
+            <h3 className="font-bold text-[#00197e] text-lg mb-4">
               Article Summary
             </h3>
             {blogs.map((blog) => (
               <Link
                 key={blog._id}
                 to={`/blogs/${blog._id}/${blog.title}`}
-                className="text-[#575f66] font-normal hover:text-[#00197e] transition-colors duration-300 mt-4 mb-4">
+                className="block text-[#575f66] font-normal hover:text-[#00197e] transition duration-300 mb-2">
                 {blog.title}
               </Link>
             ))}

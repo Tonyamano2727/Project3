@@ -133,16 +133,14 @@ const Products = ({ title }) => {
 
   return (
     <div className="w-full">
-      <div className="flex justify-center w-full ">
-        <div className="w-full  ">
-          <img
-            className="relative"
-            src={backgroundservice}
-            alt="backgroundservice"
-          />
-        </div>
-        <div className="flex absolute flex-col text-white left-20 top-[200px] p-4">
-          <h2 className="text-[45px] mb-[8px] font-bold font tracking-wide">
+      <div className="w-full relative flex justify-center items-center flex-col bg-[#E7E7E7]">
+        <img
+          className="w-full object-cover h-[200px] md:h-[350px]"
+          src={backgroundservice}
+          alt="backgroundservice"
+        />
+        <div className="absolute text-white flex flex-col items-center md:items-start md:left-20 p-4">
+          <h2 className="text-[24px] md:text-[45px] font-bold tracking-wide">
             Products
           </h2>
           <Breadcrumb title={title} />
