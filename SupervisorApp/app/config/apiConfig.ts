@@ -1,5 +1,5 @@
 const API_CONFIG = {
-    BASE_URL: 'http://192.168.2.243:5000/api',
+    BASE_URL: 'http://192.168.20.193:5000/api',
     ENDPOINTS: {
       LOGIN: '/supervisor/login',
       EMPLOYEE_LIST: '/employee/getallwithrole',
@@ -10,6 +10,7 @@ const API_CONFIG = {
       UPDATE_BOOKING: '/booking/updatebooking',
       GET_DETAIL_BOOKING: '/booking/getbooking',
       GET_SUPERVISOR_DISTRICT: '/supervisor/districts',
+      GET_SERVICECATEGORY: '/categoryservice',
     },
   };
   

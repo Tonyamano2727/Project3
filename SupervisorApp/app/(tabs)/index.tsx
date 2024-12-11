@@ -12,7 +12,6 @@ const Stack = createStackNavigator();
 
 const Tabs = () => {
   return (
-
     <Stack.Navigator initialRouteName="Login">
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="HomePage" component={HomePage} />
@@ -21,6 +20,7 @@ const Tabs = () => {
       <Stack.Screen name="Salary" component={Salary}/>
       <Stack.Screen name="ManageBooking" component={ManageBooking}/>
     </Stack.Navigator>
+    
 
   );
 };
