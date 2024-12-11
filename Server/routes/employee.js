@@ -6,13 +6,20 @@ const {
   isSupervisor,
 } = require("../middlewares/verifyToken");
 const uploader = require("../config/cloudinary.cofig");
+const uploadCloud = require("../config/cloudinary.cofig");
 
 router.post(
   "/registeremployee",
   [verifyToken, isSupervisor],
-  uploader.single("avatar"),
+  uploadCloud.single("avatar"),
+  (req, res, next) => {
+    console.log("Middleware - File Received:", req.file);
+    console.log("Middleware - Body Received:", req.body);
+    next();
+  },
   ctrls.Registeremployee
 );
+
 router.put(
   "/updateemployee/:eid",
   [verifyToken, isSupervisor],

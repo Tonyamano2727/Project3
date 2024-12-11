@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Employee = require("../models/employee");
 const Booking = require("../models/booking");
 const Salary = require("../models/salary");
+
 const mongoose = require("mongoose");
 
 const calculateSalary = asyncHandler(async (req, res) => {

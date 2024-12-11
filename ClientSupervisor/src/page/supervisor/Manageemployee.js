@@ -36,7 +36,6 @@ const Manageemployee = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
 
-  // Fetch employees data
   const fetchEmployees = async () => {
     try {
       const response = await apiGetemployee();
