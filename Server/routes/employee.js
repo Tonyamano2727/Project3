@@ -12,11 +12,6 @@ router.post(
   "/registeremployee",
   [verifyToken, isSupervisor],
   uploadCloud.single("avatar"),
-  (req, res, next) => {
-    console.log("Middleware - File Received:", req.file);
-    console.log("Middleware - Body Received:", req.body);
-    next();
-  },
   ctrls.Registeremployee
 );
 

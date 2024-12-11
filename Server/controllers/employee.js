@@ -6,11 +6,8 @@ const Servicecategory = require("../models/servicecategory");
 const Registeremployee = asyncHandler(async (req, res) => {
   try {
     const { email, mobile, name, job, district, baseSalary } = req.body;
+    const avatar = req.file;
 
-    console.log("Request Body:", req.body);
-    console.log("File Received:", req.file);
-
-    // Kiểm tra các trường bắt buộc
     if (!email || !mobile || !name || !job || !district || !baseSalary) {
       return res.status(400).json({
         success: false,
@@ -18,65 +15,23 @@ const Registeremployee = asyncHandler(async (req, res) => {
       });
     }
 
-    // Kiểm tra định dạng email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        success: false,
-        mes: "Invalid email format",
-      });
-    }
-
-    // Kiểm tra định dạng số điện thoại
-    const phoneRegex = /^[0-9]{10,12}$/;
-    if (!phoneRegex.test(mobile)) {
-      return res.status(400).json({
-        success: false,
-        mes: "Invalid phone number format",
-      });
-    }
-
-    // Kiểm tra nếu nhân viên đã tồn tại
-    const employee = await Employee.findOne({ email });
-    if (employee) {
-      return res.status(400).json({
-        success: false,
-        mes: "Employee already exists",
-      });
-    }
-
-    // Tạo dữ liệu nhân viên mới
-    const newEmployeeData = {
+    const newEmployee = await Employee.create({
       email,
       mobile,
       name,
       job,
       district,
-      avatar: req.file?.path || null, // Nếu không có ảnh, giá trị là null
       baseSalary,
-    };
-
-    console.log("New Employee Data:", newEmployeeData);
-
-    // Lưu nhân viên vào cơ sở dữ liệu
-    const newEmployee = await Employee.create(newEmployeeData);
-
-    console.log("Employee Created:", newEmployee);
+      avatar: avatar?.path,
+    });
 
     return res.status(200).json({
       success: true,
       mes: "Register successfully",
       employee: newEmployee,
-      avatarInfo: req.file
-        ? {
-            fileName: req.file.filename,
-            url: req.file.path,
-          }
-        : null,
     });
   } catch (error) {
     console.error("Error in Registeremployee:", error);
-
     return res.status(500).json({
       success: false,
       mes: "Internal server error",

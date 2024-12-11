@@ -12,7 +12,7 @@ import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { useForm, Controller } from "react-hook-form";
-import { apiCreateEmployee, apiGetSupervisorDistrict } from "../config/apiService";
+import { apiCreateEmployee, apiGetSupervisorDistrict, apiGetServiceCategory } from "../config/apiService";
 
 const CreateEmployee = () => {
   const { control, handleSubmit, reset } = useForm();
@@ -20,7 +20,11 @@ const CreateEmployee = () => {
   const [districts, setDistricts] = useState<{ id: string; value: string }[]>([]);
   const [district, setDistrict] = useState<string>("");
   const [job, setJob] = useState<string>("");
-  const [avatarFile, setAvatarFile] = useState<{ uri: string; name: string; type: string } | null>(null);
+  const [avatarFile, setAvatarFile] = useState<{
+    uri: string;
+    name: string;
+    type: string
+  } | null>(null);
 
   useEffect(() => {
     const fetchDistricts = async () => {
@@ -43,7 +47,7 @@ const CreateEmployee = () => {
 
     const fetchJobCategories = async () => {
       try {
-        const response = await fetch("http://192.168.2.243:5000/api/categoryservice");
+        const response = await fetch("http://192.168.20.193:5000/api/categoryservice");
         const data = await response.json();
         if (data.success) {
           setJobCategories(
@@ -73,6 +77,7 @@ const CreateEmployee = () => {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
+        aspect: [1, 1],
         quality: 1,
       });
   
@@ -93,7 +98,7 @@ const CreateEmployee = () => {
         setAvatarFile({
           uri: file.uri,
           name: file.fileName || "avatar.jpg",
-          type: file.type || "image/jpeg",
+          type: file.mimeType || "image/jpeg",
         });
       } else {
         Alert.alert("Error", "No file selected.");
@@ -103,32 +108,39 @@ const CreateEmployee = () => {
       Alert.alert("Error", "An unexpected error occurred.");
     }
   };
-  
 
   const onSubmit = async (data: any) => {
     try {
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("email", data.email);
-      formData.append("mobile", data.mobile);
-      formData.append("baseSalary", String(Number(data.baseSalary)));
-      formData.append("district", district);
-      formData.append("job", job);
+      const payload = {
+        name: data.name,
+        email: data.email,
+        mobile: data.mobile,
+        baseSalary: String(Number(data.baseSalary)),
+        district,
+        job,
+        avatar: avatarFile || null, // Sử dụng base64
+      };
   
-      if (avatarFile) {
-        const avatarBlob = await fetch(avatarFile.uri).then((res) => res.blob());
-        formData.append("avatar", avatarBlob, avatarFile.name); // Key "avatar" phải khớp với server
-      }
+      console.log("Payload Content:", payload);
   
-      console.log("FormData Content:");
-      formData.forEach((value, key) => console.log(key, value));
-  
-      const response = await apiCreateEmployee(formData);
+      const response = await apiCreateEmployee(payload);
       console.log("Response:", response.data);
+  
+      if (response.data.success) {
+        Alert.alert("Success", "Employee created successfully!");
+        reset();
+        setDistrict("");
+        setJob("");
+        setAvatarFile(null);
+      } else {
+        Alert.alert("Error", response.data.mes || "Failed to create employee.");
+      }
     } catch (error) {
       console.error("Error:", error);
     }
   };
+  
+  
   
   return (
     <ScrollView contentContainerStyle={{ padding: 16 }}>

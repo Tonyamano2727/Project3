@@ -32,14 +32,16 @@ export const apiCreateEmployee = async (employeeData: any) => {
     console.log("Sending request to:", url);
     console.log("Request Data:", employeeData);
 
-    const response = await axiosInstance.post(url, employeeData, {
+    const formData = TransferToFormData(employeeData)
+
+    const response = await axiosInstance.post(url, formData, {
       headers: {
         'Content-Type': 'multipart/form-data', 
         'Accept': 'application/json',
       },
     });
 
-    console.log("Response:", response.data); // Kiểm tra kết quả trả về
+    console.log("Response:", response.data); 
     return response;
   } catch (error) {
     console.error("Error during employee creation:", error);
@@ -49,6 +51,11 @@ export const apiCreateEmployee = async (employeeData: any) => {
     throw error;
   }
 };
+
+export const apiGetServiceCategory = () => {
+  const url = `${API_CONFIG.ENDPOINTS.GET_SERVICECATEGORY}`;
+  return axiosInstance.get(url);
+}
 
 // Hàm cập nhật thông tin nhân viên
 export const apiUpdateEmployee = (eid: string, data: any) => {
@@ -84,4 +91,22 @@ export const apiGetDetailBooking = (bkid: string) => {
 export const apiGetSupervisorDistrict = () => {
   const url = `${API_CONFIG.ENDPOINTS.GET_SUPERVISOR_DISTRICT}`;
   return axiosInstance.get(url)
+}
+
+export const TransferToFormData = (data: any) => {
+  const formData = new FormData();
+
+  for (const key in data) {
+    if (data[key] === undefined) {
+      continue;
+    } else if (Array.isArray(data[key])) {
+      data[key].forEach((item: any) => {
+        formData.append(key, item as any);
+      });
+    } else {
+      formData.append(key, data[key] as any);
+    }
+  }
+
+  return formData;
 }
