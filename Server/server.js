@@ -5,7 +5,6 @@ const initRoutes = require("./routes");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
-
 const app = express();
 app.use(
   cors({
@@ -19,7 +18,6 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
 
 app.use(cookieParser());
 const port = process.env.PORT || 8888;
