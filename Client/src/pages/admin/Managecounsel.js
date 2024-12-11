@@ -10,7 +10,7 @@ const Managecounsel = () => {
     q: "",
   });
 
-  // Fetch dữ liệu counsels
+
   useEffect(() => {
     const fetchCounsels = async () => {
       try {
@@ -50,7 +50,7 @@ const Managecounsel = () => {
   };
 
   return (
-    <div className="w-[85%]">
+    <div className="w-[95%]">
       <div className="w-full justify-center items-center flex flex-col">
         <div className="w-full border rounded-2xl bg-white p-5">
           <table className="rounded-3xl overflow-hidden w-full leading-10">

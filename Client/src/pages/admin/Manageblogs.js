@@ -12,6 +12,7 @@ import Updateblogs from "./Updateblogs";
 
 const Manageblogs = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const [invalidFields, setinvalidFields] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const [counts, setCounts] = useState(0);
   const [queries, setQueries] = useState({
@@ -93,7 +94,7 @@ const Manageblogs = () => {
   }, [update]);
 
   return (
-    <div className="w-[90%] flex flex-col gap-4 relative h-[760px]">
+    <div className="w-[95%] flex flex-col gap-4 relative h-[760px]">
       {editBlog && (
         <Updateblogs
           editBlog={editBlog}
@@ -140,6 +141,7 @@ const Manageblogs = () => {
           nameKey={"q"}
           value={queries.q}
           setValue={setQueries}
+          setinvalidFields={setinvalidFields}
           placeholder="Search blog title..."
           isHidelabel
         />

@@ -28,7 +28,7 @@ const Orderitem = ({ el, defaultQuantity = 1, availableQuantity }) => {
         return newQuantity;
       });
     },
-    [availableQuantity, enqueueSnackbar] 
+    [availableQuantity, enqueueSnackbar]
   );
 
   const handleQuantity = useCallback(
@@ -38,14 +38,14 @@ const Orderitem = ({ el, defaultQuantity = 1, availableQuantity }) => {
         return setQuantity(1);
       } else if (parsedNumber > availableQuantity) {
         enqueueSnackbar(`You can only order up to ${availableQuantity} items.`, {
-          variant: "error", 
+          variant: "error",
         });
         return setQuantity(availableQuantity);
       } else {
         setQuantity(parsedNumber);
       }
     },
-    [availableQuantity, enqueueSnackbar] 
+    [availableQuantity, enqueueSnackbar]
   );
 
   useEffect(() => {
@@ -62,13 +62,13 @@ const Orderitem = ({ el, defaultQuantity = 1, availableQuantity }) => {
   }, [quantity, dispatch, el, defaultQuantity]);
 
   return (
-    <div className="w-main flex border py-3">
-      <span className="w-[50%] flex justify-center">
+    <div className="w-full flex flex-col sm:flex-row border py-3 bg-white">
+      <div className="w-full sm:w-[50%] flex justify-center">
         <div className="flex w-full items-center justify-center gap-10">
           <img
             src={el.product.thumb}
             alt="thumb"
-            className="w-28 h-28 object-cover"
+            className="w-[100px] h-[100px] object-contain"
           />
           <div className="flex flex-col text-center">
             <div className="flex justify-between items-center w-full">
@@ -76,15 +76,15 @@ const Orderitem = ({ el, defaultQuantity = 1, availableQuantity }) => {
             </div>
           </div>
         </div>
-      </span>
-      <span className="w-[30%] text-center flex justify-center items-center">
+      </div>
+      <span className="w-full sm:w-[30%] text-center flex justify-center items-center my-2 sm:my-0">
         <Selectquantity
           quantity={quantity}
           handleQuantity={handleQuantity}
           handlechangequantity={handlechangequantity}
         />
       </span>
-      <span className="text-center flex justify-center items-center w-[20%] font-medium">
+      <span className="text-center flex justify-center items-center w-full sm:w-[20%] font-medium">
         Price: {formatMoney(el.product.price * quantity)} VND
       </span>
     </div>

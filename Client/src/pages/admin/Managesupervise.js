@@ -111,7 +111,7 @@ const Managesupervise = () => {
   };
 
   return (
-    <div className="w-[85%]">
+    <div className="w-[95%]">
       <div className="w-full justify-center items-center flex flex-col">
         <div className="flex w-full">
           <Inputfields
@@ -156,7 +156,7 @@ const Managesupervise = () => {
               {supervisors?.map((el, idx) => (
                 <tr
                   key={el._id}
-                  className="text-[13px] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#e0a96a] focus:ring-opacity-50">
+                  className="text-[11px] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#e0a96a] focus:ring-opacity-50">
                   <td className="text-center">{idx + 1}</td>
                   <td>
                     <span>{el.name}</span>

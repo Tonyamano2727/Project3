@@ -10,7 +10,7 @@ import {
   dislikeBlog,
 } from "../../apis";
 import icons from "../../ultils/icons";
-const { BiSolidTimeFive, FaUserShield, BiLike, BiDislike , FaEye} = icons;
+const { BiSolidTimeFive, FaUserShield, BiLike, BiDislike, FaEye } = icons;
 
 const Detailsblogs = () => {
   const { bid } = useParams();
@@ -24,7 +24,6 @@ const Detailsblogs = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const commentsPerPage = 4;
 
-  // Fetch blog details
   const fetchBlogDetails = async () => {
     try {
       const response = await getdetailsblogs(bid);
@@ -39,8 +38,6 @@ const Detailsblogs = () => {
       setLoading(false);
     }
   };
-
-  // Fetch all blogs
   const fetchBlogs = async () => {
     try {
       const response = await getallblogs();
@@ -59,12 +56,12 @@ const Detailsblogs = () => {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     setSubmissionError(null);
-  
+
     try {
       const response = await createComment(bid, { comment });
       if (response.success) {
         setComment("");
-        fetchBlogDetails(); 
+        fetchBlogDetails();
       } else {
         setSubmissionError(response.message);
       }
@@ -72,25 +69,23 @@ const Detailsblogs = () => {
       setSubmissionError(err.message);
     }
   };
-  
 
   const handleLike = async () => {
     try {
       const response = await likeBlog(bid);
       if (response.success) {
-        fetchBlogDetails(); 
+        fetchBlogDetails();
       }
     } catch (err) {
       console.log(err.message);
     }
   };
 
-
   const handleDislike = async () => {
     try {
       const response = await dislikeBlog(bid);
       if (response.success) {
-        fetchBlogDetails(); 
+        fetchBlogDetails();
       }
     } catch (err) {
       console.log(err.message);
@@ -112,21 +107,22 @@ const Detailsblogs = () => {
 
   return (
     <div className="w-full flex justify-center items-center flex-col">
-      <div className="flex justify-center w-full">
-        <div className="w-full">
-          <img
-            className="relative"
-            src={backgroundservice}
-            alt="backgroundservice"
-          />
-        </div>
-        <div className="flex absolute flex-col text-white left-20 top-[200px] p-4">
+      <div className="w-full relative flex justify-center items-center flex-col bg-[#E7E7E7]">
+        <img
+          className="w-full object-cover h-[200px] md:h-[350px]"
+          src={backgroundservice}
+          alt="backgroundservice"
+        />
+        <div className="absolute text-white flex flex-col items-center md:items-start md:left-20 p-4">
+          <h2 className="text-[24px] md:text-[45px] font-bold tracking-wide">
+            Detailsblogs
+          </h2>
           <Breadcrumb title={blogDetails?.title} />
-          <h1 className="text-3xl font-bold mb-4">{blogDetails?.title}</h1>
+          <h1 className="text-[20px] md:text-[28px] font-bold tracking-wide">{blogDetails?.title}</h1>
         </div>
       </div>
-      <div className="flex justify-center w-[85%] gap-4 mt-10 p-5">
-        <div className="w-[65%] flex flex-wrap">
+      <div className="flex justify-center w-[90%] flex-wrap gap-4 mt-10 p-5">
+        <div className="w-full lg:w-[60%] flex flex-col">
           {blogDetails && (
             <div className="w-full px-4">
               <img
@@ -143,10 +139,8 @@ const Detailsblogs = () => {
                   {new Date(blogDetails.createdAt).toLocaleDateString()}
                 </p>
                 <p className="text-sm flex justify-center items-center gap-1 text-blue-600">
-                  <FaEye />:{" "}
-                  {blogDetails.numberView}
+                  <FaEye />: {blogDetails.numberView}
                 </p>
-           
                 <div className="flex items-center justify-center gap-4">
                   <button
                     className="text-sm flex justify-center items-center gap-1 text-blue-600"
@@ -175,14 +169,15 @@ const Detailsblogs = () => {
                     key={index}
                     src={img}
                     alt={`Blog Image ${index + 1}`}
-                    className="w-[48%]"
+                    className="w-[100%] mb-2"
                   />
                 ))}
               </div>
             </div>
           )}
         </div>
-        <div className="w-[35%] top-20 flex flex-col">
+
+        <div className="w-full lg:w-[33%] mt-10 sm:mt-0 flex flex-col">
           <div className="flex flex-col bg-[#f7f6ee] rounded-lg p-10">
             <h3 className="mt-[11px] font-bold text-[#00197e] text-[20px]">
               Article Summary
@@ -243,6 +238,7 @@ const Detailsblogs = () => {
                 </div>
               </div>
             )}
+
           <form
             onSubmit={handleCommentSubmit}
             className="mt-6 bg-[#f7f6ee] p-4 rounded-lg">

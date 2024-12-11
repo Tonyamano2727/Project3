@@ -30,7 +30,7 @@ const ProfileAdmin = () => {
     navigate("/");
   };
   return (
-    <div className="w-[85%] bg-white rounded-3xl mt-16">
+    <div className="w-[95%] bg-white rounded-3xl mt-16">
       <div class=" rounded p-4 px-4 md:p-8 mb-6">
         <div className="flex justify-between items-center">
           <div className="flex justify-start items-center gap-3 ">

@@ -2,16 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { formatMoney } from "../../ultils/helper";
 import icons from "../../ultils/icons";
-import { fetchDistricts, fetchWards, fetchAddressSuggestions } from "../../apis/mapApi";
 import {
-  timeSlots,
-} from "../../ultils/contants";
+  fetchDistricts,
+  fetchWards,
+  fetchAddressSuggestions,
+} from "../../apis/mapApi";
+import { timeSlots } from "../../ultils/contants";
 import {
   apiGetDetailsServices,
   createbooking,
   gethotdistric,
 } from "../../apis";
-
 
 const { IoCloseOutline } = icons;
 
@@ -27,9 +28,6 @@ const Frombooking = ({ handleCloseForm }) => {
   const [wards, setWards] = useState([]);
 
   const [suggestions, setSuggestions] = useState([]);
-
-
-  // const googleMapsApiKey = "YOUR_GOOGLE_MAPS_API_KEY";
   const [formData, setFormData] = useState({
     customerName: "",
     email: "",
@@ -57,78 +55,82 @@ const Frombooking = ({ handleCloseForm }) => {
     fetchServiceDetails();
   }, [sid]);
 
- // Lấy danh sách quận trong Hồ Chí Minh
- useEffect(() => {
-  const loadDistricts = async () => {
+  // Lấy danh sách quận trong Hồ Chí Minh
+  useEffect(() => {
+    const loadDistricts = async () => {
+      try {
+        const districts = await fetchDistricts();
+        setDistricts(districts);
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
+    loadDistricts();
+  }, []);
+
+  // Lấy danh sách phường/xã khi chọn quận
+  const handleDistrictChange = async (e) => {
+    const selectedDistrictId = e.target.value;
+    const district = districts.find(
+      (d) => d.code.toString() === selectedDistrictId
+    );
+
+    if (!district) {
+      setWards([]);
+      setFormData((prev) => ({ ...prev, district: "", ward: "" }));
+      setIsHotDistrict(false);
+      setPercentage(0);
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      district: district.name,
+      ward: "",
+    }));
+
     try {
-      const districts = await fetchDistricts();
-      setDistricts(districts);
+      const wards = await fetchWards(selectedDistrictId);
+      setWards(wards);
+
+      // Kiểm tra quận nóng
+      const response = await gethotdistric(district.name);
+      if (response.success) {
+        const hotDistrict = response.data.find((d) => d.name === district.name);
+        setIsHotDistrict(!!hotDistrict);
+        setPercentage(hotDistrict ? hotDistrict.percentage : 0);
+      } else {
+        setIsHotDistrict(false);
+        setPercentage(0);
+      }
     } catch (err) {
       console.error(err.message);
     }
   };
-  loadDistricts();
-}, []);
 
-// Lấy danh sách phường/xã khi chọn quận
-const handleDistrictChange = async (e) => {
-  const selectedDistrictId = e.target.value;
-  const district = districts.find((d) => d.code.toString() === selectedDistrictId);
+  const handleAddressChange = async (e) => {
+    const value = e.target.value;
+    setFormData((prevData) => ({ ...prevData, address: value }));
 
-  if (!district) {
-    setWards([]);
-    setFormData((prev) => ({ ...prev, district: "", ward: "" }));
-    setIsHotDistrict(false);
-    setPercentage(0);
-    return;
-  }
-
-  setFormData((prev) => ({
-    ...prev,
-    district: district.name,
-    ward: "",
-  }));
-
-  try {
-    const wards = await fetchWards(selectedDistrictId);
-    setWards(wards);
-
-    // Kiểm tra quận nóng
-    const response = await gethotdistric(district.name);
-    if (response.success) {
-      const hotDistrict = response.data.find((d) => d.name === district.name);
-      setIsHotDistrict(!!hotDistrict);
-      setPercentage(hotDistrict ? hotDistrict.percentage : 0);
+    if (value.length > 2) {
+      try {
+        const predictions = await fetchAddressSuggestions(value);
+        setSuggestions(predictions || []);
+      } catch (err) {
+        console.error(err.message);
+      }
     } else {
-      setIsHotDistrict(false);
-      setPercentage(0);
+      setSuggestions([]);
     }
-  } catch (err) {
-    console.error(err.message);
-  }
-};
-
-
-const handleAddressChange = async (e) => {
-  const value = e.target.value;
-  setFormData((prevData) => ({ ...prevData, address: value }));
-
-  if (value.length > 2) {
-    try {
-      const predictions = await fetchAddressSuggestions(value);
-      setSuggestions(predictions || []);
-    } catch (err) {
-      console.error(err.message);
-    }
-  } else {
+  };
+  const handleSuggestionClick = (suggestion) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      address: suggestion.description,
+    }));
     setSuggestions([]);
-  }
-};
-const handleSuggestionClick = (suggestion) => {
-  setFormData((prevData) => ({ ...prevData, address: suggestion.description }));
-  setSuggestions([]); 
-};
-  
+  };
+
   useEffect(() => {
     const updatedPrice = isHotDistrict
       ? servicePrice * (1 + percentage / 100)
@@ -174,6 +176,32 @@ const handleSuggestionClick = (suggestion) => {
     }
   };
 
+  const getAvailableTimeSlots = () => {
+    if (!formData.date) return []; // Nếu chưa chọn ngày, không hiển thị time slot
+
+    const selectedDate = new Date(formData.date); // Ngày được chọn
+    const currentDate = new Date(); // Ngày hiện tại
+
+    // Nếu ngày được chọn là hôm nay, lọc các time slot dựa trên giờ hiện tại
+    if (selectedDate.toDateString() === currentDate.toDateString()) {
+      return timeSlots.filter((slot) => {
+        const [hours, minutes] = slot.value.split(":").map(Number); // Parse giờ và phút từ time slot
+        const slotTime = new Date(); // Tạo thời gian cho time slot
+        slotTime.setHours(hours, minutes, 0, 0);
+
+        return slotTime > currentDate; // Chỉ lấy các time slot trong tương lai
+      });
+    }
+
+    // Nếu ngày được chọn trong tương lai, hiển thị tất cả time slot
+    if (selectedDate > currentDate) {
+      return timeSlots;
+    }
+
+    // Nếu ngày trong quá khứ, không hiển thị time slot
+    return [];
+  };
+
   const today = new Date().toISOString().split("T")[0];
   const maxDate = new Date();
   maxDate.setDate(maxDate.getDate() + 10);
@@ -188,19 +216,16 @@ const handleSuggestionClick = (suggestion) => {
           </div>
           <button
             className="text-[30px] font-extrabold"
-            onClick={handleCloseForm}
-          >
+            onClick={handleCloseForm}>
             <IoCloseOutline />
           </button>
         </div>
         <form
           className="flex flex-wrap justify-center gap-2"
-          onSubmit={handleSubmit}
-        >
-   
+          onSubmit={handleSubmit}>
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-            Customer name
+              Customer name
             </label>
             <input
               type="text"
@@ -230,7 +255,7 @@ const handleSuggestionClick = (suggestion) => {
           {/* Số điện thoại */}
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-            Phone number
+              Phone number
             </label>
             <input
               type="number"
@@ -242,73 +267,69 @@ const handleSuggestionClick = (suggestion) => {
               placeholder="Phone number"
             />
           </div>
-          {/* Địa chỉ */}
-         {/* Address */}
-<div className="w-[45%] relative">
-  <label className="block text-gray-700 text-sm font-bold mb-2">
-    Address
-  </label>
-  <input
-    type="text"
-    name="address"
-    value={formData.address}
-    onChange={handleAddressChange}
-    className="w-full p-2 border border-gray-300 rounded"
-    required
-    placeholder="House number, street name"
-  />
-  {suggestions.length > 0 && (
-    <ul className="absolute z-10 bg-white border border-gray-300 rounded w-full max-h-40 overflow-y-auto mt-1">
-      {suggestions.map((suggestion, index) => (
-        <li
-          key={index}
-          className="p-2 cursor-pointer hover:bg-gray-100"
-          onClick={() => handleSuggestionClick(suggestion)}
-        >
-          {suggestion.description}
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
-
-     {/* District */}
-<div className="w-[45%]">
-  <label className="block text-gray-700 text-sm font-bold mb-2">District</label>
-  <select
-    onChange={handleDistrictChange}
-    className="w-full p-2 border border-gray-300 rounded"
-    required
-  >
-    <option value="">-- Select District --</option>
-    {districts.map((district) => (
-      <option key={district.code} value={district.code}>
-        {district.name}
-      </option>
-    ))}
-  </select>
-</div>
-
-{/* Ward */}
-<div className="w-[45%]">
-  <label className="block text-gray-700 text-sm font-bold mb-2">Ward/Commune</label>
-  <select
-    onChange={(e) =>
-      setFormData((prev) => ({ ...prev, ward: e.target.value }))
-    }
-    className="w-full p-2 border border-gray-300 rounded"
-    required
-  >
-    <option value="">-- Select Ward/Commune --</option>
-    {wards.map((ward) => (
-      <option key={ward.code} value={ward.name}>
-        {ward.name}
-      </option>
-    ))}
-  </select>
-</div>
-
-          {/* Ngày */}
+          <div className="w-[45%] relative">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Address
+            </label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleAddressChange}
+              className="w-full p-2 border border-gray-300 rounded"
+              required
+              placeholder="House number, street name"
+            />
+            {suggestions.length > 0 && (
+              <ul className="absolute z-10 bg-white border border-gray-300 rounded w-full max-h-40 overflow-y-auto mt-1">
+                {suggestions.map((suggestion, index) => (
+                  <li
+                    key={index}
+                    className="p-2 cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSuggestionClick(suggestion)}>
+                    {suggestion.description}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+      
+          <div className="w-[45%]">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              District
+            </label>
+            <select
+              onChange={handleDistrictChange}
+              className="w-full p-2 border border-gray-300 rounded"
+              required>
+              <option value="">-- Select District --</option>
+              {districts.map((district) => (
+                <option key={district.code} value={district.code}>
+                  {district.name}
+                </option>
+              ))}
+            </select>
+          </div>
+  
+          <div className="w-[45%]">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Ward/Commune
+            </label>
+            <select
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, ward: e.target.value }))
+              }
+              className="w-full p-2 border border-gray-300 rounded"
+              required>
+              <option value="">-- Select Ward/Commune --</option>
+              {wards.map((ward) => (
+                <option key={ward.code} value={ward.name}>
+                  {ward.name}
+                </option>
+              ))}
+            </select>
+          </div>
+      
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Date
@@ -324,7 +345,7 @@ const handleSuggestionClick = (suggestion) => {
               max={formattedMaxDate}
             />
           </div>
-          {/* Thời gian */}
+ 
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Time
@@ -334,20 +355,19 @@ const handleSuggestionClick = (suggestion) => {
               value={formData.timeSlot}
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
-              required
-            >
+              required>
               <option value="">-- Select time --</option>
-              {timeSlots.map((slot) => (
+              {getAvailableTimeSlots().map((slot) => (
                 <option key={slot.value} value={slot.value}>
                   {slot.label}
                 </option>
               ))}
             </select>
           </div>
-          {/* Số lượng */}
+
           <div className="w-[90%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-            Quantity
+              Quantity
             </label>
             <input
               type="number"
@@ -359,10 +379,10 @@ const handleSuggestionClick = (suggestion) => {
               required
             />
           </div>
-          {/* Ghi chú */}
+         
           <div className="w-[90%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-            Note
+              Note
             </label>
             <textarea
               name="notes"
@@ -371,21 +391,17 @@ const handleSuggestionClick = (suggestion) => {
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
-          {/* Tổng giá */}
+        
           <div className="w-[90%] flex items-center justify-between">
             <h3>Total price:</h3>
             <span>{`${formatMoney(totalPrice)} VNĐ`}</span>
           </div>
           {notification && (
-            <div className="text-[13px] text-right w-[90%]">
-              {notification}
-            </div>
+            <div className="text-[13px] text-right w-[90%]">{notification}</div>
           )}
-          {/* Nút submit */}
           <button
             type="submit"
-            className="bg-[#FFC704] p-3 rounded w-[90%] font-medium mt-2"
-          >
+            className="bg-[#FFC704] p-3 rounded w-[90%] font-medium mt-2">
             Book Now
           </button>
         </form>

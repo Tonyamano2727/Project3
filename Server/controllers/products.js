@@ -101,25 +101,38 @@ const createproductswithexcel = async (req, res) => {
 
       console.log("Data file Excel:", xlData);
 
-      const productsToInsert = xlData.map((item) => ({
-        title: item.Title,
-        brand: item.Brand,
-        category: item.Category,
-        price: item.Price,
-        slug: item.Title.toLowerCase().split(" ").join("-"),
-        color: item.Color,
-        quantity: item.Quantity || 0,
-        sold: item.Sold || 0,
-        thumb: item.Thumb || "",
-        images: item.Images || [],
-      }));
+      // Xử lý dữ liệu từ file Excel
+      for (const item of xlData) {
+        const slug = item.Title.toLowerCase().split(" ").join("-");
 
-      const savedProducts = await Product.insertMany(productsToInsert);
+        // Kiểm tra sản phẩm đã tồn tại hay chưa
+        const existingProduct = await Product.findOne({ slug });
+
+        if (existingProduct) {
+          // Nếu sản phẩm đã tồn tại, cộng số lượng
+          existingProduct.quantity += item.Quantity || 0;
+          await existingProduct.save();
+        } else {
+          // Nếu chưa tồn tại, tạo sản phẩm mới
+          const newProduct = new Product({
+            title: item.Title,
+            brand: item.Brand,
+            category: item.Category,
+            price: item.Price,
+            slug,
+            color: item.Color,
+            quantity: item.Quantity || 0,
+            sold: item.Sold || 0,
+            thumb: item.Thumb || "",
+            images: item.Images || [],
+          });
+          await newProduct.save();
+        }
+      }
 
       res.status(200).json({
         success: true,
         message: "File uploaded and processed successfully!",
-        data: savedProducts,
       });
     } else {
       res.status(400).json({ message: "File not found" });
@@ -132,6 +145,7 @@ const createproductswithexcel = async (req, res) => {
     });
   }
 };
+
 
 const getproduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;

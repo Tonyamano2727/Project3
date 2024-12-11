@@ -19,13 +19,13 @@ const Adminsidebar = () => {
   };
 
   return (
-    <div className=" py-4 border-r overflow-y-auto">
+    <div className=" py-4 border-r h-[700px]">
       <div className="p-3 leading-[40px]">
         <h1 className="text-gray-500 text-[15px] px-4">MENU</h1>
         {SuperSidebar.map((el) => (
           <Fragment key={el.id}>
             {el.type === "SINGLE" && (
-              <NavLink to={el.path} className="px-4 mt-3">
+              <NavLink to={el.path} className="px-4 mt-3 flex  flex-col">
                 <span className="text-[15px] text-gray-600 font-semibold">
                   {el.text}
                 </span>

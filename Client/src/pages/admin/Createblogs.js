@@ -12,7 +12,7 @@ const CreateBlogs = () => {
   const [thumbImage, setThumbImage] = useState(null);
   const [otherImages, setOtherImages] = useState([]);
   const [validationErrors, setValidationErrors] = useState(Array(7).fill(""));
-  const [thumbError, setThumbError] = useState(""); 
+  const [thumbError, setThumbError] = useState("");
   const [imagesError, setImagesError] = useState("");
 
   const hygieneLabels = [
@@ -34,7 +34,8 @@ const CreateBlogs = () => {
         setThumbError("Thumbnail must be an image file.");
         return;
       }
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
         setThumbError("Thumbnail image size must be less than 5MB.");
         return;
       }
@@ -44,47 +45,43 @@ const CreateBlogs = () => {
     }
   };
 
-  // Handle other images file change
   const handleOtherFilesChange = (e) => {
     const files = Array.from(e.target.files);
-    const updatedErrors = []; // Reset error messages
+    const updatedErrors = [];
 
     files.forEach((file) => {
-      // Validate file type and size for each file
       if (!file.type.startsWith("image/")) {
         updatedErrors.push("All files must be image files.");
-      } else if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      } else if (file.size > 5 * 1024 * 1024) {
         updatedErrors.push("Each image size must be less than 5MB.");
       } else {
-        updatedErrors.push(""); // Clear error if valid
+        updatedErrors.push("");
       }
     });
 
     setImages(files);
     const previewImages = files.map((file) => URL.createObjectURL(file));
     setOtherImages(previewImages);
-    setImagesError(""); // Clear images error when selecting files
+    setImagesError("");
   };
 
-  // Handle description change
   const handleDescriptionChange = (index, value) => {
     const updatedDescriptions = [...description];
     updatedDescriptions[index] = value;
     setDescription(updatedDescriptions);
-    // Clear validation error when the user starts typing
+
     const updatedErrors = [...validationErrors];
-    updatedErrors[index] = value.length < 80 ? "Must be at least 80 characters." : "";
+    updatedErrors[index] =
+      value.length < 80 ? "Must be at least 80 characters." : "";
     setValidationErrors(updatedErrors);
   };
 
-  // Delete thumbnail image
   const handleDeleteThumb = () => {
     setThumb(null);
     setThumbImage(null);
-    setThumbError(""); // Clear error when deleted
+    setThumbError("");
   };
 
-  // Delete other image
   const handleDeleteOtherImage = (index) => {
     const updatedImages = [...otherImages];
     const updatedFiles = [...images];
@@ -95,26 +92,26 @@ const CreateBlogs = () => {
     setImagesError(""); // Clear error if images are deleted
   };
 
-  // Handle form submission
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate descriptions
+    
     const newValidationErrors = description.map((desc) =>
       desc.length < 80 ? "Must be at least 80 characters." : ""
     );
 
     setValidationErrors(newValidationErrors);
 
-    // Reset error states
+    
     setThumbError("");
     setImagesError("");
 
-    // Check if any validation errors exist
+ 
     if (
-      newValidationErrors.some((error) => error) || 
-      !thumb || // Check if thumbnail is missing
-      images.length === 0 // Check if additional images are missing
+      newValidationErrors.some((error) => error) ||
+      !thumb ||
+      images.length === 0 
     ) {
       if (!thumb) {
         setThumbError("Thumbnail is required.");
@@ -123,7 +120,7 @@ const CreateBlogs = () => {
       if (images.length === 0) {
         setImagesError("At least one additional image is required.");
       }
-      return; // Prevent submission if validation fails
+      return;
     }
 
     const formData = new FormData();
@@ -172,12 +169,12 @@ const CreateBlogs = () => {
   }, []);
 
   return (
-    <div className="w-[85%] bg-white p-10 rounded-2xl border">
+    <div className="w-[95%] bg-white p-10 rounded-2xl border">
       <form onSubmit={handleSubmit}>
         <div className="w-full mb-4">
           <label>Title</label>
           <input
-            className="h-10 border rounded-xl mt-1 px-4 w-full"
+            className="h-10 border rounded-full mt-1 px-4 w-full"
             type="text"
             placeholder="Blog Title"
             value={title}
@@ -196,14 +193,16 @@ const CreateBlogs = () => {
                 placeholder={`Describe ${label.toLowerCase()}`}
               />
               {validationErrors[index] && (
-                <p className="text-red-500 text-sm">{validationErrors[index]}</p>
+                <p className="text-red-500 text-sm">
+                  {validationErrors[index]}
+                </p>
               )}
             </div>
           ))}
           <div className="w-[48%]">
             <label>Category</label>
             <select
-              className="rounded-xl border h-[45px] mt-2 px-4 w-full"
+              className="rounded-full border h-[45px] mt-2 px-4 w-full"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               required>
@@ -220,7 +219,7 @@ const CreateBlogs = () => {
           <div className="flex flex-col justify-center items-center">
             <label
               htmlFor="thumbImage"
-              className="mt-2 bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer">
+              className="border rounded-full p-2">
               Thumb Image
             </label>
             <input
@@ -250,7 +249,7 @@ const CreateBlogs = () => {
           <div className="flex flex-col justify-center items-center">
             <label
               htmlFor="otherImages"
-              className="mt-2 bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer">
+              className="border rounded-full p-2">
               Other Images
             </label>
             <input
@@ -279,11 +278,20 @@ const CreateBlogs = () => {
                 ))}
               </div>
             )}
-            {imagesError && <p className="text-red-500 text-sm">{imagesError}</p>}
+            {imagesError && (
+              <p className="text-red-500 text-sm">{imagesError}</p>
+            )}
           </div>
         </div>
         <div className="w-full">
-          <Button fw type="submit" style={'w-full p-2 mt-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300'}>Create Blog</Button>
+          <Button
+            fw
+            type="submit"
+            style={
+              "w-full p-2 mt-2 bg-white rounded-full bg-gradient-to-r from-[#979db6] to-gray-300"
+            }>
+            Create Blog
+          </Button>
         </div>
       </form>
     </div>

@@ -44,7 +44,7 @@ const TopHeader = () => {
             </div>
             toanb3074@gmail.com
           </span>
-          <span className="flex gap-1 text-center items-center ml-2">
+          <span className="gap-1 text-center items-center ml-2 hidden lg:block">
             <div className="text-[16px]">
               <CiMap />
             </div>

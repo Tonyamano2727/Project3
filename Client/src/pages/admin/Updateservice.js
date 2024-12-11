@@ -21,7 +21,6 @@ const UpdateServices = ({ category, editService, setEditService }) => {
     handleSubmit,
   } = useForm();
 
-  // Khi component được mount hoặc editService thay đổi, cập nhật dữ liệu
   useEffect(() => {
     if (editService) {
       reset({
@@ -75,16 +74,13 @@ const UpdateServices = ({ category, editService, setEditService }) => {
       formData.append("thumb", blob, "thumb.jpg");
     }
 
-    // Thêm các hình ảnh khác
     otherImages.forEach(async (image) => {
       const blob = await fetch(image).then((res) => res.blob());
       formData.append("images", blob, `image-${Date.now()}.jpg`);
     });
 
-    // Gửi dữ liệu
     try {
       const response = await apiUpdateServices(formData, editService._id);
-      // Xử lý phản hồi từ server...
     } catch (error) {
       console.error("Error updating service:", error);
       enqueueSnackbar("An error occurred while updating the service.", {
@@ -94,118 +90,120 @@ const UpdateServices = ({ category, editService, setEditService }) => {
   };
 
   return (
-    <div className="w-[85%] bg-gray-300 rounded-2xl">
-      <div className="p-10">
-        <form onSubmit={handleSubmit(handleUpdateService)}>
-          <InputForm
-            label="Service Title"
-            register={register}
-            errors={errors}
-            id="title"
-            validate={{
-              required: "This field is required",
-            }}
-            placeholder="Enter service title"
-          />
+    <div className="w-full flex flex-col gap-4 text-start absolute z-50 bg-white rounded-3xl">
+      <div className="w-full bg-gray-300 rounded-2xl">
+        <div className="p-10">
+          <form onSubmit={handleSubmit(handleUpdateService)}>
+            <InputForm
+              label="Service Title"
+              register={register}
+              errors={errors}
+              id="title"
+              validate={{
+                required: "This field is required",
+              }}
+              placeholder="Enter service title"
+            />
 
-          <InputForm
-            label="Price"
-            register={register}
-            errors={errors}
-            id="price"
-            validate={{
-              required: "This field is required",
-            }}
-            placeholder="Enter service price"
-          />
+            <InputForm
+              label="Price"
+              register={register}
+              errors={errors}
+              id="price"
+              validate={{
+                required: "This field is required",
+              }}
+              placeholder="Enter service price"
+            />
 
-          <InputForm
-            label="Category"
-            register={register}
-            errors={errors}
-            id="category"
-            validate={{
-              required: "This field is required",
-            }}
-            placeholder="Enter category"
-          />
+            <InputForm
+              label="Category"
+              register={register}
+              errors={errors}
+              id="category"
+              validate={{
+                required: "This field is required",
+              }}
+              placeholder="Enter category"
+            />
 
-          <Markdoweditor
-            name="description"
-            value={payload.description}
-            changevalue={(content) =>
-              setPayload((prev) => ({ ...prev, description: content }))
-            }
-            label="Service Description"
-            setisfousdescription={setIsFocusDescription}
-          />
-          <div className="flex items-center justify-around mb-5">
-            <div className="flex flex-col justify-center items-center">
-              <label
-                htmlFor="thumbImage"
-                className="mt-2 bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer">
-                Thumb Image
-              </label>
-              <input
-                id="thumbImage"
-                className="hidden"
-                type="file"
-                accept="image/*"
-                onChange={handleThumbFileChange}
-              />
-              {thumbImage && (
-                <div className="relative">
-                  <img
-                    src={thumbImage}
-                    alt="Thumb Preview"
-                    className="mt-2 h-20 w-20 object-cover"
-                  />
-                  <button
-                    onClick={handleDeleteThumb}
-                    className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
-                    X
-                  </button>
-                </div>
-              )}
+            <Markdoweditor
+              name="description"
+              value={payload.description}
+              changevalue={(content) =>
+                setPayload((prev) => ({ ...prev, description: content }))
+              }
+              label="Service Description"
+              setisfousdescription={setIsFocusDescription}
+            />
+            <div className="flex items-center justify-around mb-5">
+              <div className="flex flex-col justify-center items-center">
+                <label
+                  htmlFor="thumbImage"
+                  className="mt-2 bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer">
+                  Thumb Image
+                </label>
+                <input
+                  id="thumbImage"
+                  className="hidden"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleThumbFileChange}
+                />
+                {thumbImage && (
+                  <div className="relative">
+                    <img
+                      src={thumbImage}
+                      alt="Thumb Preview"
+                      className="mt-2 h-20 w-20 object-cover"
+                    />
+                    <button
+                      onClick={handleDeleteThumb}
+                      className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
+                      X
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col justify-center items-center">
+                <label
+                  htmlFor="otherImages"
+                  className="mt-2 bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer">
+                  Other Images
+                </label>
+                <input
+                  id="otherImages"
+                  className="hidden"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleOtherFilesChange}
+                />
+                {otherImages.length > 0 && (
+                  <div className="mt-2 grid grid-cols-3 gap-2">
+                    {otherImages.map((image, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={image}
+                          alt={`Other Image ${index}`}
+                          className="h-20 w-20 object-cover"
+                        />
+                        <button
+                          onClick={() => handleDeleteOtherImage(index)}
+                          className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
+                          X
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="flex flex-col justify-center items-center">
-              <label
-                htmlFor="otherImages"
-                className="mt-2 bg-gradient-to-r from-blue-400 to-purple-500 text-white px-4 py-2 rounded-lg cursor-pointer">
-                Other Images
-              </label>
-              <input
-                id="otherImages"
-                className="hidden"
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleOtherFilesChange}
-              />
-              {otherImages.length > 0 && (
-                <div className="mt-2 grid grid-cols-3 gap-2">
-                  {otherImages.map((image, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={image}
-                        alt={`Other Image ${index}`}
-                        className="h-20 w-20 object-cover"
-                      />
-                      <button
-                        onClick={() => handleDeleteOtherImage(index)}
-                        className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
-                        X
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <Button type="submit">Update Service</Button>
-        </form>
+            <Button type="submit">Update Service</Button>
+          </form>
+        </div>
       </div>
     </div>
   );

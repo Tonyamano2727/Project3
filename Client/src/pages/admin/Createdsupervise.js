@@ -58,7 +58,7 @@ const Createdsupervise = () => {
   };
 
   return (
-    <div className="w-[85%] p-10 rounded-2xl border bg-white mt-5">
+    <div className="w-[95%] p-10 rounded-2xl border bg-white mt-5">
       <h2 className="text-lg font-semibold mb-4 text-center uppercase text-black ">
         Create Supervisor
       </h2>

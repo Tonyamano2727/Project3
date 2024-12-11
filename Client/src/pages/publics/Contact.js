@@ -11,7 +11,6 @@ const FQA = ({ title }, { category }) => {
   const [service, setService] = useState("");
 
   const [services, setServices] = useState([]);
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,54 +55,53 @@ const FQA = ({ title }, { category }) => {
   }, [category]);
   return (
     <div className="w-full flex items-center justify-center flex-col">
-      <div className="flex justify-center w-full ">
-        <div className="w-full  ">
-          <img
-            className="relative"
-            src={backgroundservice}
-            alt="backgroundservice"
-          />
-        </div>
-        <div className="flex absolute flex-col text-white left-20 top-[200px] p-4">
-          <h2 className="text-[45px] mb-[8px] font-bold font tracking-wide">
+      <div className="w-full relative flex justify-center items-center flex-col bg-[#E7E7E7]">
+        <img
+          className="w-full object-cover h-[200px] md:h-[350px]"
+          src={backgroundservice}
+          alt="backgroundservice"
+        />
+        <div className="absolute text-white flex flex-col items-center md:items-start md:left-20 p-4">
+          <h2 className="text-[24px] md:text-[45px] font-bold tracking-wide">
             Contact
           </h2>
           <Breadcrumb title={title} />
         </div>
       </div>
       <div className="flex items-center justify-center w-full">
-        <div className="flex ">
+        <div className="flex flex-col ">
           <div className="w-full relative">
             <img src={contactbg} />
           </div>
           <div className="flex absolute w-[50%] left-[50%] flex-col">
-            <div className="flex flex-col mt-20"> 
+            <div className="flex flex-col mt-20">
               <h3 className="text-[35px] leading-[55px] font-bold text-[#00197e]">
                 CONTACT WITH US
               </h3>
             </div>
             <form
               onSubmit={handleSubmit}
-              className="w-full gap-5 flex flex-col flex-wrap justify-center mt-5">
+              className="w-[90%] flex flex-col gap-5 mt-5 p-5 bg-white shadow-lg rounded-lg">
               <div className="flex flex-wrap gap-3 w-full">
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="p-4 w-[48%] placeholder:text-gray-500 placeholder:text-[14px] rounded-lg border border-gray-300 "
+                  className="p-4 w-full sm:w-[48%] lg:w-[48%] placeholder:text-gray-500 placeholder:text-[14px] rounded-lg border border-gray-300"
                   placeholder="Your Name*"
                 />
                 <input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="p-4 w-[48%] placeholder:text-gray-500 placeholder:text-[14px] rounded-lg border border-gray-300 "
+                  className="p-4 w-full sm:w-[48%] lg:w-[48%] placeholder:text-gray-500 placeholder:text-[14px] rounded-lg border border-gray-300"
                   placeholder="Phone No.*"
                 />
               </div>
+
               <select
                 id="options"
                 value={service}
                 onChange={(e) => setService(e.target.value)}
-                className="p-4 w-[98%] rounded-lg border border-gray-300 text-[14px] text-gray-500">
+                className="p-4 w-full rounded-lg border border-gray-300 text-[14px] text-gray-500">
                 <option value="">Select Service</option>
                 {services.map((serviceItem) => (
                   <option key={serviceItem._id} value={serviceItem.title}>
@@ -111,17 +109,16 @@ const FQA = ({ title }, { category }) => {
                   </option>
                 ))}
               </select>
+
               <button
                 type="submit"
-                className="p-4 w-[98%] rounded-lg bg-[#FFC704] transition-all duration-300 hover:bg-blue-500 hover:text-white">
+                className="p-4 w-full rounded-lg bg-[#FFC704] hover:bg-blue-500 hover:text-white transition-all duration-300">
                 Send Consultation
               </button>
             </form>
           </div>
         </div>
       </div>
-      
-      <div className="w-full lg:w-main flex leading-7 text-[15px] flex-wrap"></div>
     </div>
   );
 };

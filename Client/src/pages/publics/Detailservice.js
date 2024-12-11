@@ -60,20 +60,23 @@ const Detailservice = ({ category }) => {
 
   return (
     <div className="flex w-full justify-center flex-col items-center relative overflow-hidden">
-      <div className="flex justify-center w-full relative">
-        <div className="w-full">
-          <img src={backgroundservice} alt="backgroundservice" />
-        </div>
-        <div className="flex absolute flex-col text-white left-20 top-[70px] p-4">
-          <h2 className="text-[45px] mb-[8px] font-bold tracking-wide">
+      <div className="w-full relative flex justify-center items-center flex-col bg-[#E7E7E7]">
+        <img
+          className="w-full object-cover h-[200px] md:h-[350px]"
+          src={backgroundservice}
+          alt="backgroundservice"
+        />
+        <div className="absolute text-white flex flex-col items-center md:items-start md:left-20 p-4">
+          <h2 className="text-[24px] md:text-[45px] font-bold tracking-wide">
             Services
           </h2>
           <Breadcrumb title={title} />
         </div>
       </div>
-      <div className="w-[90%] flex justify-center gap-8 mt-20">
-        <div className="w-[33%] flex flex-col items-center">
-          <div className="h-auto bg-[#F3F3F7] w-[90%] p-6 rounded-xl">
+      <div className="w-[90%] flex flex-col lg:flex-row justify-center gap-8 mt-10">
+     
+      <div className="md:w-[33%] flex flex-col items-center">
+          <div className="h-auto bg-[#F3F3F7] md:w-[90%] p-6 rounded-xl">
             <div>
               <h6 className="text-[25px] text-[#00197e] font-semibold mb-3">
                 Category
@@ -103,7 +106,7 @@ const Detailservice = ({ category }) => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col justify-center items-center mt-4 relative">
+          <div className="flex flex-col justify-center items-center mt-4 relative w-full md:w-[90%]">
             <div className="flex items-center justify-center w-full">
               <img
                 className="w-full h-[400px] object-cover rounded-xl"
@@ -141,34 +144,26 @@ const Detailservice = ({ category }) => {
           )}
         </div>
 
-        <div className="w-[60%]">
-          <div>
-            <h1 className="text-[#00197E] text-[36px] font-bold">
-              {serviceDetail?.title}
-            </h1>
-          </div>
-          <div>
-            {serviceDetail?.description?.length > 1 && (
-              <span className="flex leading-8 mt-4 flex-col">
-                {serviceDetail?.description}
-              </span>
-            )}
-            {serviceDetail?.description?.length === 1 && (
+        <div className="w-full lg:w-[60%]">
+          <h1 className="text-[#00197E] text-[24px] md:text-[36px] font-bold">
+            {serviceDetail?.title}
+          </h1>
+          <div className="mt-4 text-[14px] md:text-[16px] leading-6 md:leading-8">
+            {serviceDetail?.description?.length > 1 ? (
+              <span>{serviceDetail?.description}</span>
+            ) : (
               <div
-                className="flex leading-8 mt-4 flex-col"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(serviceDetail?.description[0]),
-                }}></div>
+                }}
+              />
             )}
           </div>
-
-          <div className="w-full mt-[20px]">
-            <img
-              className="w-full object-cover h-auto"
-              src={serviceDetail?.thumb}
-              alt={serviceDetail?.title}
-            />
-          </div>
+          <img
+            className="w-full h-auto object-cover mt-6 rounded-xl"
+            src={serviceDetail?.thumb}
+            alt={serviceDetail?.title}
+          />
         </div>
       </div>
     </div>

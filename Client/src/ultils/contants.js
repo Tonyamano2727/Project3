@@ -801,18 +801,36 @@ export const districtsHCM = [
 ];
 
 export const timeSlots = [
-  { value: "", label: "Select a time slot" },
-  { value: "06:00 - 07:00", label: "06:00 AM - 07:00 AM" },
-  { value: "07:00 - 08:00", label: "07:00 AM - 08:00 AM" },
-  { value: "08:00 - 09:00", label: "08:00 AM - 09:00 AM" },
-  { value: "09:00 - 10:00", label: "09:00 AM - 10:00 AM" },
-  { value: "10:00 - 11:00", label: "10:00 AM - 11:00 AM" },
-  { value: "11:00 - 12:00", label: "11:00 AM - 12:00 PM" },
-  { value: "12:00 - 01:00", label: "12:00 PM - 01:00 PM" },
-  { value: "01:00 - 02:00", label: "01:00 PM - 02:00 PM" },
-  { value: "02:00 - 03:00", label: "02:00 PM - 03:00 PM" },
-  { value: "03:00 - 04:00", label: "03:00 PM - 04:00 PM" },
-  { value: "04:00 - 05:00", label: "04:00 PM - 05:00 PM" },
-  { value: "05:00 - 06:00", label: "05:00 PM - 06:00 PM" },
-  { value: "06:00 - 07:00", label: "06:00 PM - 07:00 PM" },
+  { value: "08:00", label: "08:00 AM - 09:00 AM" },
+  { value: "09:00", label: "09:00 AM - 10:00 AM" },
+  { value: "10:00", label: "10:00 AM - 11:00 AM" },
+  { value: "11:00", label: "11:00 AM - 12:00 AM" },
+  { value: "12:00", label: "12:00 AM - 01:00 PM" },
+  { value: "13:00", label: "01:00 PM - 02:00 PM" },
+  { value: "14:00", label: "02:00 PM - 03:00 PM" },
+  { value: "15:00", label: "03:00 PM - 04:00 PM" },
+  { value: "16:00", label: "04:00 PM - 05:00 PM" },
+  { value: "17:00", label: "05:00 PM - 06:00 PM" },
+  { value: "18:00", label: "06:00 PM - 07:00 PM" },
 ];
+// export const timeSlots = [
+//   { value: "", label: "Select a time slot" },
+//   { value: "06:00 - 07:00", label: "06:00 AM - 07:00 AM" },
+//   { value: "07:00 - 08:00", label: "07:00 AM - 08:00 AM" },
+//   { value: "08:00 - 09:00", label: "08:00 AM - 09:00 AM" },
+//   { value: "09:00 - 10:00", label: "09:00 AM - 10:00 AM" },
+//   { value: "10:00 - 11:00", label: "10:00 AM - 11:00 AM" },
+//   { value: "11:00 - 12:00", label: "11:00 AM - 12:00 PM" },
+//   { value: "12:00 - 01:00", label: "12:00 PM - 01:00 PM" },
+//   { value: "01:00 - 02:00", label: "01:00 PM - 02:00 PM" },
+//   { value: "02:00 - 03:00", label: "02:00 PM - 03:00 PM" },
+//   { value: "03:00 - 04:00", label: "03:00 PM - 04:00 PM" },
+//   { value: "04:00 - 05:00", label: "04:00 PM - 05:00 PM" },
+//   { value: "05:00 - 06:00", label: "05:00 PM - 06:00 PM" },
+//   { value: "06:00 - 07:00", label: "06:00 PM - 07:00 PM" },
+//   { value: "07:00 - 08:00", label: "07:00 PM - 08:00 PM" },
+//   { value: "08:00 - 09:00", label: "08:00 PM - 09:00 PM" },
+// ];
+
+
+
