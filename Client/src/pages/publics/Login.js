@@ -103,8 +103,8 @@ const Login = () => {
   return (
     <div className="bg-[#f3f4f8] flex justify-center flex-col items-center">
       <div className="items-center justify-center flex shadow-lg w-[80%] bg-white mt-10 mb-10 rounded-2xl">
-        <div className="mt-5 mb-5 rounded-md flex items-center justify-center w-main gap-5">
-          <div className="flex items-center justify-center w-[35%] bg-transparent">
+        <div className="mt-5 mb-5 rounded-md flex items-center justify-center  w-full gap-5">
+          <div className=" items-center justify-center w-[35%] bg-transparent hidden lg:block">
             <video
               src={loginfrom}
               autoPlay
@@ -113,46 +113,15 @@ const Login = () => {
               className="w-full h-auto"
             />
           </div>
-          {isForgotpassword && (
-            <div className="flex w-[60%] flex-col">
-              <h1 className="text-[25px] font-semibold text-black mb-8 leading-9">
-                Please enter your email to recover your password
-              </h1>
-              <div className="flex flex-col w-full relative">
-                <label
-                  className="text-[10px] absolute top-[-14px]"
-                  htmlFor="email">
-                  Enter your email:
-                </label>
-
-                <input
-                  type="text"
-                  id="email"
-                  className="p-2 mt-2 w-full placeholder:text-gray-500 placeholder:text-[14px] rounded-lg mb-2 border border-gray-300 focus:outline-none focus:border-transparent focus:ring-0"
-                  placeholder="email@gmail.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <div className="flex mt-5 gap-6">
-                  <Button name="Submit" handleOnclick={handleForgotPassword} />
-                  <Button
-                    name="Back"
-                    handleOnclick={() => setisForgotpassword(false)}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
           {!isForgotpassword && (
-            <div className="flex flex-col w-[60%] text-center">
+            <div className="flex flex-col w-[90%] lg:w-[60%] text-center">
               <h1 className="text-[28px] font-semibold text-black mb-8">
                 {isRegister ? "Create Account" : "Welcome Back !!!"}
               </h1>
               {isRegister && (
                 <div className="w-full flex flex-wrap gap-2 ">
                   <div className="w-full flex flex-wrap gap-2 justify-between">
-                    <div className="w-[49%]">
+                    <div className="lg:w-[49%] w-full">
                       <Inputfields
                         value={payload.firstname}
                         setValue={setpayload}
@@ -161,7 +130,7 @@ const Login = () => {
                         setinvalidFields={setinvalidFields}
                       />
                     </div>
-                    <div className="w-[49%]">
+                    <div className="lg:w-[49%] w-full">
                       <Inputfields
                         value={payload.lastname}
                         setValue={setpayload}
@@ -251,6 +220,37 @@ const Login = () => {
                     </span>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {isForgotpassword && (
+            <div className="flex w-[90%] lg:w-[60%] flex-col">
+              <h1 className="text-[18px] font-semibold text-black mb-8 leading-9 lg:text-[25px]">
+                Please enter your email to recover your password
+              </h1>
+              <div className="flex flex-col w-full relative">
+                <label
+                  className="text-[10px] absolute top-[-14px]"
+                  htmlFor="email">
+                  Enter your email:
+                </label>
+
+                <input
+                  type="text"
+                  id="email"
+                  className="p-2 mt-2 w-full placeholder:text-gray-500 placeholder:text-[14px] rounded-lg mb-2 border border-gray-300 focus:outline-none focus:border-transparent focus:ring-0"
+                  placeholder="email@gmail.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <div className="flex mt-5 gap-6">
+                  <Button name="Submit" handleOnclick={handleForgotPassword} />
+                  <Button
+                    name="Back"
+                    handleOnclick={() => setisForgotpassword(false)}
+                  />
+                </div>
               </div>
             </div>
           )}

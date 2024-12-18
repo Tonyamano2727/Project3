@@ -84,7 +84,7 @@ const Salary = () => {
 
   return (
     <div className="p-6 bg-gray-100 w-full">
-      {/* Filters */}
+    
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -136,6 +136,7 @@ const Salary = () => {
           <table className="rounded-3xl overflow-hidden w-full leading-10">
             <thead className="text-center">
               <tr className="text-[13px] text-center">
+              <th>Number</th>
                 <th>Employee's Name</th>
                 <th>Month</th>
                 <th>Year</th>
@@ -146,8 +147,10 @@ const Salary = () => {
             </thead>
             <tbody className="text-[13px] text-center">
               {filteredSalaries.length > 0 ? (
-                filteredSalaries.map((salary) => (
+                filteredSalaries.map((salary , index) => (
+                  
                   <tr key={salary._id}>
+                        <td className="p-2">{index + 1}</td>
                     <td>{salary.employee?.name || "Unknown Employee"}</td>
                     <td>{salary.month}</td>
                     <td>{salary.year}</td>

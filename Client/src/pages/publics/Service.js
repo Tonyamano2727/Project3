@@ -31,7 +31,7 @@ const Service = ({ title, category }) => {
     fetchServices();
   }, [category]);
   return (
-    <div className="w-full justify-center items-center flex flex-col bg-[#F3F3F7]">
+    <div className="w-full justify-center items-center flex flex-col bg-[white]">
       <div className="w-full relative flex justify-center items-center flex-col bg-[#E7E7E7]">
         <img
           className="w-full object-cover h-[200px] md:h-[350px]"
@@ -79,7 +79,7 @@ const Service = ({ title, category }) => {
                 alt={service.title}
                 className="w-full h-[200px] md:h-[300px] object-cover rounded-tl-xl rounded-tr-xl"
               />
-              <div className="w-full bg-white p-6 md:p-8 rounded-bl-xl rounded-br-xl h-[130px] md:h-[85px]">
+              <div className="w-full bg-[#E7E7E7] p-6 md:p-8 rounded-bl-xl rounded-br-xl h-[130px] md:h-[85px]">
                 <Link
                   className="w-full text-[#273689] text-[14px] lg:mt-0 mt-[50px] md:mt-[0px] md:text-[16px] font-medium flex items-center justify-between z-50"
                   to={`/services/${service._id}/${service.title}`}>

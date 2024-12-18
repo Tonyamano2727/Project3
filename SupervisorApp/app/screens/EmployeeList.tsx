@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  FlatList, 
-  LayoutAnimation, 
-  UIManager, 
-  Platform, 
-  Alert, 
-  Modal, 
-  TextInput, 
-  Button 
-} from 'react-native';
-import { apiGetEmployeeList, apiUpdateEmployee } from '../config/apiService';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  LayoutAnimation,
+  UIManager,
+  Platform,
+  Alert,
+  Modal,
+  TextInput,
+  ActivityIndicator,
+  ImageBackground,
+  Image,
+} from "react-native";
+import { apiGetEmployeeList, apiUpdateEmployee } from "../config/apiService";
+import houseCleaningTools from '../../assets/images/house-cleaning-tools.jpg';
 
 interface Employee {
   _id: string;
@@ -32,13 +35,13 @@ const EmployeeList = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [currentEmployee, setCurrentEmployee] = useState<Employee | null>(null);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [baseSalary, setBaseSalary] = useState<number | undefined>(undefined);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [baseSalary, setBaseSalary] = useState<string>("");
 
   useEffect(() => {
-    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+    if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
       UIManager.setLayoutAnimationEnabledExperimental(true);
     }
 
@@ -52,11 +55,11 @@ const EmployeeList = () => {
       if (response.status === 200 && response.data.success) {
         setEmployees(response.data.staff);
       } else {
-        Alert.alert('Error', response.data.mes || 'Failed to fetch employee list.');
+        Alert.alert("Error", response.data.mes || "Failed to fetch employee list.");
       }
-    } catch (error: any) {
-      console.error('Error fetching employees:', error);
-      Alert.alert('Error', 'An error occurred while fetching employee list.');
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+      Alert.alert("Error", "An error occurred while fetching employee list.");
     } finally {
       setLoading(false);
     }
@@ -64,11 +67,7 @@ const EmployeeList = () => {
 
   const toggleDetails = (id: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    if (expandedEmployeeId === id) {
-      setExpandedEmployeeId(null);
-    } else {
-      setExpandedEmployeeId(id);
-    }
+    setExpandedEmployeeId(expandedEmployeeId === id ? null : id);
   };
 
   const handleEditEmployee = (employee: Employee) => {
@@ -76,39 +75,47 @@ const EmployeeList = () => {
     setName(employee.name);
     setEmail(employee.email);
     setMobile(employee.mobile);
-    setBaseSalary(employee.baseSalary);
+    setBaseSalary(employee.baseSalary?.toString() || "");
     setModalVisible(true);
   };
 
   const handleUpdateEmployee = async () => {
-    if (currentEmployee) {
-      const updatedEmployee = {
-        name,
-        email,
-        mobile,
-        baseSalary,
-      };
+    if (!currentEmployee) return;
 
-      try {
-        const response = await apiUpdateEmployee(currentEmployee._id, updatedEmployee);
-        if (response.status === 200 && response.data.success) {
-          fetchEmployees(); 
-          setModalVisible(false);
-          Alert.alert('Success', 'Employee updated successfully.');
-        } else {
-          Alert.alert('Error', 'Failed to update employee.');
-        }
-      } catch (error) {
-        Alert.alert('Error', 'An error occurred while updating employee.');
+    const updatedEmployee = {
+      name,
+      email,
+      mobile,
+      baseSalary: Number(baseSalary),
+    };
+
+    try {
+      const response = await apiUpdateEmployee(currentEmployee._id, updatedEmployee);
+      if (response.status === 200 && response.data.success) {
+        fetchEmployees();
+        setModalVisible(false);
+        Alert.alert("Success", "Employee updated successfully.");
+      } else {
+        Alert.alert("Error", "Failed to update employee.");
       }
+    } catch (error) {
+      Alert.alert("Error", "An error occurred while updating employee.");
     }
   };
 
   const renderItem = ({ item }: { item: Employee }) => {
     const isExpanded = expandedEmployeeId === item._id;
+
     return (
       <View style={styles.employeeItem}>
-        <TouchableOpacity onPress={() => toggleDetails(item._id)}>
+        <TouchableOpacity
+          onPress={() => toggleDetails(item._id)}
+          style={styles.employeeHeader}>
+          {item.avatar ? (
+            <Image source={{ uri: item.avatar }} style={styles.avatar} />
+          ) : (
+            <View style={styles.avatarPlaceholder} />
+          )}
           <Text style={styles.employeeName}>{item.name}</Text>
         </TouchableOpacity>
         {isExpanded && (
@@ -117,8 +124,10 @@ const EmployeeList = () => {
             <Text style={styles.detailText}>Job: {item.job}</Text>
             <Text style={styles.detailText}>Mobile: {item.mobile}</Text>
             <Text style={styles.detailText}>District: {item.district}</Text>
-            {item.baseSalary !== undefined && (
-              <Text style={styles.detailText}>Base Salary: ${item.baseSalary}</Text>
+            {item.baseSalary && (
+              <Text style={styles.detailText}>
+                Base Salary: ${item.baseSalary}
+              </Text>
             )}
             <TouchableOpacity onPress={() => handleEditEmployee(item)}>
               <Text style={styles.editButton}>Edit</Text>
@@ -130,10 +139,10 @@ const EmployeeList = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={houseCleaningTools} style={styles.container}>
       <Text style={styles.title}>Employee List</Text>
       {loading ? (
-        <Text>Loading...</Text>
+        <ActivityIndicator size="large" color="#007AFF" />
       ) : (
         <FlatList
           data={employees}
@@ -141,16 +150,16 @@ const EmployeeList = () => {
           renderItem={renderItem}
           contentContainerStyle={styles.listContainer}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
-          ListEmptyComponent={() => <Text>No employees found.</Text>}
+          ListEmptyComponent={
+            <Text style={styles.emptyListText}>No employees found.</Text>
+          }
         />
       )}
 
-      {/* Modal for editing employee */}
       <Modal
         visible={modalVisible}
         animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
+        onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Edit Employee</Text>
           <TextInput
@@ -174,83 +183,144 @@ const EmployeeList = () => {
           />
           <TextInput
             style={styles.input}
-            value={baseSalary?.toString()}
-            onChangeText={(text) => setBaseSalary(Number(text))}
+            value={baseSalary}
+            onChangeText={setBaseSalary}
             placeholder="Base Salary"
             keyboardType="numeric"
           />
-          <Button title="Save" onPress={handleUpdateEmployee} />
-          <View style={styles.buttonSpacing} />
-          <Button title="Cancel" onPress={() => setModalVisible(false)} />
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={handleUpdateEmployee}>
+            <Text style={styles.saveButtonText}>Save</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.saveButton, styles.cancelButton]}
+            onPress={() => setModalVisible(false)}>
+            <Text style={styles.saveButtonText}>Cancel</Text>
+          </TouchableOpacity>
         </View>
       </Modal>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+    fontWeight: "700",
+    textAlign: "center",
+    marginVertical: 20,
+    color: "#fff",
   },
   listContainer: {
     paddingBottom: 20,
+    
   },
   employeeItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#f2f2f2',
-    borderRadius: 8,
+    padding: 16,
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+    width: "100%",
+    alignSelf: "center",
+  },
+  employeeHeader: {
+    flexDirection: "column", 
+    alignItems: "center", 
+    width: "100%", 
+  },
+  avatar: {
+    width: 200,
+    height: 100,
+    borderRadius: 25,
+    marginBottom: 8, // Space between image and name
+    alignSelf: "center", // Ensure avatar is centered
+  },
+  avatarPlaceholder: {
+    width: 100,
+    height: 50,
+    backgroundColor: "#ccc",
+    borderRadius: 25,
+    marginBottom: 8, // Space between image and name
+    alignSelf: "center", // Ensure placeholder is centered
   },
   employeeName: {
     fontSize: 18,
-    color: '#007AFF',
+    fontWeight: "500",
+    color: "#333",
+    width:200, // Ensure name has the same width as avatar
+    textAlign: "center", // Align text in the center
   },
   employeeDetails: {
-    marginTop: 10,
+    marginTop: 8,
+    paddingLeft: 16,
   },
   detailText: {
     fontSize: 14,
-    color: '#333',
-    marginBottom: 4,
+    color: "#555",
+    marginVertical: 2,
   },
   separator: {
-    height: 10,
+    height: 8,
   },
   editButton: {
-    fontSize: 14,
-    color: '#007AFF',
     marginTop: 10,
+    fontSize: 14,
+    color: "#007AFF",
+    fontWeight: "600",
+    textAlign: "center",
   },
   modalContainer: {
     flex: 1,
+    justifyContent: "center",
     padding: 20,
-    justifyContent: 'center',
-    backgroundColor: 'white',
+    backgroundColor: "#fff",
   },
   modalTitle: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 20,
-    textAlign: 'center',
+    color: "#333",
+    width: "100%"
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 12,
-    borderRadius: 5,
+    borderColor: "#ddd",
+    padding: 12,
+    marginVertical: 8,
+    borderRadius: 8,
+    backgroundColor: "#f9f9f9",
   },
-  buttonSpacing: {
-    marginVertical: 10,  
+  saveButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  saveButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  cancelButton: {
+    backgroundColor: "#FF3B30",
+  },
+  emptyListText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#888",
   },
 });
+
 
 export default EmployeeList;

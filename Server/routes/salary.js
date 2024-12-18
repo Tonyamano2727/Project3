@@ -5,7 +5,7 @@ const uploader = require('../config/cloudinary.cofig')
 
 
 router.post('/salary/:employeeId',[verifyToken,isSupervisor], ctrls.calculateSalary)
-router.get('/', ctrls.getAllSalaries)
+router.get('/',[verifyToken,isSupervisor], ctrls.getAllSalaries)
 
 
 module.exports = router

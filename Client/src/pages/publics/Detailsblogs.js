@@ -118,10 +118,10 @@ const Detailsblogs = () => {
             Detailsblogs
           </h2>
           <Breadcrumb title={blogDetails?.title} />
-          <h1 className="text-[20px] md:text-[28px] font-bold tracking-wide">{blogDetails?.title}</h1>
+          <h1 className="text-[20px] md:text-[28px] font-bold tracking-wide hidden xl:block">{blogDetails?.title}</h1>
         </div>
       </div>
-      <div className="flex justify-center w-[90%] flex-wrap gap-4 mt-10 p-5">
+      <div className="flex justify-center w-full xl:w-[90%] flex-wrap gap-4 mt-10 p-0 xl:p-5">
         <div className="w-full lg:w-[60%] flex flex-col">
           {blogDetails && (
             <div className="w-full px-4">

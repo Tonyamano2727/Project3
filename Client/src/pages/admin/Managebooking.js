@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getallbooking } from "../../apis/booking";
-import { Inputfields, Pagination, Selectinput } from "../../components";
+import {
+  Inputfields,
+  Pagination,
+  Selectinput,
+  Frombookingdetails,
+} from "../../components";
 import { useSearchParams } from "react-router-dom";
 import useDebounce from "../../hooks/useDebounce";
 import { statusOptionsBooking, sortByDate } from "../../ultils/contants";
@@ -17,6 +22,7 @@ const ManageBooking = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categories, setCategories] = useState([]);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const [selectedSortByDate, setSelectedSortByDate] = useState(
     sortByDate[0].value
   );
@@ -115,11 +121,12 @@ const ManageBooking = () => {
               <th className="">Service</th>
               <th className="">Email</th>
               <th className="">Phone</th>
-              <th className="">Address</th>
+          
               <th className="">Date</th>
               <th className="">Time Slot</th>
               <th className="">Status</th>
               <th className="">Total Price</th>
+              <th className="">Actions</th>
             </tr>
           </thead>
           <tbody className="text-center">
@@ -129,11 +136,19 @@ const ManageBooking = () => {
                 <td>{booking.category}</td>
                 <td>{booking.email}</td>
                 <td>{booking.phoneNumber}</td>
-                <td>{booking.address}</td>
+             
                 <td>{booking.date}</td>
                 <td>{booking.timeSlot}</td>
                 <td>{booking.status}</td>
                 <td>{booking.totalPrice.toLocaleString()} VND</td>
+                <td>
+                  <button
+                    type="button"
+                    className="text-blue-500 hover:underline"
+                    onClick={() => setSelectedBooking(booking)}>
+                    Show
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -148,6 +163,12 @@ const ManageBooking = () => {
         <div className="w-full flex justify-end mt-5">
           <Pagination totalCount={counts} />
         </div>
+        {selectedBooking && (
+          <Frombookingdetails
+            booking={selectedBooking}
+            onClose={() => setSelectedBooking(null)}
+          />
+        )}
       </div>
     </div>
   );

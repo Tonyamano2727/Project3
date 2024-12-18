@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Employee = require("../models/employee");
 const Booking = require("../models/booking");
 const Salary = require("../models/salary");
+const Supervisor = require("../models/supervisor");
 
 const mongoose = require("mongoose");
 
@@ -92,21 +93,32 @@ const calculateSalary = asyncHandler(async (req, res) => {
 });
 
 const getAllSalaries = asyncHandler(async (req, res) => {
-  try {
-    const salaries = await Salary.find().populate("employee", "name");
+  const { _id } = req.user; // Get supervisor's ID from the authenticated user
+  const supervisor = await Supervisor.findById(_id);
 
-    return res.json({
-      success: true,
-      data: salaries,
-    });
-  } catch (error) {
-    return res.status(500).json({
+  if (!supervisor) {
+    return res.status(404).json({
       success: false,
-      mes: "Có lỗi xảy ra khi lấy dữ liệu bảng lương.",
-      error: error.message,
+      mes: "Supervisor not found",
     });
   }
+
+  // Find employees in the same district as the supervisor
+  const staff = await Employee.find({ district: supervisor.district });
+
+  // Get the salaries for employees in the same district
+  const salaries = await Salary.find({
+    employee: { $in: staff.map(employee => employee._id) }, // Match employees in the district
+  }).populate("employee", "name district");
+
+  return res.status(200).json({
+    success: true,
+    data: salaries,
+  });
 });
+
+
+
 
 module.exports = {
   calculateSalary,

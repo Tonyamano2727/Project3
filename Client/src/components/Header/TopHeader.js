@@ -46,7 +46,7 @@ const TopHeader = () => {
           </span>
           <span className="gap-1 text-center items-center ml-2 hidden lg:block">
             <div className="text-[16px]">
-              <CiMap />
+              {/* <CiMap /> */}
             </div>
             18 / 3, Long Thoi commune, Nha Be district, Ho Chi Minh City
           </span>
