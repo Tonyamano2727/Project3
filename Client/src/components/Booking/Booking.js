@@ -5,6 +5,7 @@ import backgroundfrom from "../../assets/backgroundfrom.png";
 import icons from "../../ultils/icons";
 import { Link } from "react-router-dom";
 import { createcounsel, apiGetServices } from "../../apis";
+import { useSnackbar } from "notistack";
 
 const { FaCheck, FaArrowRightLong } = icons;
 
@@ -15,11 +16,15 @@ const Booking = ({ category }) => {
 
   const [services, setServices] = useState([]);
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!name || !phone || !service) {
-      alert("Please fill in all required fields.");
+      enqueueSnackbar("Please fill in all required fields.", {
+        variant: "warning",
+      });
       return;
     }
 
@@ -29,12 +34,18 @@ const Booking = ({ category }) => {
         mobile: phone,
         service,
       });
+
       setName("");
       setPhone("");
       setService("");
+
+      enqueueSnackbar(" Send Consultation successfully!", { variant: "success" });
     } catch (error) {
       console.error("Error creating counsel:", error);
-      alert("Failed to create booking. Please try again.");
+
+      enqueueSnackbar("Failed to create  send consultation. Please try again.", {
+        variant: "error",
+      });
     }
   };
 
