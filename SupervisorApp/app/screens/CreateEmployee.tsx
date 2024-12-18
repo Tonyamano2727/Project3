@@ -51,7 +51,6 @@ const CreateEmployee = () => {
       try {
         const response = await apiGetServiceCategory();
         const data = response.data; 
-    
 
         if (data.success) {
           setJobCategories(

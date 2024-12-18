@@ -4,6 +4,7 @@ import backgroundservice from "../../assets/backgroundservice.png";
 import contactbg from "../../assets/contactbg.png";
 import { createcounsel } from "../../apis";
 import axios from "axios";
+import { useSnackbar } from "notistack";
 
 const FQA = ({ title }, { category }) => {
   const [name, setName] = useState("");
@@ -12,26 +13,35 @@ const FQA = ({ title }, { category }) => {
 
   const [services, setServices] = useState([]);
 
+  const { enqueueSnackbar } = useSnackbar(); // Dùng để hiển thị thông báo
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!name || !phone || !service) {
-      alert("Please fill in all required fields.");
+      enqueueSnackbar("Please fill in all required fields.", {
+        variant: "warning",
+      });
       return;
     }
 
     try {
-      const response = await createcounsel({
+      await createcounsel({
         name,
         mobile: phone,
         service,
       });
+
       setName("");
       setPhone("");
       setService("");
+
+      enqueueSnackbar(" Send Consultation!", { variant: "success" });
     } catch (error) {
       console.error("Error creating counsel:", error);
-      alert("Failed to create booking. Please try again.");
+      enqueueSnackbar("Failed to create  send consultation. Please try again.", {
+        variant: "error",
+      });
     }
   };
 

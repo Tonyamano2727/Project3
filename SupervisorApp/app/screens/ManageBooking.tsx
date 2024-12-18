@@ -46,6 +46,10 @@ const ManageBooking = () => {
   const [filterStatus, setFilterStatus] = useState('');
   const [openModal, setOpenModal] = useState(false);
 
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+  };
+
   // Fetch bookings and employees
   const fetchBookings = async () => {
     try {
@@ -207,61 +211,108 @@ const ManageBooking = () => {
 
       {/* Modal */}
       <Modal visible={openModal} onRequestClose={handleCloseModal}>
-        <View style={{ padding: 20 }}>
-          <Text style={{ fontSize: 20 }}>Update Booking</Text>
+  <View style={{ padding: 20 }}>
+    <View style={{ marginVertical: 10 }}>
+      <Text style={{ fontSize: 20 }}>Status</Text>
+      <View style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 20, overflow: 'hidden', marginTop: 15 }}>
+        <Picker
+          selectedValue={selectedBooking?.status || ''}
+          onValueChange={(itemValue) =>
+            setSelectedBooking((prev) => (prev ? { ...prev, status: itemValue } : prev))
+          }
+        >
+          <Picker.Item label="Pending" value="Pending" />
+          <Picker.Item label="Confirmed" value="Confirmed" />
+          <Picker.Item label="In-progress" value="In-progress" />
+          <Picker.Item label="Completed" value="Completed" />
+          <Picker.Item label="Canceled" value="Canceled" />
+        </Picker>
+      </View>
+    </View>
 
-          <View style={{ marginVertical: 10 }}>
-            <Text>Status</Text>
-            <Picker
-              selectedValue={selectedBooking?.status || ''}
-              onValueChange={(itemValue) =>
-                setSelectedBooking(prev => (prev ? { ...prev, status: itemValue } : prev))
-              }
-            >
-              <Picker.Item label="Pending" value="Pending" />
-              <Picker.Item label="Confirmed" value="Confirmed" />
-              <Picker.Item label="In-progress" value="In-progress" />
-              <Picker.Item label="Completed" value="Completed" />
-              <Picker.Item label="Canceled" value="Canceled" />
-            </Picker>
-          </View>
+    <View style={{ marginVertical: 10 }}>
+      <Text style={{ fontSize: 20 }}>Employee</Text>
+      <View style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 20, overflow: 'hidden', marginTop: 15 }}>
+        <Picker
+          selectedValue={selectedBooking?.employeeDetails[0]?.employeeId || ''}
+          onValueChange={(itemValue) => {
+            const selectedEmployee = employees.find((e: Employee) => e._id === itemValue);
+            setSelectedBooking((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    employeeDetails: [
+                      { employeeId: itemValue, name: selectedEmployee?.name || '' },
+                    ],
+                  }
+                : prev
+            );
+          }}
+        >
+          {employees.map((employee: Employee) => (
+            <Picker.Item key={employee._id} label={employee.name} value={employee._id} />
+          ))}
+        </Picker>
+      </View>
+    </View>
 
-          <View style={{ marginVertical: 10 }}>
-            <Text>Employee</Text>
-            <Picker
-              selectedValue={selectedBooking?.employeeDetails[0]?.employeeId || ''}
-              onValueChange={(itemValue) => {
-                const selectedEmployee = employees.find((e: Employee) => e._id === itemValue);
-                setSelectedBooking(prev => (prev ? {
-                  ...prev,
-                  employeeDetails: [{ employeeId: itemValue, name: selectedEmployee?.name || '' }]
-                } : prev));
-              }}
-            >
-              {employees.map((employee: Employee) => (
-                <Picker.Item key={employee._id} label={employee.name} value={employee._id} />
-              ))}
-            </Picker>
-          </View>
+    <View style={{ marginVertical: 10 }}>
+    <Text style={{ fontSize: 20 }}>
+      Price: {formatCurrency(selectedBooking?.price || 0)}
+    </Text>
+      <Text style={{ fontSize: 20, marginTop: 15 }}>Quantity</Text>
+      <TextInput
+        style={{
+          borderWidth: 1,
+          borderColor: '#ccc',
+          borderRadius: 20,
+          paddingHorizontal: 10,
+          height: 40,
+          fontSize: 15,
+          marginTop: 15,
+        }}
+        keyboardType="numeric"
+        value={selectedBooking?.quantity?.toString() || ''}
+        onChangeText={(text) =>
+          setSelectedBooking((prev) =>
+            prev ? { ...prev, quantity: parseInt(text) } : prev
+          )
+        }
+      />
+    </View>
 
-          <View style={{ marginVertical: 10 }}>
-            <Text>Price: {selectedBooking?.price || 0} VND</Text>
-            <TextInput
-              keyboardType="numeric"
-              value={selectedBooking?.quantity?.toString() || ''}
-              onChangeText={(text) =>
-                setSelectedBooking(prev => (prev ? { ...prev, quantity: parseInt(text) } : prev))
-              }
-            />
-          </View>
+  <View style={{ justifyContent: 'space-between', padding: 20 }}>
+    {/* Nút Save */}
+    <TouchableOpacity
+      style={{
+        backgroundColor: '#007bff', // Màu nền của nút
+        borderRadius: 10, // Bo góc
+        padding: 10,
+        alignItems: 'center',
+      }}
+      onPress={handleSubmitUpdate}
+    >
+      <Text style={{ color: 'white', fontSize: 16 }}>Save</Text>
+    </TouchableOpacity>
 
-            <View style={{ justifyContent: 'space-between', padding: 20 }}>
-                <Button title="Save" onPress={handleSubmitUpdate} />
-                <View style={{ height: 15 }} />
-                <Button title="Close" onPress={handleCloseModal} />
-            </View>
-        </View>
-      </Modal>
+    <View style={{ height: 15 }} />
+
+      {/* Nút Close */}
+      <TouchableOpacity
+        style={{
+          backgroundColor: '#ff5733', 
+          borderRadius: 10, 
+          padding: 10,
+          alignItems: 'center',
+        }}
+        onPress={handleCloseModal}
+      >
+        <Text style={{ color: 'white', fontSize: 16 }}>Close</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
+
 
       {/* Snackbar */}
       {snackbarOpen && (
