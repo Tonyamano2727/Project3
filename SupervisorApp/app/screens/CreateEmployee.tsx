@@ -47,8 +47,9 @@ const CreateEmployee = () => {
 
     const fetchJobCategories = async () => {
       try {
-        const response = await fetch("http://192.168.20.193:5000/api/categoryservice");
-        const data = await response.json();
+        const response = await apiGetServiceCategory();
+        const data = response.data; 
+    
         if (data.success) {
           setJobCategories(
             data.categories.map((job: any) => ({
@@ -56,9 +57,12 @@ const CreateEmployee = () => {
               value: job.title,
             }))
           );
+        } else {
+          Alert.alert("Error", "Failed to fetch job categories.");
         }
       } catch (error) {
         Alert.alert("Error", "An error occurred while fetching job categories.");
+        console.error("API Error:", error);
       }
     };
 
