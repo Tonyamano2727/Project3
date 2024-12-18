@@ -29,7 +29,7 @@ const Mywhistlist = ({ title }) => {
             <Breadcrumb title={title} />
           </div>
         </div>
-        <div className="w-full flex flex-wrap gap-4">
+        <div className="w-[90%] flex flex-wrap gap-4 justify-center items-center mt-10">
           {current?.wishlist?.map((el) => (
             <div className="flex w-[45%] md:w-[30%] lg:w-[22%] xl:w-[24%]">
               <Product key={el.id} pid={el._id} productData={el} />

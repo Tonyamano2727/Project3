@@ -204,11 +204,11 @@ const getBookings = async (req, res) => {
 
 const getAllBookings = async (req, res) => {
   const queries = { ...req.query };
-  // Tách các trường dặt biệt
+  
   const excludeFields = ["limit", "sort", "page", "fields"];
   excludeFields.forEach((el) => delete queries[el]);
 
-  // Format lại các operator cho đúng cú pháp mongoose
+  
   let queryString = JSON.stringify(queries);
   queryString = queryString.replace(
     /\b(gte|gt|lt|lte)\b/g,

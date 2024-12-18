@@ -162,7 +162,7 @@ const Manageblogs = () => {
           <tbody className="text-center">
             {blogs.map((blog, idx) => (
               <tr
-                className="text-[13px] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none"
+                className="text-[11px] border-b transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none"
                 key={blog._id}>
                 <td>{idx + 1}</td>
                 <td>
@@ -176,13 +176,13 @@ const Manageblogs = () => {
                   <div className="flex items-center justify-center">
                     <span
                       onClick={() => setEditBlog(blog)}
-                      className="hover:underline cursor-pointer px-2 text-blue-500">
-                      <FaEdit size={20} />
+                      className="hover:underline text-[12px] cursor-pointer px-2 text-blue-500">
+                     Update
                     </span>
                     <span
                       onClick={() => handleDeleteBlog(blog._id)}
-                      className="text-red-500 hover:underline cursor-pointer px-2">
-                      <RiDeleteBin6Line size={20} />
+                      className="text-red-500 text-[12px] hover:underline cursor-pointer px-2">
+                      Delete
                     </span>
                   </div>
                 </td>

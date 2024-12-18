@@ -8,8 +8,8 @@ import {
 import { fetchDistricts } from './../../apis/mapApi';
 
 const ManageHotDistrict = () => {
-  const [hotDistricts, setHotDistricts] = useState([]); // Danh sách quận nóng
-  const [districts, setDistricts] = useState([]); // Danh sách quận lấy từ API
+  const [hotDistricts, setHotDistricts] = useState([]); 
+  const [districts, setDistricts] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingId, setEditingId] = useState(null);
@@ -19,7 +19,7 @@ const ManageHotDistrict = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const inputRef = useRef(null);
 
-  // Lấy danh sách API quận 
+  
   useEffect(() => {
     const loadDistricts = async () => {
       try {

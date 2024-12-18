@@ -41,7 +41,7 @@ const Frombooking = ({ handleCloseForm }) => {
     notes: "",
   });
 
-  // Lấy thông tin dịch vụ
+
   useEffect(() => {
     const fetchServiceDetails = async () => {
       try {
@@ -55,7 +55,7 @@ const Frombooking = ({ handleCloseForm }) => {
     fetchServiceDetails();
   }, [sid]);
 
-  // Lấy danh sách quận trong Hồ Chí Minh
+ 
   useEffect(() => {
     const loadDistricts = async () => {
       try {
@@ -68,7 +68,7 @@ const Frombooking = ({ handleCloseForm }) => {
     loadDistricts();
   }, []);
 
-  // Lấy danh sách phường/xã khi chọn quận
+  
   const handleDistrictChange = async (e) => {
     const selectedDistrictId = e.target.value;
     const district = districts.find(
@@ -93,7 +93,7 @@ const Frombooking = ({ handleCloseForm }) => {
       const wards = await fetchWards(selectedDistrictId);
       setWards(wards);
 
-      // Kiểm tra quận nóng
+      
       const response = await gethotdistric(district.name);
       if (response.success) {
         const hotDistrict = response.data.find((d) => d.name === district.name);
@@ -144,13 +144,13 @@ const Frombooking = ({ handleCloseForm }) => {
     }
   }, [formData.quantity, servicePrice, isHotDistrict, percentage]);
 
-  // Xử lý nhập liệu
+ 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  // Xử lý gửi form
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.district || !formData.ward) {
@@ -177,28 +177,28 @@ const Frombooking = ({ handleCloseForm }) => {
   };
 
   const getAvailableTimeSlots = () => {
-    if (!formData.date) return []; // Nếu chưa chọn ngày, không hiển thị time slot
+    if (!formData.date) return []; 
 
-    const selectedDate = new Date(formData.date); // Ngày được chọn
-    const currentDate = new Date(); // Ngày hiện tại
+    const selectedDate = new Date(formData.date); 
+    const currentDate = new Date(); 
 
-    // Nếu ngày được chọn là hôm nay, lọc các time slot dựa trên giờ hiện tại
+
     if (selectedDate.toDateString() === currentDate.toDateString()) {
       return timeSlots.filter((slot) => {
-        const [hours, minutes] = slot.value.split(":").map(Number); // Parse giờ và phút từ time slot
-        const slotTime = new Date(); // Tạo thời gian cho time slot
+        const [hours, minutes] = slot.value.split(":").map(Number); 
+        const slotTime = new Date();
         slotTime.setHours(hours, minutes, 0, 0);
 
-        return slotTime > currentDate; // Chỉ lấy các time slot trong tương lai
+        return slotTime > currentDate; 
       });
     }
 
-    // Nếu ngày được chọn trong tương lai, hiển thị tất cả time slot
+
     if (selectedDate > currentDate) {
       return timeSlots;
     }
 
-    // Nếu ngày trong quá khứ, không hiển thị time slot
+    
     return [];
   };
 
@@ -237,7 +237,7 @@ const Frombooking = ({ handleCloseForm }) => {
               placeholder="Customer name"
             />
           </div>
-          {/* Email */}
+     
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Email
@@ -280,18 +280,7 @@ const Frombooking = ({ handleCloseForm }) => {
               required
               placeholder="House number, street name"
             />
-            {suggestions.length > 0 && (
-              <ul className="absolute z-10 bg-white border border-gray-300 rounded w-full max-h-40 overflow-y-auto mt-1">
-                {suggestions.map((suggestion, index) => (
-                  <li
-                    key={index}
-                    className="p-2 cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSuggestionClick(suggestion)}>
-                    {suggestion.description}
-                  </li>
-                ))}
-              </ul>
-            )}
+            
           </div>
       
           <div className="w-[45%]">

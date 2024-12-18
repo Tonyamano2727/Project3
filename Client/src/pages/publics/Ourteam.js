@@ -56,7 +56,7 @@ const Ourteam = ({ title }) => {
   }, [params, queriesDebounce, queries, sort]);
 
   return (
-    <div className="w-full flex justify-center items-center flex-col bg-[#E7E7E7]">
+    <div className="w-full flex justify-center items-center flex-col bg-[white]">
       <div className="w-full relative flex justify-center items-center flex-col bg-[#E7E7E7]">
         <img
           className="w-full object-cover h-[200px] md:h-[350px]"

@@ -17,7 +17,7 @@ const Fromupdateprofile = ({ onClose }) => {
     reset,
   } = useForm();
 
-  const { enqueueSnackbar } = useSnackbar(); // Initialize notistack
+  const { enqueueSnackbar } = useSnackbar(); 
 
   useEffect(() => {
     reset({

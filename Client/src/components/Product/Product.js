@@ -23,7 +23,7 @@ const Product = ({ productData, pid }) => {
   const location = useLocation();
   const [isShowOption, setIsShowOption] = useState(false);
   const { current } = useSelector((state) => state.user);
-  const { enqueueSnackbar } = useSnackbar(); // Initialize notistack
+  const { enqueueSnackbar } = useSnackbar(); 
 
   const handleClickOptions = async (e, flag) => {
     e.stopPropagation();
@@ -101,7 +101,7 @@ const Product = ({ productData, pid }) => {
   return (
     <div className="w-full px-[10px] text-base">
       <div
-        className="w-full flex flex-col items-center"
+        className="w-full flex flex-col items-center border rounded-3xl p-2 bg-[#f7f7f7]"
         onMouseEnter={(e) => {
           e.stopPropagation();
           setIsShowOption(true);
@@ -158,23 +158,31 @@ const Product = ({ productData, pid }) => {
           <img
             src={productData?.thumb || ""}
             alt=""
-            className="h-[203px] object-contain"
+            className="h-[200px] object-contain bg-transparent"
           />
-        </div>
-        <div className="flex flex-col items-center gap-1 w-full leading-8">
-          <span className="line-clamp-1 font-semibold text-[20px] mt-4">
-            {productData?.title}
-          </span>
-          <span className="flex h-4">
-            {renderStarFromNumber(productData?.totalRatings)}
-          </span>
-          <span>{`${formatMoney(productData?.price)} VNĐ `}</span>
           {productData?.quantity === 0 && (
-            <span className="text-red-500 text-sm mt-2">Out of stock</span>
+            <span className="text-red-500 text-sm mt-2 absolute top-0 bg-red-300">
+              Out of stock
+            </span>
           )}
           {productData?.quantity >= 1 && (
-            <span className="text-red-500 text-sm mt-2">In stock</span>
+            <span className="text-red-500 text-sm mt-2 absolute top-0 p-1 px-[20px] right-[-10px]">
+              In stock
+            </span>
           )}
+        </div>
+
+        <div className="flex flex-col items-center gap-1 w-full leading-8">
+        <span className="flex h-4 mb-2 mt-2">
+            {renderStarFromNumber(productData?.totalRatings)}
+          </span>
+          <div className="flex items-center justify-between w-[90%] mb-2">
+            <span className="text-sm text-gray-700 truncate w-[50%]">
+              {productData?.title}
+            </span>
+            <span className="text-sm text-gray-700">{`${formatMoney(productData?.price)} VNĐ `}</span>
+          </div>
+          
         </div>
       </div>
     </div>
