@@ -49,10 +49,9 @@ const CreateEmployee = () => {
 
     const fetchJobCategories = async () => {
       try {
-
         const response = await apiGetServiceCategory();
         const data = response.data; 
-    
+
         if (data.success) {
           setJobCategories(
             data.categories.map((job: any) => ({
