@@ -1,13 +1,20 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { apigetorder, apiupdatestatusorder } from "../../apis"; // Import the API function
-import { InputForm, Pagination, Selectinput } from "../../components";
+import { apigetorder, apiupdatestatusorder } from "../../apis";
+import {
+  InputForm,
+  Pagination,
+  Selectinput,
+  Fromorderdetails,
+} from "../../components";
 import { useForm } from "react-hook-form";
 import { formatMoney } from "../../ultils/helper";
 import moment from "moment";
+
 import useDebounce from "../../hooks/useDebounce";
 import { useSearchParams } from "react-router-dom";
 import { statusOptions, sortByDate } from "../../ultils/contants";
 import { IoMdCreate } from "react-icons/io";
+import icons from "../../ultils/icons";
 
 const ManageOrder = () => {
   const [Order, setOrder] = useState([]);
@@ -16,8 +23,9 @@ const ManageOrder = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [sort, setSort] = useState("");
   const [totalAmount, setTotalAmount] = useState(0);
-  const [isEditing, setIsEditing] = useState(null); 
+  const [isEditing, setIsEditing] = useState(null);
   const [tempStatus, setTempStatus] = useState("");
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const {
     register,
@@ -26,7 +34,6 @@ const ManageOrder = () => {
   } = useForm();
   const q = watch("q");
 
-  // Fetch orders from the API
   const fetchOrder = async (params) => {
     const response = await apigetorder({
       ...params,
@@ -95,11 +102,10 @@ const ManageOrder = () => {
     }
   };
 
-
   const changeValue = useCallback((value, type) => {
     if (type === "status") {
       setSelectedStatus(value);
-      setTempStatus(""); 
+      setTempStatus("");
     } else if (type === "sortByDate") {
       setSort(value);
     }
@@ -122,13 +128,13 @@ const ManageOrder = () => {
 
       <div className="w-full flex justify-end items-center mb-4 gap-5 mt-3">
         <Selectinput
-        className={'bg-gradient-to-r from-[#979db6] to-gray-300'}
+          className={"bg-gradient-to-r from-[#979db6] to-gray-300"}
           options={statusOptions}
           changeValue={(value) => changeValue(value, "status")}
           value={selectedStatus}
         />
         <Selectinput
-         className={'bg-gradient-to-r from-[#979db6] to-gray-300'}
+          className={"bg-gradient-to-r from-[#979db6] to-gray-300"}
           options={sortByDate}
           changeValue={(value) => changeValue(value, "sortByDate")}
           value={sort}
@@ -140,59 +146,54 @@ const ManageOrder = () => {
           <thead>
             <tr className="text-[13px]">
               <th className="">#</th>
-              <th className="">Products</th>
+             
               <th className="">Total</th>
               <th className="">Status</th>
               <th className="">Address</th>
               <th className="">Created At</th>
-              <th className="">Actions</th> {/* Thêm cột cho Actions */}
+              <th className="">Actions</th>
             </tr>
           </thead>
           <tbody className="text-[11px]">
             {Order.map((el, idx) => (
               <tr key={el._id}>
                 <td className="text-center">{idx + 1}</td>
-                <td>
-                  <span className="flex flex-col items-center justify-center">
-                    {el.products?.map((item) => (
-                      <span key={item._id}>
-                        {`${item.title} - ${item.color} - ${formatMoney(
-                          item.price
-                        )} VND`}
-                      </span>
-                    ))}
-                  </span>
-                </td>
+                
                 <td className="text-center">{`${formatMoney(
                   el.total * 23500
                 )} VND`}</td>
                 <td className="text-center">
                   {isEditing === el._id ? (
                     <Selectinput
-                      options={statusOptions} 
-                      changeValue={(value) => setTempStatus(value)} // Update temporary status
-                      value={tempStatus || el.status} // Use tempStatus if editing
+                      options={statusOptions}
+                      changeValue={(value) => setTempStatus(value)} 
+                      value={tempStatus || el.status} 
                     />
                   ) : (
-                    el.status 
+                    el.status
                   )}
                 </td>
                 <td className="text-center">{el.address}</td>
                 <td className="text-center">
                   {moment(el.createdAt).format("DD/MM/YYYY")}
                 </td>
-                <td className="py-2 px-4">
+                <td className="py-2 px-4 text-blue-500">
                   <div className="flex justify-center items-center">
+                    <button
+                      className=""
+                      onClick={() => setSelectedOrder(el)} 
+                    >
+                      Detail
+                    </button>
                     {isEditing === el._id ? (
-                      <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded"
+                      <span
+                        className=" px-4"
                         onClick={() => {
-                          updateOrderStatus(el._id, tempStatus); // Use tempStatus for update
+                          updateOrderStatus(el._id, tempStatus); 
                           setIsEditing(null);
-                        }}
-                      >
+                        }}>
                         Save
-                      </button>
+                      </span>
                     ) : (
                       <span
                         onClick={() => {
@@ -200,7 +201,7 @@ const ManageOrder = () => {
                           setTempStatus(el.status); // Set temp status when editing starts
                         }}
                         className="px-2 hover:underline cursor-pointer">
-                        <IoMdCreate size={20} color="blue" />
+                        Update
                       </span>
                     )}
                   </div>
@@ -218,6 +219,12 @@ const ManageOrder = () => {
       <div className="w-full flex justify-end my-8">
         <Pagination totalCount={counts} />
       </div>
+      {selectedOrder && (
+        <Fromorderdetails
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
+      )}
     </div>
   );
 };

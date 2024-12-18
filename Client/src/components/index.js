@@ -47,6 +47,8 @@ export {default as Rightoverview} from './Rightoverview/Rightoverview'
 export {default as Fromupdateprofile} from './Fromupdateprofile/Fromupdateprofile'
 export {default as Fromchangepassword} from './Fromchangepassword/Fromchangepassword'
 export {default as Frombookingplan} from './Frombooking/Frombookingplan'
+export {default as Fromorderdetails} from './Fromorderdetails/Fromorderdetails'
+export {default as Frombookingdetails} from './Frombookingdetails/Frombookingdetails'
 
 
 

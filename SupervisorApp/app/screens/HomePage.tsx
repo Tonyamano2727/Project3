@@ -1,61 +1,61 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  ImageBackground,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/types';
+import houseCleaningTools from '../../assets/images/house-cleaning-tools.jpg';
 
 type HomePageNavigationProp = StackNavigationProp<RootStackParamList, 'HomePage'>;
+
 const HomePage = () => {
-  const [isEmployeeMenuOpen, setIsEmployeeMenuOpen] = useState(false);
   const navigation = useNavigation<HomePageNavigationProp>();
-
-  const toggleEmployeeMenu = () => {
-    setIsEmployeeMenuOpen(!isEmployeeMenuOpen);
-  };
-
-  const closeEmployeeMenu = () => {
-    setIsEmployeeMenuOpen(false);
-  };
 
   const handleNavigate = (screen: keyof RootStackParamList) => {
     navigation.navigate(screen);
-    setIsEmployeeMenuOpen(false); 
   };
 
   return (
-    <TouchableWithoutFeedback onPress={closeEmployeeMenu}>
-      <View style={styles.container}>
-        
-        <View style={styles.dropdownContainer}>
-          <TouchableOpacity style={styles.mainButton} onPress={toggleEmployeeMenu}>
-            <Text style={styles.buttonText}>Manage Employee</Text>
+    <TouchableWithoutFeedback onPress={() => {}}>
+      <ImageBackground source={houseCleaningTools} style={styles.container}>
+        <View style={styles.overlay}>
+          {/* Manage Employee Buttons */}
+          <TouchableOpacity
+            style={styles.mainButton}
+            onPress={() => handleNavigate('EmployeeList')}
+          >
+            <Text style={styles.buttonText}>Employee List</Text>
           </TouchableOpacity>
-          
-          {isEmployeeMenuOpen && (
-            <View style={styles.dropdown}>
-              <TouchableOpacity
-                style={styles.dropdownButton}
-                onPress={() => handleNavigate('EmployeeList')}
-              >
-                <Text style={styles.dropdownButtonText}>Employee List</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.dropdownButton}
-                onPress={() => handleNavigate('CreateEmployee')}
-              >
-                <Text style={styles.dropdownButtonText}>Create Employee</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.dropdownButton} onPress={() => handleNavigate('Salary')}>
-                <Text style={styles.dropdownButtonText}>Salary</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
 
-        <TouchableOpacity style={styles.mainButton} onPress={() => handleNavigate('ManageBooking')}>
-          <Text style={styles.buttonText}>Manage Booking</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            style={styles.mainButton}
+            onPress={() => handleNavigate('CreateEmployee')}
+          >
+            <Text style={styles.buttonText}>Create Employee</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.mainButton}
+            onPress={() => handleNavigate('Salary')}
+          >
+            <Text style={styles.buttonText}>Salary</Text>
+          </TouchableOpacity>
+
+          {/* Manage Booking Button */}
+          <TouchableOpacity
+            style={styles.mainButton}
+            onPress={() => handleNavigate('ManageBooking')}
+          >
+            <Text style={styles.buttonText}>Manage Booking</Text>
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
     </TouchableWithoutFeedback>
   );
 };
@@ -65,45 +65,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#fff', 
   },
-  dropdownContainer: {
-    width: '80%',
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    width: '100%',
+    height: '100%',
   },
   mainButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#ffc703',
     paddingVertical: 12,
     paddingHorizontal: 25,
-    borderRadius: 5,
-    marginBottom: 10,
+    borderRadius: 20,
+    marginBottom: 14,
+    width: '50%', 
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
-  },
-  dropdown: {
-    width: '100%',
-    backgroundColor: '#f9f9f9',
-    borderRadius: 5,
-    marginTop: 10,
-    elevation: 5, 
-    shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  dropdownButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  dropdownButtonText: {
-    fontSize: 16,
-    color: '#007AFF',
+    fontSize: 14,
+    
+    textAlign: 'center', 
   },
 });
 

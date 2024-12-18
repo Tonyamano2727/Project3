@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 import { useSearchParams } from "react-router-dom";
 import { IoMdCreate } from "react-icons/io";
-
+import { TfiSave } from "react-icons/tfi";
 const ManageUser = () => {
   const { enqueueSnackbar } = useSnackbar(); 
   const [invalidFields, setInvalidFields] = useState(null);
@@ -147,7 +147,7 @@ const ManageUser = () => {
               {users?.map((el, idx) => (
                 <tr
                   key={el._id}
-                  className="text-[11px] transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#e0a96a] focus:ring-opacity-50">
+                  className="text-[11px] border-b transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#e0a96a] focus:ring-opacity-50">
                   <td className="text-center">{idx + 1}</td>
                   <td>
                     <span>{el.email}</span>
@@ -165,7 +165,7 @@ const ManageUser = () => {
                     {editEl?._id === el._id ? (
                       <select
                         {...register("isBlocked")}
-                        className="p-2 rounded-2xl  w-full text-[14px]  px-4 bg-gradient-to-r from-[#d3b491] to-[#e07c93]"
+                        className="p-2 rounded-2xl  w-full text-[14px]  px-4 bg-gradient-to-r from-[#979db6] to-gray-300"
                         onChange={(e) => setValue("isBlocked", e.target.value)}>
                         <option value="Active">Active</option>
                         <option value="Blocked">Blocked</option>
@@ -181,13 +181,13 @@ const ManageUser = () => {
                     <div className="flex justify-center items-center">
                       {editEl?._id === el._id ? (
                         <Button fw type="submit" style={'w-auto'}>
-                          Update
+                         Update
                         </Button>
                       ) : (
                         <span
                           onClick={() => setEditEl(el)}
                           className="px-2 hover:underline cursor-pointer">
-                          <IoMdCreate size={20} color="blue" />
+                         Change
                         </span>
                       )}
                     </div>

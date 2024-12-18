@@ -46,8 +46,12 @@ import { HiOutlineLogout } from "react-icons/hi";
 import { FaUsers } from "react-icons/fa6";
 import { BiLike } from "react-icons/bi";
 import { BiDislike } from "react-icons/bi";
+import { MdOutlineNavigateNext } from "react-icons/md";
+import { GrFormPrevious } from "react-icons/gr";
 const icons = {
   BiLike,
+  MdOutlineNavigateNext,
+  GrFormPrevious,
   BiDislike,
   IoIosArrowForward,
   HiOutlineLogout,

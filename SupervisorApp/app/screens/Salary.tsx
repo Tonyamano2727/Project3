@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Button, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, Button, RefreshControl, ScrollView } from 'react-native';
 import { apiGetEmployeeList, apiGetSalary } from '../config/apiService'; // Ensure the correct API import
 import { Picker } from '@react-native-picker/picker';
 
@@ -81,7 +81,7 @@ const Salary = () => {
     setIsRefreshing(false); // Stop refreshing
   };
 
-  const renderSalaryItem = ({ item }: { item: any }) => (
+  const renderSalaryItem = (item: any) => (
     <View style={styles.salaryItem}>
       <Text style={styles.text}>Employee: {item.employee?.name || 'N/A'}</Text>
       <Text style={styles.text}>Month: {item.month}</Text>
@@ -96,19 +96,18 @@ const Salary = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Salary Management</Text>
 
-      {/* Filter Section */}
+      {/* Compact Filter Section */}
       <View style={styles.filterSection}>
-        <Text style={styles.subtitle}>Filter by Month and Year</Text>
+        <Text style={styles.subtitle}>Filter</Text>
 
         {/* Month Filter */}
         <View style={styles.pickerWrapper}>
-          <Text>Month</Text>
           <Picker
             selectedValue={filterMonth}
             onValueChange={(itemValue) => setFilterMonth(itemValue)}
             style={styles.picker}
           >
-            <Picker.Item label="All" value="" />
+            <Picker.Item label="All Months" value="" />
             {months.map((month) => (
               <Picker.Item key={month} label={`Month ${month}`} value={month} />
             ))}
@@ -117,35 +116,28 @@ const Salary = () => {
 
         {/* Year Filter */}
         <View style={styles.pickerWrapper}>
-          <Text>Year</Text>
           <Picker
             selectedValue={filterYear}
             onValueChange={(itemValue) => setFilterYear(itemValue)}
             style={styles.picker}
           >
-            <Picker.Item label="All" value="" />
+            <Picker.Item label="All Years" value="" />
             {years.map((year) => (
               <Picker.Item key={year} label={year} value={year} />
             ))}
           </Picker>
         </View>
 
-        <Button title="Apply Filter" onPress={handleFilterChange} />
+        <Button title="Apply" onPress={handleFilterChange} />
       </View>
 
-      {/* Salary List */}
-      <FlatList
-        data={filteredSalaries}
-        renderItem={renderSalaryItem}
-        keyExtractor={(item) => item._id || item.employee?._id}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={onRefresh}
-          />
-        }
-        contentContainerStyle={styles.flatListContainer}
-      />
+      {/* Full-Scroll View for Salary List */}
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}
+      >
+        {filteredSalaries.map((item) => renderSalaryItem(item))}
+      </ScrollView>
     </View>
   );
 };
@@ -171,7 +163,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   pickerWrapper: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   picker: {
     height: 50,
@@ -184,7 +176,6 @@ const styles = StyleSheet.create({
   salaryItem: {
     padding: 15,
     marginBottom: 10,
-    marginTop: 10,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
@@ -192,8 +183,8 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
   },
-  flatListContainer: {
-    paddingBottom: 20, 
+  scrollViewContent: {
+    paddingBottom: 20,
   },
 });
 

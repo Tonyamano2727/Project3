@@ -4,8 +4,8 @@ import Product from "../Product/Product";
 import Slider from "react-slick";
 
 const tabs = [
-  { id: 1, name: "Hot products" },
-  { id: 2, name: "Test" },
+  { id: 1, name: "Newly launched" },
+  { id: 2, name: "Best Sellers" },
 ];
 var settings = {
   dots: false,
@@ -17,21 +17,21 @@ var settings = {
     {
       breakpoint: 1024,
       settings: {
-        slidesToShow: 3,
+        slidesToShow: 2,
         slidesToScroll: 2
       }
     },
     {
       breakpoint: 768,
       settings: {
-        slidesToShow: 3,
+        slidesToShow: 2,
         slidesToScroll: 1
       }
     },
     {
       breakpoint: 480,
       settings: {
-        slidesToShow: 2,
+        slidesToShow: 1,
         slidesToScroll: 1
       }
     }
@@ -46,8 +46,8 @@ const TabletandIpad = () => {
     const fectchProducts = async () => {
       const [laptopResponse, tabletResponse] =
         await Promise.all([
-        apiGetProducts({ sort: "-createdAt"}),
-        apiGetProducts({ sort: "category",category: "Test"}),
+        apiGetProducts({ sort: "createdAt"}),
+        apiGetProducts({ sort: "sold" }),
         ]);
       if (laptopResponse?.success) {
         setLaptop(laptopResponse.products);
@@ -71,7 +71,7 @@ const TabletandIpad = () => {
           {tabs.map((el) => (
             <span
               key={el.id}
-              className={`font-semibold capitalize cursor-pointer ${
+              className={` capitalize cursor-pointer ${
                 activedTab === el.id ? "text-main" : ""
               }`}
               onClick={() => setActivedTab(el.id)}>
@@ -79,8 +79,8 @@ const TabletandIpad = () => {
             </span>
           ))}
         </div>
-        <div className="w-full pb-8">
-          <div className="w-[100%]">
+        <div className="w-full pb-8 flex justify-center">
+          <div className="w-[95%]">
             <div className="mt-4">
               <Slider {...settings}>
                 {products?.map((el) => (

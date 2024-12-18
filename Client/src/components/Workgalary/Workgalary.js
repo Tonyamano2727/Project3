@@ -11,7 +11,6 @@ import { formatMoney } from "../../ultils/helper";
 import { apiGetServices } from "../../apis";
 
 const { FaArrowRightLong } = icons;
-
 const settings = {
   arrows: false,
   dots: true,
@@ -21,7 +20,24 @@ const settings = {
   slidesToScroll: 1,
   autoplay: true,
   autoplaySpeed: 7000,
+  responsive: [
+    {
+      breakpoint: 768,  
+      settings: {
+        slidesToShow: 1, 
+        slidesToScroll: 1,
+      },
+    },
+    {
+      breakpoint: 1024,  
+      settings: {
+        slidesToShow: 2, 
+        slidesToScroll: 2,
+      },
+    },
+  ],
 };
+
 
 const Workgalary = ({ category }) => {
   const [services, setServices] = useState([]);
@@ -46,23 +62,117 @@ const Workgalary = ({ category }) => {
   }, [category]);
 
   return (
-    <div className="flex justify-center items-center flex-col mt-20">
-      <div className="bg-[#F3F3F7] w-full h-[850px] flex relative flex-col items-center">
+    // <div className="flex justify-center items-center flex-col mt-20">
+    //   <div className="bg-[#F3F3F7] w-full h-[850px] flex relative flex-col items-center">
+    //     <div className="marquee-block flex absolute top-[-13px]">
+    //       <img className="animation-image" src={animation2} />
+    //       <img className="animation-image" src={animation2} />
+    //     </div>
+    //     <div className="flex justify-between items-center mt-20 w-[90%]">
+    //       <div className="flex flex-col">
+    //         <h5 className="text-[16px] text-[#2f6eff] font-medium">
+    //           CLEENY PORTFOLIO
+    //         </h5>
+    //         <h3 className="text-[44px] text-[#00197e] font-bold w-[60%]">
+    //           Latest cleeny Portfolio from Work Galary
+    //         </h3>
+    //       </div>
+    //       <div className="flex text-center bg-[#FFC703] rounded-full p-4 w-[15%] justify-center">
+    //         <Link className="text-[15px] font-medium flex items-center gap-2">
+    //           View All Work
+    //           <span>
+    //             <FaArrowRightLong />
+    //           </span>
+    //         </Link>
+    //       </div>
+    //     </div>
+    //     <div className="flex justify-center items-center w-full mt-16 p-3">
+    //       <Slider
+    //         {...settings}
+    //         className="w-full justify-center items-center flex">
+    //         {services.map((service) => (
+    //           <div
+    //             key={service._id}
+    //             className="relative w-full h-[300px] justify-center items-center flex mb-10">
+    //             <div className="h-full w-[100%] flex justify-center items-center">
+    //               <img
+    //                 className="h-full w-[95%] object-cover"
+    //                 src={service.thumb}
+    //                 alt={service.title}
+    //               />
+    //             </div>
+    //             <Link
+    //               to={`/services/${service._id}/${service.title}`}
+    //               className="w-[70%] flex flex-col absolute bottom-0 left-3">
+    //               <div className="w-full rounded-tl-xl rounded-tr-xl p-6 bg-[#2F6EFF]">
+    //                 <div className="text-white flex flex-col">
+    //                   <span className="text-[14px] font-normal">
+    //                     <span>Price : </span>
+    //                     <span>{`${formatMoney(service?.price)} VNĐ `}</span>
+    //                   </span>
+    //                   <span className="mt-2 text-[24px] font-semibold">
+    //                     {service.title}
+    //                   </span>
+    //                 </div>
+    //               </div>
+    //               <div className="h-[3px] bg-[#FFC704] w-full"></div>
+    //               <div className="w-[45px] h-[45px] flex items-center bg-[#FFC704] p-4 rounded-full absolute right-[-20px] top-10">
+    //                 <FaArrowRightLong className="text-white" />
+    //               </div>
+    //             </Link>
+    //           </div>
+    //         ))}
+    //       </Slider>
+    //     </div>
+    //     <div className="flex mt-20 relative w-[85%] justify-center z-50">
+    //       <div>
+    //         <img src={bgherocontact} />
+    //       </div>
+    //       <div className="flex w-[10%] left-[47%] absolute top-[-50px]">
+    //         <img className="h-[250px] object-contain" src={hero2} />
+    //       </div>
+    //       <div className="absolute flex justify-between top-12 items-center w-[90%]">
+    //         <div className="flex flex-col justify-start w-[45%]">
+    //           <h3 className="text-[35px] text-white font-bold">
+    //             Please Call Us to Take the
+    //           </h3>
+    //           <h3 className="text-[35px] text-white font-bold">
+    //             Extraordinary Service!
+    //           </h3>
+    //         </div>
+
+    //         <div className="w-[35%] justify-end flex">
+    //           <div className="w-[60%] bg-[#FFC703] p-4 rounded-full text-center">
+    //             <span className="font-normal text-[15px] ">
+    //               Call : 038 (6950) 752
+    //             </span>
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //     <div className="marquee-block flex absolute bottom-[-13px] z-0">
+    //       <img className="animation-image" src={animation3} />
+    //       <img className="animation-image" src={animation3} />
+    //     </div>
+    //   </div>
+    // </div>
+    <div className="flex flex-col justify-center items-center mt-20">
+      <div className="bg-[#F3F3F7] w-full h-auto md:h-[850px] flex flex-col items-center relative">
         <div className="marquee-block flex absolute top-[-13px]">
           <img className="animation-image" src={animation2} />
           <img className="animation-image" src={animation2} />
         </div>
-        <div className="flex justify-between items-center mt-20 w-[90%]">
+        <div className="flex flex-col md:flex-row justify-between items-center mt-10 md:mt-20 w-[90%]">
           <div className="flex flex-col">
-            <h5 className="text-[16px] text-[#2f6eff] font-medium">
+            <h5 className="text-[14px] sm:text-[16px] text-[#2f6eff] font-medium">
               CLEENY PORTFOLIO
             </h5>
-            <h3 className="text-[44px] text-[#00197e] font-bold w-[60%]">
+            <h3 className="text-[28px] sm:text-[36px] md:text-[44px] text-[#00197e] font-bold w-full md:w-[60%]">
               Latest cleeny Portfolio from Work Galary
             </h3>
           </div>
-          <div className="flex text-center bg-[#FFC703] rounded-full p-4 w-[15%] justify-center">
-            <Link className="text-[15px] font-medium flex items-center gap-2">
+          <div className="flex text-center bg-[#FFC703] rounded-full p-3 sm:p-4 w-[100%] md:w-[15%] justify-center mt-4 md:mt-0">
+            <Link className="text-[13px] sm:text-[15px] font-medium flex items-center gap-2">
               View All Work
               <span>
                 <FaArrowRightLong />
@@ -70,37 +180,35 @@ const Workgalary = ({ category }) => {
             </Link>
           </div>
         </div>
-        <div className="flex justify-center items-center w-full mt-16 p-3">
-          <Slider
-            {...settings}
-            className="w-full justify-center items-center flex">
+        <div className="flex justify-center items-center w-full mt-10 md:mt-16 p-3">
+          <Slider {...settings} className="w-full flex">
             {services.map((service) => (
               <div
                 key={service._id}
-                className="relative w-full h-[300px] justify-center items-center flex mb-10">
+                className="relative w-full h-[250px] sm:h-[300px] flex justify-center items-center mb-10">
                 <div className="h-full w-[100%] flex justify-center items-center">
                   <img
-                    className="h-full w-[95%] object-cover"
+                    className="h-full w-[90%] sm:w-[95%] object-cover"
                     src={service.thumb}
                     alt={service.title}
                   />
                 </div>
                 <Link
                   to={`/services/${service._id}/${service.title}`}
-                  className="w-[70%] flex flex-col absolute bottom-0 left-3">
-                  <div className="w-full rounded-tl-xl rounded-tr-xl p-6 bg-[#2F6EFF]">
+                  className="w-[80%] sm:w-[70%] flex flex-col absolute bottom-0 left-3">
+                  <div className="w-full rounded-tl-xl rounded-tr-xl p-4 sm:p-6 bg-[#2F6EFF]">
                     <div className="text-white flex flex-col">
-                      <span className="text-[14px] font-normal">
+                      <span className="text-[12px] sm:text-[14px] font-normal">
                         <span>Price : </span>
                         <span>{`${formatMoney(service?.price)} VNĐ `}</span>
                       </span>
-                      <span className="mt-2 text-[24px] font-semibold">
+                      <span className="mt-2 text-[18px] sm:text-[24px] font-semibold">
                         {service.title}
                       </span>
                     </div>
                   </div>
                   <div className="h-[3px] bg-[#FFC704] w-full"></div>
-                  <div className="w-[45px] h-[45px] flex items-center bg-[#FFC704] p-4 rounded-full absolute right-[-20px] top-10">
+                  <div className="w-[35px] sm:w-[45px] h-[35px] sm:h-[45px] flex items-center bg-[#FFC704] p-2 sm:p-4 rounded-full absolute right-[-10px] sm:right-[-20px] top-8 sm:top-10">
                     <FaArrowRightLong className="text-white" />
                   </div>
                 </Link>
@@ -108,33 +216,35 @@ const Workgalary = ({ category }) => {
             ))}
           </Slider>
         </div>
-        <div className="flex mt-20 relative w-[85%] justify-center z-50">
+        <div className="flex mt-10 md:mt-20 relative w-full md:w-[85%] justify-center z-50">
           <div>
             <img src={bgherocontact} />
           </div>
-          <div className="flex w-[10%] left-[47%] absolute top-[-50px]">
-            <img className="h-[250px] object-contain" src={hero2} />
+          <div className="flex w-[20%] sm:w-[10%] left-[40%] sm:left-[47%] absolute top-[-30px] sm:top-[-50px]">
+            <img
+              className="h-[150px] sm:h-[250px] object-contain"
+              src={hero2}
+            />
           </div>
-          <div className="absolute flex justify-between top-12 items-center w-[90%]">
-            <div className="flex flex-col justify-start w-[45%]">
-              <h3 className="text-[35px] text-white font-bold">
+          <div className="absolute flex flex-col md:flex-row justify-between top-4 sm:top-12 items-center w-full md:w-[90%]">
+            <div className="flex flex-col justify-start w-full md:w-[45%] text-center md:text-left">
+              <h3 className="text-[24px] sm:text-[35px] xl:text-white font-bold">
                 Please Call Us to Take the
               </h3>
-              <h3 className="text-[35px] text-white font-bold">
+              <h3 className="text-[24px] sm:text-[35px] xl:text-white font-bold">
                 Extraordinary Service!
               </h3>
             </div>
-
-            <div className="w-[35%] justify-end flex">
-              <div className="w-[60%] bg-[#FFC703] p-4 rounded-full text-center">
-                <span className="font-normal text-[15px] ">
+            <div className="w-full md:w-[35%] justify-end flex mt-4 md:mt-0">
+              <div className="w-[100%] sm:w-[60%] bg-[#FFC703] p-2 sm:p-4 rounded-full text-center">
+                <span className="font-normal text-[13px] sm:text-[15px]">
                   Call : 038 (6950) 752
                 </span>
               </div>
             </div>
           </div>
         </div>
-        <div className="marquee-block flex absolute bottom-[-13px] z-0">
+        <div className="marquee-block flex absolute bottom-[-10px] sm:bottom-[-13px] z-0">
           <img className="animation-image" src={animation3} />
           <img className="animation-image" src={animation3} />
         </div>

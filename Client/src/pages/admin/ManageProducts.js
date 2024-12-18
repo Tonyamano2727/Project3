@@ -273,16 +273,16 @@ const ManageProducts = () => {
                 <td>{el.sold}</td>
                 <td>{el.totalRatings}</td>
                 <td>
-                  <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center gap-2">
                     <span
                       onClick={() => setEditProduct(el)}
-                      className="hover:underline cursor-pointer px-2 text-blue-500">
-                      <FaEdit size={20} />
+                      className="hover:underline cursor-pointer text-blue-500">
+                      Update
                     </span>
                     <span
                       onClick={() => handleDeleteProduct(el._id)}
-                      className="text-red-500 hover:underline cursor-pointer px-2">
-                      <RiDeleteBin6Line size={20} />
+                      className="text-red-500 hover:underline cursor-pointer">
+                      Delete
                     </span>
                   </div>
                 </td>
