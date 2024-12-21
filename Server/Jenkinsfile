@@ -17,10 +17,18 @@ pipeline {
             }
         }
 
+        stage('Navigate to Server Directory') {
+            steps {
+                dir('Server') {
+                    echo 'Switched to Server directory'
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    dir('Server') { // Chuyển vào thư mục Server
+                    dir('Server') { 
                         echo 'Building Docker image for linux/amd64 platform...'
                         docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}", "--platform linux/amd64 .")
                     }
