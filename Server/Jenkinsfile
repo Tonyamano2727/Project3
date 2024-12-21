@@ -57,8 +57,7 @@ pipeline {
                 script {
                     echo 'Clearing server_project3-related images and containers...'
                     sh '''
-                        docker container stop server-project3 || echo "No container named server-project3 to stop"
-                        docker container rm server-project3 || echo "No container named server-project3 to remove"
+                        docker rm -f server-project3 || echo "No container named server-project3 to remove"
                         docker image rm ${DOCKER_IMAGE}:${DOCKER_TAG} || echo "No image ${DOCKER_IMAGE}:${DOCKER_TAG} to remove"
                     '''
 
