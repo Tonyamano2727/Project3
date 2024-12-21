@@ -21,8 +21,8 @@ const Createdemployee = () => {
     const fetchData = async () => {
       try {
         const [jobResponse, districtResponse] = await Promise.all([
-          axios.get("http://localhost:5000/api/categoryservice"),
-          axios.get("http://localhost:5000/api/supervisor/districts", {
+          axios.get("http://13.229.115.93:5000/api/categoryservice"),
+          axios.get("http://13.229.115.93:5000/api/supervisor/districts", {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
             },
@@ -81,7 +81,7 @@ const Createdemployee = () => {
       });
 
       const response = await axios.post(
-        "http://localhost:5000/api/employee/registeremployee",
+        "http://13.229.115.93:5000/api/employee/registeremployee",
         formData,
         {
           headers: {
@@ -201,4 +201,3 @@ const Createdemployee = () => {
 };
 
 export default Createdemployee;
-
