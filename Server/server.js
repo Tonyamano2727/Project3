@@ -22,7 +22,7 @@ app.use(
 app.use(cookieParser());
 const port = process.env.PORT || 8888;
 
-app.use(express.json()); // write data client rp server
+app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 dbConnect();
