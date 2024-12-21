@@ -1,5 +1,5 @@
 const API_CONFIG = {
-    BASE_URL: 'http://192.168.20.42:5000/api',
+    BASE_URL: 'http://13.229.115.93:5000/api',
 
     ENDPOINTS: {
       LOGIN: '/supervisor/login',

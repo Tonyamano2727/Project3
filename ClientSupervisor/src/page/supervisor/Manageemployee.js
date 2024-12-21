@@ -26,7 +26,9 @@ const Manageemployee = () => {
         setError(response.message || "No staff found");
       }
     } catch (error) {
-      setError(error.message || "An error occurred while fetching employee data.");
+      setError(
+        error.message || "An error occurred while fetching employee data."
+      );
     } finally {
       setLoading(false);
     }
@@ -35,7 +37,9 @@ const Manageemployee = () => {
   // Fetch job categories
   const fetchJobCategories = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/categoryservice");
+      const response = await axios.get(
+        "http://13.229.115.93:5000/api/categoryservice"
+      );
       if (response.data.success) {
         setJobCategories(
           response.data.categories.map((job) => ({
@@ -123,7 +127,7 @@ const Manageemployee = () => {
   // Fetch data on component mount
   useEffect(() => {
     fetchEmployees();
-    fetchJobCategories();  // Fetch job categories
+    fetchJobCategories(); // Fetch job categories
   }, []);
 
   return (
@@ -185,7 +189,9 @@ const Manageemployee = () => {
 
             {/* Name */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 p-1 ">Name:</label>
+              <label className="block text-sm font-semibold text-gray-700 p-1 ">
+                Name:
+              </label>
               <input
                 type="text"
                 name="name"
@@ -197,7 +203,9 @@ const Manageemployee = () => {
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 p-1">Email:</label>
+              <label className="block text-sm font-semibold text-gray-700 p-1">
+                Email:
+              </label>
               <input
                 type="email"
                 name="email"
@@ -209,7 +217,9 @@ const Manageemployee = () => {
 
             {/* Job Category */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 p-1">Job Category:</label>
+              <label className="block text-sm font-semibold text-gray-700 p-1">
+                Job Category:
+              </label>
               <select
                 name="job"
                 value={selectedEmployee?.job || ""}
@@ -227,7 +237,9 @@ const Manageemployee = () => {
 
             {/* Phone */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 p-1">Phone:</label>
+              <label className="block text-sm font-semibold text-gray-700 p-1">
+                Phone:
+              </label>
               <input
                 type="text"
                 name="mobile"
@@ -239,7 +251,9 @@ const Manageemployee = () => {
 
             {/* Base Salary */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 p-1">Base Salary:</label>
+              <label className="block text-sm font-semibold text-gray-700 p-1">
+                Base Salary:
+              </label>
               <input
                 type="number"
                 name="baseSalary"
@@ -249,9 +263,10 @@ const Manageemployee = () => {
               />
             </div>
 
-           
             <div>
-              <label className="block text-sm font-semibold text-gray-700 p-1">Avatar:</label>
+              <label className="block text-sm font-semibold text-gray-700 p-1">
+                Avatar:
+              </label>
               <input
                 type="file"
                 accept="image/*"
@@ -260,7 +275,6 @@ const Manageemployee = () => {
               />
             </div>
 
-            
             <div className="mt-6 flex flex-col">
               <button
                 onClick={handleSave}
