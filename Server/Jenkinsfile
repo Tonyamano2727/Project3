@@ -13,15 +13,17 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'master', url: 'https://github.com/LVNAnh/devops-assignment.git'
+                git branch: 'master', url: 'https://github.com/Tonyamano2727/Project3.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    echo 'Building Docker image for linux/amd64 platform...'
-                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}", "--platform linux/amd64 .")
+                    dir('Server') { // Chuyển vào thư mục Server
+                        echo 'Building Docker image for linux/amd64 platform...'
+                        docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}", "--platform linux/amd64 .")
+                    }
                 }
             }
         }
