@@ -2,7 +2,7 @@ const asyncHandler = require("express-async-handler");
 const data = require("../data/data2.json");
 const slugify = require("slugify");
 const Product = require("../models/products");
-const categoryData = require("../../data/cate_brand");
+const categoryData = require("../data/cate_brand");
 const productCategory = require("../models/productCategory");
 
 const fn = async (Products) => {
