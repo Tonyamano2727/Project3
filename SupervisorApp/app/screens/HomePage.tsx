@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   ImageBackground,
+  Alert
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -16,6 +17,27 @@ type HomePageNavigationProp = StackNavigationProp<RootStackParamList, 'HomePage'
 
 const HomePage = () => {
   const navigation = useNavigation<HomePageNavigationProp>();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            Alert.alert(
+              "Confirmation",
+              "You will back to login screen, Are you sure?",
+              [
+                { text: "No", style: "cancel" },
+                { text: "Yes", onPress: () => navigation.navigate('Login') },
+              ]
+            );
+          }}
+        >
+          <Text style={{ color: '#007AFF', marginLeft: 10 }}>{"<- Back"}</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   const handleNavigate = (screen: keyof RootStackParamList) => {
     navigation.navigate(screen);
