@@ -9,7 +9,7 @@ RUN npm install
 
 # Copy toàn bộ mã nguồn
 COPY . .
-COPY data /app/data
+COPY ../data /app/data
 
 # Expose cổng server (thay đổi nếu cần)
 EXPOSE 5000
