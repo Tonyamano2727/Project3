@@ -266,16 +266,36 @@ const deleteUser = asyncHandler(async (req, res) => {
 const updateuser = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { firstname, lastname, email, mobile, address } = req.body;
-  const data = { firstname, lastname, email, mobile, address };
+
+  if (!_id) throw new Error("Missing user ID");
+
+  const data = {};
+  if (firstname) data.firstname = firstname;
+  if (lastname) data.lastname = lastname;
+  if (email) data.email = email;
+  if (mobile) data.mobile = mobile;
+  if (address) data.address = address;
   if (req.file) data.avatar = req.file.path;
-  if (!_id || Object.keys(req.body).length === 0)
-    throw new Error("Missing input");
+
+  if (Object.keys(data).length === 0) {
+    throw new Error("No fields to update");
+  }
+
   const response = await User.findByIdAndUpdate(_id, data, {
     new: true,
-  }).select("-password,-role");
+  }).select("-password -role");
+
+  if (!response) {
+    return res.status(400).json({
+      success: false,
+      mes: "Failed to update user. User may not exist.",
+    });
+  }
+
   return res.status(200).json({
-    success: response ? true : false,
-    mes: response ? "Updated" : "Something went wrong",
+    success: true,
+    mes: "User updated successfully",
+    data: response,
   });
 });
 
