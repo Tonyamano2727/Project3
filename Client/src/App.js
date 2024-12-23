@@ -70,12 +70,14 @@ function App() {
         variantError: "my-snackbar-error",
         variantInfo: "my-snackbar-info",
         variantWarning: "my-snackbar-warning",
-      }}>
+      }}
+    >
       <div className="relative font-main overflow-hidden">
         {isShowCart && (
           <div
             onClick={() => dispatch(Showcart())}
-            className="absolute min-h-screen bg-box inset-0 bg-overplay z-50 flex justify-end">
+            className="absolute min-h-screen bg-box inset-0 bg-overplay z-50 flex justify-end"
+          >
             <Cart />
           </div>
         )}
