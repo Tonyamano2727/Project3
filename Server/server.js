@@ -9,6 +9,7 @@ const app = express();
 app.use(
   cors({
     origin: [
+      process.env.CLIENT_RENDER,
       process.env.CLIENT_URL,
       process.env.SUPERVISOR,
       process.env.CLIENT_MOBILE,
