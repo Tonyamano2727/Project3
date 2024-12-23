@@ -52,7 +52,7 @@ const FQA = ({ title }, { category }) => {
     const fetchServices = async () => {
       try {
         const response = await axios.get(
-          "http://13.229.115.93:5000/api/service/",
+          "https://project3-dq33.onrender.com/api/service/",
           {
             params: {
               category: category,

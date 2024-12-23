@@ -11,7 +11,7 @@ const Infomanage = () => {
     const fetchSupervisors = async () => {
       try {
         const response = await fetch(
-          "http://13.229.115.93:5000/api/supervisor/getallsupervisor"
+          "https://project3-dq33.onrender.com/api/supervisor/getallsupervisor"
         );
         const data = await response.json();
 
@@ -28,7 +28,9 @@ const Infomanage = () => {
     console.log();
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://13.229.115.93:5000/api/api/user/"); // Đường dẫn API của bạn
+        const response = await fetch(
+          "https://project3-dq33.onrender.com/api/api/user/"
+        ); // Đường dẫn API của bạn
         const data = await response.json();
 
         if (data.success) {
