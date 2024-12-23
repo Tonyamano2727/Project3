@@ -39,20 +39,26 @@ const FQA = ({ title }, { category }) => {
       enqueueSnackbar(" Send Consultation!", { variant: "success" });
     } catch (error) {
       console.error("Error creating counsel:", error);
-      enqueueSnackbar("Failed to create  send consultation. Please try again.", {
-        variant: "error",
-      });
+      enqueueSnackbar(
+        "Failed to create  send consultation. Please try again.",
+        {
+          variant: "error",
+        }
+      );
     }
   };
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/service/", {
-          params: {
-            category: category,
-          },
-        });
+        const response = await axios.get(
+          "http://13.229.115.93:5000/api/service/",
+          {
+            params: {
+              category: category,
+            },
+          }
+        );
         setServices(response.data.service);
       } catch (err) {
         console.log(err.message);
@@ -91,7 +97,8 @@ const FQA = ({ title }, { category }) => {
             </div>
             <form
               onSubmit={handleSubmit}
-              className="w-[90%] flex flex-col gap-5 mt-5 p-5 bg-white shadow-lg rounded-lg">
+              className="w-[90%] flex flex-col gap-5 mt-5 p-5 bg-white shadow-lg rounded-lg"
+            >
               <div className="flex flex-wrap gap-3 w-full">
                 <input
                   value={name}
@@ -111,7 +118,8 @@ const FQA = ({ title }, { category }) => {
                 id="options"
                 value={service}
                 onChange={(e) => setService(e.target.value)}
-                className="p-4 w-full rounded-lg border border-gray-300 text-[14px] text-gray-500">
+                className="p-4 w-full rounded-lg border border-gray-300 text-[14px] text-gray-500"
+              >
                 <option value="">Select Service</option>
                 {services.map((serviceItem) => (
                   <option key={serviceItem._id} value={serviceItem.title}>
@@ -122,7 +130,8 @@ const FQA = ({ title }, { category }) => {
 
               <button
                 type="submit"
-                className="p-4 w-full rounded-lg bg-[#FFC704] hover:bg-blue-500 hover:text-white transition-all duration-300">
+                className="p-4 w-full rounded-lg bg-[#FFC704] hover:bg-blue-500 hover:text-white transition-all duration-300"
+              >
                 Send Consultation
               </button>
             </form>
