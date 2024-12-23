@@ -13,13 +13,16 @@ const Service = ({ title, category }) => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/service/", {
-          params: {
-            category: category,
-            page: 1,
-            limit: 10,
-          },
-        });
+        const response = await axios.get(
+          "http://13.229.115.93:5000/api/service/",
+          {
+            params: {
+              category: category,
+              page: 1,
+              limit: 10,
+            },
+          }
+        );
         setServices(response.data.service);
       } catch (err) {
         console.log(err.message);
@@ -67,7 +70,8 @@ const Service = ({ title, category }) => {
         {services.map((service, index) => (
           <div
             key={service._id}
-            className="w-full sm:w-[48%] lg:w-[30%] flex flex-col mb-5">
+            className="w-full sm:w-[48%] lg:w-[30%] flex flex-col mb-5"
+          >
             <div className="w-full relative">
               <div className="absolute z-50 top-[200px] md:top-[250px] w-full">
                 <h3 className="xl:text-[18px] md:text-[15px] bg-[#F3F3F7] text-[#00197e] rounded-tr-xl p-5 font-semibold">
@@ -82,7 +86,8 @@ const Service = ({ title, category }) => {
               <div className="w-full bg-[#E7E7E7] p-6 md:p-8 rounded-bl-xl rounded-br-xl h-[130px] md:h-[85px]">
                 <Link
                   className="w-full text-[#273689] text-[14px] lg:mt-0 mt-[50px] md:mt-[0px] md:text-[16px] font-medium flex items-center justify-between z-50"
-                  to={`/services/${service._id}/${service.title}`}>
+                  to={`/services/${service._id}/${service.title}`}
+                >
                   <div className="flex gap-2 items-center">
                     {Icon[index % Icon.length].title}
                     <FaArrowRightLong />
