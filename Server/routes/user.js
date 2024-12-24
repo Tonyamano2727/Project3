@@ -24,7 +24,7 @@ router.delete("/remove-cart/:pid", [verifyToken], ctrls.removeProductInCart);
 router.delete(
   "/mobile/remove-cart/:pid",
   verifyToken,
-  removeProductFromCartForMobile
+  ctrls.removeProductFromCartForMobile
 );
 router.put("/:uid", [verifyToken, isAdmin], ctrls.updateuserbyadmin);
 router.put("/whistlist/:pid", [verifyToken], ctrls.UpdateWhistlist);
