@@ -420,6 +420,63 @@ const removeProductInCart = asyncHandler(async (req, res) => {
   });
 });
 
+const removeProductFromCartForMobile = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { pid } = req.params;
+
+  try {
+    const productId = mongoose.Types.ObjectId(pid);
+
+    const user = await User.findById(_id).select("cart");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const productInCart = user.cart.find(
+      (item) => item.product.toString() === productId.toString()
+    );
+
+    if (!productInCart) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found in cart",
+      });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      {
+        $pull: {
+          cart: { product: productId },
+        },
+      },
+      { new: true }
+    ).populate("cart.product");
+
+    if (!updatedUser) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to remove product from cart",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Product removed from cart successfully",
+      cart: updatedUser.cart,
+    });
+  } catch (error) {
+    console.error("Error removing product from cart:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while removing the product from the cart",
+    });
+  }
+});
+
 const UpdateWhistlist = asyncHandler(async (req, res) => {
   const { pid } = req.params;
   const { _id } = req.user;
@@ -465,4 +522,5 @@ module.exports = {
   updateCart,
   removeProductInCart,
   UpdateWhistlist,
+  removeProductFromCartForMobile,
 };
