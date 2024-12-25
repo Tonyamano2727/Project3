@@ -94,6 +94,7 @@ const Detailsblogs = () => {
 
   useEffect(() => {
     fetchBlogs();
+    window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
@@ -169,7 +170,7 @@ const Detailsblogs = () => {
                     key={index}
                     src={img}
                     alt={`Blog Image ${index + 1}`}
-                    className="w-[100%] mb-2"
+                    className="w-[45%] mb-2"
                   />
                 ))}
               </div>

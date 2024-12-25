@@ -62,18 +62,18 @@ const UpdateBlogs = ({ editBlog, render, setEditBlog }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    
     const formData = new FormData();
     formData.append("title", title);
     
     description.forEach((desc) => {
       formData.append("description", desc);
     });
-  
+    
     formData.append("category", category);
-    if (thumb) formData.append("thumb", thumb);
+    if (thumb) formData.append("thumb", thumb);  // Nếu là base64, thì gửi base64 lên server
     otherImages.forEach((image) => {
-      formData.append("images", image);
+      formData.append("images", image);  // Gửi ảnh dưới dạng base64 hoặc URL
     });
   
     try {
@@ -81,18 +81,16 @@ const UpdateBlogs = ({ editBlog, render, setEditBlog }) => {
       if (response.success) {
         render();
         setEditBlog(null);
-        enqueueSnackbar("Blog updated successfully!", { variant: "success" }); // Sử dụng thông báo mặc định
+        enqueueSnackbar("Blog updated successfully!", { variant: "success" });
       } else {
-        enqueueSnackbar("Failed to update blog.", { variant: "error" }); // Sử dụng thông báo mặc định
+        enqueueSnackbar("Failed to update blog.", { variant: "error" });
       }
     } catch (error) {
-      console.error(
-        "Error updating blog:",
-        error.response ? error.response.data : error
-      );
-      enqueueSnackbar("An error occurred while updating the blog.", { variant: "error" }); // Thông báo lỗi mặc định
+      console.error("Error updating blog:", error.response ? error.response.data : error);
+      enqueueSnackbar("An error occurred while updating the blog.", { variant: "error" });
     }
   };
+  
   
 
   useEffect(() => {

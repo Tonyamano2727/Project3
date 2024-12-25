@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from "react";
 import animation from "../../assets/animation.png";
-import { serviceData } from "../../ultils/contants";
 import backgroundfrom from "../../assets/backgroundfrom.png";
 import icons from "../../ultils/icons";
 import { Link } from "react-router-dom";
-import { createcounsel, apiGetServices } from "../../apis";
+import { createcounsel, getallblogs } from "../../apis";
 import { useSnackbar } from "notistack";
 
 const { FaCheck, FaArrowRightLong } = icons;
 
-const Booking = ({ category }) => {
+const Booking = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [service, setService] = useState("");
-
-  const [services, setServices] = useState([]);
+  const [blogs, setBlogs] = useState([]);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -39,31 +37,49 @@ const Booking = ({ category }) => {
       setPhone("");
       setService("");
 
-      enqueueSnackbar(" Send Consultation successfully!", { variant: "success" });
+      enqueueSnackbar("Send Consultation successfully!", {
+        variant: "success",
+      });
     } catch (error) {
       console.error("Error creating counsel:", error);
 
-      enqueueSnackbar("Failed to create  send consultation. Please try again.", {
+      enqueueSnackbar("Failed to send consultation. Please try again.", {
         variant: "error",
       });
     }
   };
 
   useEffect(() => {
-    const fetchServices = async (params) => {
+    const fetchBlogs = async () => {
       try {
-        const response = await apiGetServices({
-          ...params,
-          limit: process.env.REACT_APP_PRODUCT_LIMIT,
-        });
-        setServices(response.service);
+        const response = await getallblogs();
+        if (response.success) {
+          // Lọc dữ liệu cần thiết từ API
+          const blogData = response.blogs.map((blog) => ({
+            id: blog._id,
+            thumb: blog.thumb,
+            title: blog.title,
+            category: blog.category,
+            createdAt: blog.createdAt, // Nếu có trường này
+          }));
+
+          // Sắp xếp blogs theo thời gian tạo (mới nhất trước)
+          const sortedBlogs = blogData.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
+
+          // Lấy 3 blog mới nhất
+          setBlogs(sortedBlogs.slice(0, 3));
+        } else {
+          console.error("Failed to fetch blogs:", response.message);
+        }
       } catch (err) {
-        console.error(err.message);
+        console.error("Error fetching blogs:", err.message);
       }
     };
 
-    fetchServices();
-  }, [category]);
+    fetchBlogs();
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center mt-20">
@@ -100,10 +116,10 @@ const Booking = ({ category }) => {
               value={service}
               onChange={(e) => setService(e.target.value)}
               className="p-3 lg:p-4 w-full lg:w-[21%] text-[14px] rounded-lg border border-gray-300 text-gray-500">
-              <option value="">Select Service</option>
-              {services.map((serviceItem) => (
-                <option key={serviceItem._id} value={serviceItem.title}>
-                  {serviceItem.title}
+              <option value="">Select Blog</option>
+              {blogs.map((blog) => (
+                <option key={blog.id} value={blog.title}>
+                  {blog.title}
                 </option>
               ))}
             </select>
@@ -116,39 +132,28 @@ const Booking = ({ category }) => {
         </div>
 
         <div className="w-full flex flex-col items-center mt-20 px-5">
-          <h5 className="text-[#FFC704] text-center">OUR SERVICES</h5>
+          <h5 className="text-[#FFC704] text-center">OUR BLOGS</h5>
           <h3 className="text-[28px] lg:text-[44px] font-bold text-white text-center mt-3">
-            Professional Cleaning Services
+            Latest Blogs
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 w-full max-w-[1200px] mt-10">
-            {serviceData.map(({ id, imgSrc, iconSrc, title, details }) => (
+            {blogs.map(({ id, thumb, title, category }) => (
               <div key={id} className="relative flex flex-col items-center">
-                <img src={imgSrc} alt={title} className="w-full rounded-lg" />
-                <div className="absolute top-[75%] bg-white p-4 rounded-full shadow-lg left-5">
-                  <img
-                    className="h-[40px] object-contain"
-                    src={iconSrc}
-                    alt="Icon"
-                  />
-                </div>
+                <img src={thumb} alt={title} className="w-full rounded-lg object-cover h-[250px]" />
                 <div className="flex flex-col w-full p-6 bg-[#0A2A99] rounded-br-lg rounded-tr-lg mt-[-30px] z-10 transition-all hover:scale-105">
-                  <h3 className="text-white text-[20px] lg:text-[24px] font-semibold">
+                  <h3 className="text-white text-[20px] lg:text-[24px] font-semibold w-full line-clamp-1">
                     {title}
                   </h3>
-                  {details.map((detail, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 mt-4 text-[14px] lg:text-[16px]">
-                      <span className="text-[#FFC704]">
-                        <FaCheck />
-                      </span>
-                      <span className="text-[#B8B9D5]">{detail}</span>
-                    </div>
-                  ))}
+                  <span className="mt-4 text-[#B8B9D5] text-[14px] lg:text-[16px]">
+                    {category}
+                  </span>
                   <hr className="my-4" />
-                  <Link className="flex items-center gap-3 text-white text-[14px] lg:text-[16px] font-medium">
-                    View Details <FaArrowRightLong />
-                  </Link>
+                  <Link
+  to={`/blogs/${id}/${title}`}
+  className="flex items-center gap-3 text-white text-[14px] lg:text-[16px] font-medium mt-4 hover:text-[#FFC704] transition-all">
+  View Details <FaArrowRightLong />
+</Link>
+
                 </div>
               </div>
             ))}

@@ -7,6 +7,7 @@ import {
 } from "../../api/supervisor";
 import { FaEdit } from "react-icons/fa";
 import Fromdetailsbooking from "../../components/Fromdetailsbooking/Fromdetailsbooking";
+import { useSnackbar } from "notistack";
 
 const Managebooking = () => {
   const [bookings, setBookings] = useState([]);
@@ -19,7 +20,8 @@ const Managebooking = () => {
   const [updateError, setUpdateError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [statusError, setStatusError] = useState(null);
-  const [showDetails, setShowDetails] = useState(false); // State to toggle details view
+  const [showDetails, setShowDetails] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
 
   const fetchBookings = async () => {
     try {
@@ -66,7 +68,10 @@ const Managebooking = () => {
   const handleOpenModal = (bkid, editMode = false) => {
     fetchBookingDetails(bkid);
     if (selectedBooking && selectedBooking.status === "Completed") {
-      setStatusError("Cannot edit a completed booking.");
+      enqueueSnackbar("Cannot edit a completed booking", {
+        variant: "error",
+      });
+      
       return;
     } else {
       setStatusError(null);
@@ -91,13 +96,18 @@ const Managebooking = () => {
         return;
       }
       if (selectedBooking.status === "Completed") {
-        setUpdateError("Cannot update a completed booking.");
+        enqueueSnackbar("Cannot completed booking because date ", {
+          variant: "error",
+        });
         return;
       }
 
       const updatedData = { ...selectedBooking };
       const response = await apiupdatebooking(updatedData, selectedBooking._id);
       if (response.success) {
+        enqueueSnackbar("Update booking successfull ", {
+          variant: "success",
+        });
         setOpenModal(false);
         fetchBookings();
       } else {
@@ -146,7 +156,7 @@ const Managebooking = () => {
                 <button
                   onClick={() => {
                     handleOpenModal(booking._id, false);
-                    setShowDetails(!showDetails); // Toggle details view
+                    setShowDetails(!showDetails); 
                   }}
                   className="text-blue-500 hover:underline"
                 >
@@ -155,7 +165,9 @@ const Managebooking = () => {
                 <button
                   onClick={() => {
                     if (booking.status === "Completed") {
-                      setStatusError("Cannot edit a completed booking.");
+                      enqueueSnackbar("Cannot edit a completed booking", {
+                        variant: "error",
+                      });
                     } else {
                       handleOpenModal(booking._id, true);
                     }
