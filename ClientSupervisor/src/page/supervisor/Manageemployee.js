@@ -4,7 +4,6 @@ import {
   apiUpdateEmployee,
   apiDeletedemployee,
 } from "../../api/supervisor";
-import { FaEdit } from "react-icons/fa";
 import axios from "axios";
 
 const Manageemployee = () => {
@@ -16,7 +15,6 @@ const Manageemployee = () => {
   const [avatarFile, setAvatarFile] = useState(null);
   const [jobCategories, setJobCategories] = useState([]);
 
-  // Fetch employees
   const fetchEmployees = async () => {
     try {
       const response = await apiGetemployee();
@@ -53,7 +51,6 @@ const Manageemployee = () => {
     }
   };
 
-  // Handle editing employee
   const handleEdit = (employee) => {
     setSelectedEmployee(employee);
     setAvatarFile(null);
@@ -65,7 +62,6 @@ const Manageemployee = () => {
     setSelectedEmployee(null);
   };
 
-  // Handle input changes for employee info
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setSelectedEmployee({
@@ -74,13 +70,11 @@ const Manageemployee = () => {
     });
   };
 
-  // Handle avatar change
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     setAvatarFile(file);
   };
 
-  // Save updated employee info
   const handleSave = async () => {
     const formData = new FormData();
     formData.append("name", selectedEmployee.name);
@@ -106,7 +100,6 @@ const Manageemployee = () => {
     }
   };
 
-  // Handle employee deletion
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       try {
@@ -123,10 +116,9 @@ const Manageemployee = () => {
     }
   };
 
-  // Fetch data on component mount
   useEffect(() => {
     fetchEmployees();
-    fetchJobCategories(); // Fetch job categories
+    fetchJobCategories();
   }, []);
 
   return (

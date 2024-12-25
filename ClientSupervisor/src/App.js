@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
-  HashRouter as Router,
+  BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
@@ -21,22 +21,10 @@ const PrivateRoute = ({ children }) => {
   return accessToken ? children : <Navigate to="/" />;
 };
 
-function RedirectToHash() {
-  useEffect(() => {
-    const currentUrl = window.location.href;
-    if (!currentUrl.includes("#")) {
-      window.location.replace(`${window.location.origin}/#/`);
-    }
-  }, []);
-
-  return null;
-}
-
 function App() {
   return (
     <Router>
       <div className="App">
-        <RedirectToHash />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route
