@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Alert
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { removeAuthToken } from '../config/apiService';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/types';
 import houseCleaningTools from '../../assets/images/house-cleaning-tools.jpg';
@@ -18,26 +19,23 @@ type HomePageNavigationProp = StackNavigationProp<RootStackParamList, 'HomePage'
 const HomePage = () => {
   const navigation = useNavigation<HomePageNavigationProp>();
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            Alert.alert(
-              "Confirmation",
-              "You will back to login screen, Are you sure?",
-              [
-                { text: "No", style: "cancel" },
-                { text: "Yes", onPress: () => navigation.navigate('Login') },
-              ]
-            );
-          }}
-        >
-          <Text style={{ color: '#007AFF', marginLeft: 10 }}>{"<- Back"}</Text>
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
+  const handleLogout = async () => {
+    Alert.alert(
+      'Confirmation',
+      'Are you sure you want to log out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Log Out',
+          onPress: async () => {
+            await removeAuthToken();
+            navigation.navigate('Login');
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   const handleNavigate = (screen: keyof RootStackParamList) => {
     navigation.navigate(screen);
@@ -76,6 +74,11 @@ const HomePage = () => {
           >
             <Text style={styles.buttonText}>Manage Booking</Text>
           </TouchableOpacity>
+
+
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
         </View>
       </ImageBackground>
     </TouchableWithoutFeedback>
@@ -109,6 +112,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     
     textAlign: 'center', 
+  },
+  logoutButton: {
+    backgroundColor: '#ff3b30',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  logoutText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 

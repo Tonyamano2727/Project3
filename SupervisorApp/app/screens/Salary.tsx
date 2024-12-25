@@ -15,7 +15,6 @@ const Salary = () => {
   const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
   const years = Array.from({ length: 7 }, (_, i) => (2024 + i).toString());
 
-  // Fetch employees and salary data
   const fetchEmployees = async () => {
     try {
       const response = await apiGetEmployeeList();
@@ -77,21 +76,21 @@ const Salary = () => {
 
   const onRefresh = () => {
     setIsRefreshing(true);
-    fetchEmployees(); // Reload employee data
-    fetchSalaries(); // Reload salary data
-    setIsRefreshing(false); // Stop refreshing
+    fetchEmployees(); 
+    fetchSalaries(); 
+    setIsRefreshing(false); 
   };
 
-  const renderSalaryItem = (item: any) => (
-    <View style={styles.salaryItem}>
-      <Text style={styles.text}>Employee: {item.employee?.name || 'N/A'}</Text>
-      <Text style={styles.text}>Month: {item.month}</Text>
-      <Text style={styles.text}>Year: {item.year}</Text>
-      <Text style={styles.text}>Base Salary: {item.baseSalary?.toLocaleString()} VND</Text>
-      <Text style={styles.text}>Commission: {item.commission?.toLocaleString()} VND</Text>
-      <Text style={styles.text}>Total Salary: {item.totalSalary?.toLocaleString()} VND</Text>
-    </View>
-  );
+  // const renderSalaryItem = (item: any) => (
+  //   <View style={styles.salaryItem}>
+  //     <Text style={styles.text}>Employee: {item.employee?.name || 'N/A'}</Text>
+  //     <Text style={styles.text}>Month: {item.month}</Text>
+  //     <Text style={styles.text}>Year: {item.year}</Text>
+  //     <Text style={styles.text}>Base Salary: {item.baseSalary?.toLocaleString()} VND</Text>
+  //     <Text style={styles.text}>Commission: {item.commission?.toLocaleString()} VND</Text>
+  //     <Text style={styles.text}>Total Salary: {item.totalSalary?.toLocaleString()} VND</Text>
+  //   </View>
+  // );
 
   return (
     <ImageBackground
@@ -139,7 +138,16 @@ const Salary = () => {
         contentContainerStyle={styles.scrollViewContent}
         refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}
       >
-        {filteredSalaries.map((item) => renderSalaryItem(item))}
+        {filteredSalaries.map((item) => (
+          <View key={`${item.employee?._id}-${item.month}-${item.year}`} style={styles.salaryItem}>
+            <Text style={styles.text}>Employee: {item.employee?.name || 'N/A'}</Text>
+            <Text style={styles.text}>Month: {item.month}</Text>
+            <Text style={styles.text}>Year: {item.year}</Text>
+            <Text style={styles.text}>Base Salary: {item.baseSalary?.toLocaleString()} VND</Text>
+            <Text style={styles.text}>Commission: {item.commission?.toLocaleString()} VND</Text>
+            <Text style={styles.text}>Total Salary: {item.totalSalary?.toLocaleString()} VND</Text>
+          </View>
+        ))}
       </ScrollView>
     </View>
     </ImageBackground>
