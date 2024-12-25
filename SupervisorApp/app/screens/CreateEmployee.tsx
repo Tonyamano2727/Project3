@@ -8,6 +8,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ImageBackground,
+  StyleSheet,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
@@ -27,6 +28,7 @@ const CreateEmployee = () => {
     name: string;
     type: string
   } | null>(null);
+  const [loadingStatus, setLoadingStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDistricts = async () => {
@@ -116,33 +118,63 @@ const CreateEmployee = () => {
   };
 
   const onSubmit = async (data: any) => {
+    // Validate email
+    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!emailRegex.test(data.email)) {
+      Alert.alert("Validation Error", "Please enter a valid email address.");
+      return;
+    }
+  
+    // Validate phone
+    const phoneRegex = /^\d{10,11}$/;
+    if (!phoneRegex.test(data.mobile)) {
+      Alert.alert("Validation Error", "Phone number must be 10 or 11 digits.");
+      return;
+    }
+  
+    // Validate base salary
+    const salary = Number(data.baseSalary.replace(/\D/g, ""));
+    if (isNaN(salary) || salary <= 0) {
+      Alert.alert("Validation Error", "Base salary must be a positive number.");
+      return;
+    }
+  
+    // Set loading status
+    setLoadingStatus("Loading");
+    let dots = 0;
+    const interval = setInterval(() => {
+      dots = (dots + 1) % 4; 
+      setLoadingStatus(`Loading${'.'.repeat(dots)}`);
+    }, 100);
+  
     try {
       const payload = {
         name: data.name,
         email: data.email,
         mobile: data.mobile,
-        baseSalary: String(Number(data.baseSalary.replace(/\D/g, ""))),
+        baseSalary: String(salary),
         district,
         job,
-        avatar: avatarFile || null, 
+        avatar: avatarFile || null,
       };
-
-      console.log("Payload Content:", payload);
-
+  
       const response = await apiCreateEmployee(payload);
-      console.log("Response:", response.data);
-
       if (response.data.success) {
-        Alert.alert("Success", "Employee created successfully!");
+        clearInterval(interval);
+        setLoadingStatus("Success!");
+        setTimeout(() => setLoadingStatus(null), 2000); 
         reset();
         setDistrict("");
         setJob("");
         setAvatarFile(null);
       } else {
-        Alert.alert("Error", response.data.mes || "Failed to create employee.");
+        clearInterval(interval);
+        setLoadingStatus(null);
       }
     } catch (error) {
-      console.error("Error:", error);
+      clearInterval(interval);
+      setLoadingStatus(null);
+      Alert.alert("Error", "An unexpected error occurred.");
     }
   };
 
@@ -278,10 +310,36 @@ const CreateEmployee = () => {
         </TouchableOpacity>
         {avatarFile && <Text style={{ color: 'white' }}>Selected File: {avatarFile.name}</Text>}
 
+        {/* Hiển thị trạng thái loading */}
+        {loadingStatus && (
+          <View style={styles.overlay}>
+            <Text style={styles.overlayText}>{loadingStatus}</Text>
+          </View>
+        )}
+
         <Button title="Create Employee" onPress={handleSubmit(onSubmit)} />
       </ScrollView>
     </ImageBackground>
   );
 };
+
+const styles = StyleSheet.create({
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", 
+    zIndex: 10,
+  },
+  overlayText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+});
 
 export default CreateEmployee;
