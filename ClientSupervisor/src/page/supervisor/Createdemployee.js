@@ -5,11 +5,12 @@ import { useSnackbar } from "notistack";
 import { useForm } from "react-hook-form";
 
 const Createdemployee = () => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [jobCategories, setJobCategories] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [district, setDistrict] = useState("");
   const [job, setJob] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -61,7 +62,16 @@ const Createdemployee = () => {
   }, [enqueueSnackbar]);
 
   const onSubmit = async (data) => {
+    let loadingSnackbarId = null; // Khởi tạo biến để lưu ID thông báo loading
     try {
+      setIsLoading(true);
+
+      // Hiển thị thông báo loading và lưu ID
+      loadingSnackbarId = enqueueSnackbar("Processing...", {
+        variant: "info",
+        persist: true, // Thông báo loading tồn tại đến khi được đóng
+      });
+
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("email", data.email);
@@ -72,16 +82,6 @@ const Createdemployee = () => {
       if (data.avatar && data.avatar[0]) {
         formData.append("avatar", data.avatar[0]);
       }
-
-      console.log("FormData:", {
-        name: data.name,
-        email: data.email,
-        mobile: data.mobile,
-        baseSalary: data.baseSalary,
-        district,
-        job,
-        avatar: data.avatar?.[0],
-      });
 
       const response = await axios.post(
         "https://project3-dq33.onrender.com/api/employee/registeremployee",
@@ -110,10 +110,14 @@ const Createdemployee = () => {
       const errorMessage =
         error.response?.data?.message ||
         "An error occurred while creating the employee.";
-      console.error("Error creating employee:", errorMessage);
-      enqueueSnackbar(errorMessage, {
-        variant: "error",
-      });
+      enqueueSnackbar(errorMessage, { variant: "error" });
+    } finally {
+      setIsLoading(false);
+
+      // Đóng thông báo loading
+      if (loadingSnackbarId !== null) {
+        closeSnackbar(loadingSnackbarId);
+      }
     }
   };
 
@@ -203,11 +207,12 @@ const Createdemployee = () => {
           <Button
             fw
             type="submit"
+            disabled={isLoading}
             style={
               "w-full p-2 bg-white rounded-2xl bg-gradient-to-r from-[#979db6] to-gray-300"
             }
           >
-            Create Employee
+            {isLoading ? "Processing..." : "Create Employee"}{" "}
           </Button>
         </div>
       </form>
