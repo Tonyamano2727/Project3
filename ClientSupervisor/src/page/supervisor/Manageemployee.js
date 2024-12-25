@@ -34,11 +34,10 @@ const Manageemployee = () => {
     }
   };
 
-  // Fetch job categories
   const fetchJobCategories = async () => {
     try {
       const response = await axios.get(
-        "http://13.229.115.93:5000/api/categoryservice"
+        "https://project3-dq33.onrender.com/api/categoryservice"
       );
       if (response.data.success) {
         setJobCategories(
