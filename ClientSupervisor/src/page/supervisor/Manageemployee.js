@@ -4,16 +4,27 @@ import {
   apiUpdateEmployee,
   apiDeletedemployee,
 } from "../../api/supervisor";
+import { useSnackbar } from "notistack";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from "@mui/material";
 import axios from "axios";
 
 const Manageemployee = () => {
   const [staff, setStaff] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [, setLoading] = useState(true);
+  const [, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
   const [jobCategories, setJobCategories] = useState([]);
+  const { enqueueSnackbar } = useSnackbar();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteEmployeeId, setDeleteEmployeeId] = useState(null);
 
   const fetchEmployees = async () => {
     try {
@@ -49,6 +60,11 @@ const Manageemployee = () => {
     } catch (error) {
       console.error("Error loading job categories:", error);
     }
+  };
+
+  const openDeleteDialog = (id) => {
+    setDeleteEmployeeId(id);
+    setDeleteDialogOpen(true);
   };
 
   const handleEdit = (employee) => {
@@ -90,29 +106,41 @@ const Manageemployee = () => {
     try {
       const response = await apiUpdateEmployee(selectedEmployee._id, formData);
       if (response.success) {
+        enqueueSnackbar("Employee updated successfully!", {
+          variant: "success",
+        });
         setOpen(false);
         fetchEmployees();
       } else {
-        alert("Failed to update employee");
+        enqueueSnackbar("Failed to update employee.", { variant: "error" });
       }
     } catch (error) {
-      alert("An error occurred while updating employee.");
+      enqueueSnackbar("An error occurred while updating employee.", {
+        variant: "error",
+      });
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this employee?")) {
-      try {
-        const response = await apiDeletedemployee(id);
-        if (response.success) {
-          alert("Employee deleted successfully");
-          fetchEmployees();
-        } else {
-          alert(response.message);
-        }
-      } catch (error) {
-        alert("An error occurred while deleting the employee.");
+  const handleDelete = async () => {
+    try {
+      const response = await apiDeletedemployee(deleteEmployeeId);
+      if (response.success) {
+        enqueueSnackbar("Employee deleted successfully!", {
+          variant: "success",
+        });
+        fetchEmployees();
+      } else {
+        enqueueSnackbar(response.message || "Failed to delete employee.", {
+          variant: "error",
+        });
       }
+    } catch (error) {
+      enqueueSnackbar("An error occurred while deleting employee.", {
+        variant: "error",
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setDeleteEmployeeId(null);
     }
   };
 
@@ -162,16 +190,38 @@ const Manageemployee = () => {
                   Update
                 </button>
                 <button
-                  className="text-red-600 hover:text-red-800  text-center ml-3"
-                  onClick={() => handleDelete(employee._id)}
+                  className="text-red-600 hover:text-red-800 text-center ml-3"
+                  onClick={() => openDeleteDialog(employee._id)}
                 >
-                  Deleted
+                  Delete
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Dialog để xác nhận xóa */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+      >
+        <DialogTitle id="delete-dialog-title">Confirm Delete</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this employee? This action cannot be
+          undone.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDelete} color="secondary" autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {open && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50 ">
