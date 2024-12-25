@@ -1,15 +1,48 @@
 import axios from 'axios';
 import API_CONFIG from './apiConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Cấu hình một instance của Axios với baseURL đã định nghĩa
 export const axiosInstance = axios.create({
     baseURL: API_CONFIG.BASE_URL,
   });
 
-// Hàm để thiết lập token
-export const setAuthToken = (token: string) => {
-    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    console.log('Authorization Header Set:', axiosInstance.defaults.headers.common['Authorization']); 
+  export const initializeAuthToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+      if (token) {
+        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        console.log('Authorization token initialized:', token);
+      }
+    } catch (error) {
+      console.error('Error initializing auth token:', error);
+    }
+  };
+
+  export const setAuthToken = async (token: string) => {
+    try {
+      await AsyncStorage.setItem('accessToken', token);
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } catch (error) {
+      console.error('Error setting auth token:', error);
+    }
+  };
+
+  export const getAuthToken = async (): Promise<string | null> => {
+    try {
+      return await AsyncStorage.getItem('accessToken');
+    } catch (error) {
+      console.error('Error getting auth token:', error);
+      return null;
+    }
+  };
+
+  export const removeAuthToken = async () => {
+    try {
+      await AsyncStorage.removeItem('accessToken');
+      delete axiosInstance.defaults.headers.common['Authorization'];
+    } catch (error) {
+      console.error('Error removing auth token:', error);
+    }
   };
 
 // Hàm đăng nhập
@@ -58,9 +91,13 @@ export const apiGetServiceCategory = () => {
 }
 
 // Hàm cập nhật thông tin nhân viên
-export const apiUpdateEmployee = (eid: string, data: any) => {
-  const url = `${API_CONFIG.ENDPOINTS.UPDATE_EMPLOYEE}/${eid}`;
-  return axiosInstance.put(url, data);
+export const apiUpdateEmployee = async (employeeId: string, data: FormData) => {
+  const url = `${API_CONFIG.ENDPOINTS.UPDATE_EMPLOYEE}/${employeeId}`;
+  return axiosInstance.put(url, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 };
 
 // Hàm lấy thông tin lương

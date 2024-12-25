@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Button, TextInput, StyleSheet, Alert, ImageBackground } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/types';
-import { apiLogin, setAuthToken } from '../config/apiService';
+import { apiLogin, setAuthToken, getAuthToken } from '../config/apiService';
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -12,6 +12,16 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation<LoginScreenNavigationProp>();
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const token = await getAuthToken();
+      if (token) {
+        navigation.navigate('HomePage');
+      }
+    };
+    checkLoginStatus();
+  }, [navigation]);
 
   const handleLogin = async () => {
 

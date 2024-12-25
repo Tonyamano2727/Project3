@@ -333,8 +333,8 @@ const ManageBooking = () => {
           {/* Nút Save */}
           <TouchableOpacity
             style={{
-              backgroundColor: '#007bff', // Màu nền của nút
-              borderRadius: 10, // Bo góc
+              backgroundColor: '#007bff', 
+              borderRadius: 10,
               padding: 10,
               alignItems: 'center',
             }}

@@ -14,8 +14,10 @@ import {
   ActivityIndicator,
   ImageBackground,
   Image,
+  RefreshControl
 } from "react-native";
 import { apiGetEmployeeList, apiUpdateEmployee } from "../config/apiService";
+import * as ImagePicker from 'expo-image-picker';
 import houseCleaningTools from '../../assets/images/house-cleaning-tools.jpg';
 
 interface Employee {
@@ -39,6 +41,9 @@ const EmployeeList = () => {
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [baseSalary, setBaseSalary] = useState<string>("");
+  const [avatar, setAvatar] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [savingStatus, setSavingStatus] = useState<string | null>(null);
 
   useEffect(() => {
     if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -48,6 +53,44 @@ const EmployeeList = () => {
     fetchEmployees();
   }, []);
 
+  useEffect(() => {
+    if (savingStatus === 'Saving') {
+      let dots = 0;
+      const interval = setInterval(() => {
+        dots = (dots + 1) % 4; 
+        setSavingStatus(`Saving${'.'.repeat(dots)}`);
+      }, 100);
+  
+      return () => clearInterval(interval); 
+    }
+  }, [savingStatus]);
+
+  const onRefresh = async () => {
+    setIsRefreshing(true); 
+    await fetchEmployees(); 
+    setIsRefreshing(false); 
+  };
+
+  const handlePickAvatar = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Camera roll permissions are required to select an avatar.');
+      return;
+    }
+  
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+  
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const selectedImage = result.assets[0];
+      setAvatar(selectedImage.uri); 
+    }
+  };
+  
   const fetchEmployees = async () => {
     setLoading(true);
     try {
@@ -76,32 +119,45 @@ const EmployeeList = () => {
     setEmail(employee.email);
     setMobile(employee.mobile);
     setBaseSalary(employee.baseSalary?.toString() || "");
+    setAvatar(null);
     setModalVisible(true);
   };
 
   const handleUpdateEmployee = async () => {
     if (!currentEmployee) return;
-
-    const updatedEmployee = {
-      name,
-      email,
-      mobile,
-      baseSalary: Number(baseSalary.replace(/,/g, "")),
-    };
-
+  
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('mobile', mobile);
+    formData.append('baseSalary', baseSalary.replace(/,/g, ""));
+    if (avatar) {
+      formData.append('avatar', {
+        uri: avatar,
+        name: 'avatar.jpg', 
+        type: 'image/jpeg', 
+      });
+    }
+  
+    setSavingStatus('Saving');
     try {
-      const response = await apiUpdateEmployee(currentEmployee._id, updatedEmployee);
+      const response = await apiUpdateEmployee(currentEmployee._id, formData);
       if (response.status === 200 && response.data.success) {
         fetchEmployees();
+        setSavingStatus('Saved!');
+        setTimeout(() => setSavingStatus(null), 2000); // Xóa trạng thái sau 2 giây
         setModalVisible(false);
-        Alert.alert("Success", "Employee updated successfully.");
       } else {
-        Alert.alert("Error", "Failed to update employee.");
+        setSavingStatus(null);
+        Alert.alert("Error", response.data.message || "Failed to update employee.");
       }
     } catch (error) {
+      console.error("Error updating employee:", error);
+      setSavingStatus(null);
       Alert.alert("Error", "An error occurred while updating employee.");
     }
   };
+  
 
   const renderItem = ({ item }: { item: Employee }) => {
     const isExpanded = expandedEmployeeId === item._id;
@@ -153,15 +209,39 @@ const EmployeeList = () => {
           ListEmptyComponent={
             <Text style={styles.emptyListText}>No employees found.</Text>
           }
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          }
         />
       )}
 
       <Modal
         visible={modalVisible}
         animationType="slide"
-        onRequestClose={() => setModalVisible(false)}>
+        onRequestClose={() => setModalVisible(false)}
+      >
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Edit Employee</Text>
+
+          {savingStatus && (
+            <Text style={styles.savingStatus}>{savingStatus}</Text>
+          )}
+
+          {/* Hiển thị Avatar */}
+          {avatar ? (
+            <Image source={{ uri: avatar }} style={styles.avatarPreview} />
+          ) : currentEmployee?.avatar ? (
+            <Image source={{ uri: currentEmployee.avatar }} style={styles.avatarPreview} />
+          ) : (
+            <View style={styles.avatarPlaceholder} />
+          )}
+
+          {/* Nút Chọn Ảnh */}
+          <TouchableOpacity style={styles.saveButton} onPress={handlePickAvatar}>
+            <Text style={styles.saveButtonText}>Choose Avatar</Text>
+          </TouchableOpacity>
+
+          {/* Các trường thông tin khác */}
           <TextInput
             style={styles.input}
             value={name}
@@ -183,19 +263,22 @@ const EmployeeList = () => {
           />
           <TextInput
             style={styles.input}
-            value={baseSalary.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} // Format number with commas
-            onChangeText={(text) => setBaseSalary(text.replace(/,/g, ""))} // Remove commas for raw input
+            value={baseSalary.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            onChangeText={(text) => setBaseSalary(text.replace(/,/g, ""))}
             placeholder="Base Salary"
             keyboardType="numeric"
           />
-          <TouchableOpacity
-            style={styles.saveButton}
-            onPress={handleUpdateEmployee}>
+
+          {/* Nút Lưu */}
+          <TouchableOpacity style={styles.saveButton} onPress={handleUpdateEmployee}>
             <Text style={styles.saveButtonText}>Save</Text>
           </TouchableOpacity>
+
+          {/* Nút Hủy */}
           <TouchableOpacity
             style={[styles.saveButton, styles.cancelButton]}
-            onPress={() => setModalVisible(false)}>
+            onPress={() => setModalVisible(false)}
+          >
             <Text style={styles.saveButtonText}>Cancel</Text>
           </TouchableOpacity>
         </View>
@@ -242,23 +325,23 @@ const styles = StyleSheet.create({
     width: 200,
     height: 100,
     borderRadius: 25,
-    marginBottom: 8, // Space between image and name
-    alignSelf: "center", // Ensure avatar is centered
+    marginBottom: 8, 
+    alignSelf: "center", 
   },
   avatarPlaceholder: {
     width: 100,
     height: 50,
     backgroundColor: "#ccc",
     borderRadius: 25,
-    marginBottom: 8, // Space between image and name
-    alignSelf: "center", // Ensure placeholder is centered
+    marginBottom: 8, 
+    alignSelf: "center", 
   },
   employeeName: {
     fontSize: 18,
     fontWeight: "500",
     color: "#333",
-    width:200, // Ensure name has the same width as avatar
-    textAlign: "center", // Align text in the center
+    width:200, 
+    textAlign: "center", 
   },
   employeeDetails: {
     marginTop: 8,
@@ -319,6 +402,20 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     color: "#888",
+  },
+  avatarPreview: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    alignSelf: "center",
+    marginBottom: 10,
+  },
+  savingStatus: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#007AFF',
+    marginBottom: 10,
+    fontWeight: 'bold',
   },
 });
 
