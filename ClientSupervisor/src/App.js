@@ -18,7 +18,7 @@ import Managebookingplan from "./page/supervisor/Managebookingplan";
 
 const PrivateRoute = ({ children }) => {
   const accessToken = localStorage.getItem("accessToken");
-  return accessToken ? children : <Navigate to="/" />;
+  return accessToken ? children : <Navigate to={path.LOGIN} />;
 };
 
 function App() {
@@ -26,7 +26,9 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Login />} />
+          {/* Đường dẫn trang login */}
+          <Route path={path.LOGIN} element={<Login />} />
+          {/* Đường dẫn chính của supervisor */}
           <Route
             path={path.SUPER_LAYOUT}
             element={
@@ -35,6 +37,7 @@ function App() {
               </PrivateRoute>
             }
           >
+            {/* Các route con */}
             <Route path={path.SALARY} element={<Salary />} />
             <Route path={path.MANAGE_EMPLOYYEE} element={<Manageemployee />} />
             <Route
