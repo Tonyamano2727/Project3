@@ -21,12 +21,15 @@ const Createdemployee = () => {
     const fetchData = async () => {
       try {
         const [jobResponse, districtResponse] = await Promise.all([
-          axios.get("http://localhost:5000/api/categoryservice"),
-          axios.get("http://localhost:5000/api/supervisor/districts", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }),
+          axios.get("https://project3-dq33.onrender.com/api/categoryservice"),
+          axios.get(
+            "https://project3-dq33.onrender.com/api/supervisor/districts",
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+              },
+            }
+          ),
         ]);
 
         if (jobResponse.data.success) {
@@ -81,7 +84,7 @@ const Createdemployee = () => {
       });
 
       const response = await axios.post(
-        "http://localhost:5000/api/employee/registeremployee",
+        "https://project3-dq33.onrender.com/api/employee/registeremployee",
         formData,
         {
           headers: {
@@ -201,4 +204,3 @@ const Createdemployee = () => {
 };
 
 export default Createdemployee;
-

@@ -9,7 +9,9 @@ const app = express();
 app.use(
   cors({
     origin: [
+      process.env.CLIENT_RENDER,
       process.env.CLIENT_URL,
+      process.env.SUPERVISOR_RENDER,
       process.env.SUPERVISOR,
       process.env.CLIENT_MOBILE,
       process.env.CONNECTION_MOBILE,
@@ -22,7 +24,7 @@ app.use(
 app.use(cookieParser());
 const port = process.env.PORT || 8888;
 
-app.use(express.json()); // write data client rp server
+app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 dbConnect();

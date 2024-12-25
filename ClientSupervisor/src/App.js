@@ -24,6 +24,7 @@ const PrivateRoute = ({ children }) => {
 
 function App() {
   return (
+<<<<<<< HEAD
     <SnackbarProvider
       maxSnack={3}
       classes={{
@@ -64,6 +65,36 @@ function App() {
         </div>
       </Router>
     </SnackbarProvider>
+=======
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route
+            path={path.SUPER_LAYOUT}
+            element={
+              <PrivateRoute>
+                <SupervisorLayout />
+              </PrivateRoute>
+            }
+          >
+            <Route path={path.SALARY} element={<Salary />} />
+            <Route path={path.MANAGE_EMPLOYYEE} element={<Manageemployee />} />
+            <Route
+              path={path.CREATED_EMPLOYYEE}
+              element={<Createdemployee />}
+            />
+            <Route path={path.MANAGE_BOOKING} element={<Managebooking />} />
+            <Route
+              path={path.MANAGE_BOOKINGPPLAN}
+              element={<Managebookingplan />}
+            />
+            <Route path={path.OVER_VIEW} element={<Overview />} />
+          </Route>
+        </Routes>
+      </div>
+    </Router>
+>>>>>>> bf43c81cde06c78fbcbc320abd3c06123f2078b7
   );
 }
 

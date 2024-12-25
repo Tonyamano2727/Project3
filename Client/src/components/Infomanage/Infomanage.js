@@ -11,7 +11,7 @@ const Infomanage = () => {
     const fetchSupervisors = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/supervisor/getallsupervisor"
+          "https://project3-dq33.onrender.com/api/supervisor/getallsupervisor"
         );
         const data = await response.json();
 
@@ -28,7 +28,9 @@ const Infomanage = () => {
     console.log();
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/user/"); // Đường dẫn API của bạn
+        const response = await fetch(
+          "https://project3-dq33.onrender.com/api/api/user/"
+        ); // Đường dẫn API của bạn
         const data = await response.json();
 
         if (data.success) {
@@ -61,12 +63,18 @@ const Infomanage = () => {
           <tr className="text-[13px]">
             <td className="py-2 px-4 font-medium">User</td>
             <td className="py-2 px-8 text-[14px] font-semibold">{userCount}</td>
-            <td className="py-2 px-4"><Link>Manage</Link></td>
+            <td className="py-2 px-4">
+              <Link>Manage</Link>
+            </td>
           </tr>
           <tr className="text-[13px]">
             <td className="py-2 px-4 font-medium">Supervise</td>
-            <td className="py-2 px-8 text-[14px] font-semibold">{supervisorCount}</td>
-            <td className="py-2 px-4"><Link>Manage</Link></td>
+            <td className="py-2 px-8 text-[14px] font-semibold">
+              {supervisorCount}
+            </td>
+            <td className="py-2 px-4">
+              <Link>Manage</Link>
+            </td>
           </tr>
         </tbody>
       </table>

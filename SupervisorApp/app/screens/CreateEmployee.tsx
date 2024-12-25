@@ -14,7 +14,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { useForm, Controller } from "react-hook-form";
 import { apiCreateEmployee, apiGetSupervisorDistrict, apiGetServiceCategory } from "../config/apiService";
-import houseCleaningTools from '../../assets/images/house-cleaning-tools.jpg'; // Đường dẫn đến ảnh nền
+import houseCleaningTools from '../../assets/images/house-cleaning-tools.jpg'; 
 
 const CreateEmployee = () => {
   const { control, handleSubmit, reset } = useForm();
@@ -49,10 +49,9 @@ const CreateEmployee = () => {
 
     const fetchJobCategories = async () => {
       try {
-
         const response = await apiGetServiceCategory();
         const data = response.data; 
-    
+
         if (data.success) {
           setJobCategories(
             data.categories.map((job: any) => ({
@@ -122,10 +121,10 @@ const CreateEmployee = () => {
         name: data.name,
         email: data.email,
         mobile: data.mobile,
-        baseSalary: String(Number(data.baseSalary)),
+        baseSalary: String(Number(data.baseSalary.replace(/\D/g, ""))),
         district,
         job,
-        avatar: avatarFile || null, // Sử dụng base64
+        avatar: avatarFile || null, 
       };
 
       console.log("Payload Content:", payload);
@@ -168,8 +167,8 @@ const CreateEmployee = () => {
 
   return (
     <ImageBackground
-      source={houseCleaningTools} // Sử dụng hình nền từ assets
-      style={{ flex: 1, padding: 16 }} // Đảm bảo bao phủ toàn bộ màn hình
+      source={houseCleaningTools} 
+      style={{ flex: 1, padding: 16 }} 
     >
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <Text style={{ fontSize: 24, textAlign: "center", marginBottom: 20, color: 'white' }}>
@@ -230,11 +229,11 @@ const CreateEmployee = () => {
           rules={{ required: "Base Salary is required" }}
           render={({ field: { onChange, value } }) => (
             <TextInput
-              style={inputStyle} // Sử dụng inputStyle
+              style={inputStyle}
               placeholder="Base Salary Employee"
               keyboardType="numeric"
-              value={value}
-              onChangeText={onChange}
+              value={value ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(value.replace(/\D/g, ""))) : ""}
+              onChangeText={(text) => onChange(text.replace(/\D/g, ""))} 
             />
           )}
         />

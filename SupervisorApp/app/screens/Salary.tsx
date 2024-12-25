@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, RefreshControl, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Button, RefreshControl, ScrollView, ImageBackground } from 'react-native';
 import { apiGetEmployeeList, apiGetSalary } from '../config/apiService'; // Ensure the correct API import
 import { Picker } from '@react-native-picker/picker';
+import houseCleaningTools from '../../assets/images/house-cleaning-tools.jpg';
 
 const Salary = () => {
   const [employees, setEmployees] = useState<any[]>([]);
@@ -93,6 +94,10 @@ const Salary = () => {
   );
 
   return (
+    <ImageBackground
+          source={houseCleaningTools} 
+          style={{ flex: 1, padding: 16 }} 
+    >
     <View style={styles.container}>
       <Text style={styles.title}>Salary Management</Text>
 
@@ -127,8 +132,6 @@ const Salary = () => {
             ))}
           </Picker>
         </View>
-
-        <Button title="Apply" onPress={handleFilterChange} />
       </View>
 
       {/* Full-Scroll View for Salary List */}
@@ -139,6 +142,7 @@ const Salary = () => {
         {filteredSalaries.map((item) => renderSalaryItem(item))}
       </ScrollView>
     </View>
+    </ImageBackground>
   );
 };
 

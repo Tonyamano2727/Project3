@@ -8,9 +8,11 @@ import {
   Modal,
   Button,
   Alert as RNAlert,
+  ImageBackground
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { apiManageBooking, apiUpdateBooking, apiGetDetailBooking, apiGetEmployeeList } from '../config/apiService';
+import houseCleaningTools from '../../assets/images/house-cleaning-tools.jpg'; 
 
 type Booking = {
   _id: string;
@@ -45,6 +47,10 @@ const ManageBooking = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState('');
   const [openModal, setOpenModal] = useState(false);
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+  };
 
   // Fetch bookings and employees
   const fetchBookings = async () => {
@@ -156,6 +162,10 @@ const ManageBooking = () => {
   }, []);
 
   return (
+    <ImageBackground
+          source={houseCleaningTools} 
+          style={{ flex: 1, padding: 16 }} 
+    >
     <View style={{ flex: 1, padding: 20, backgroundColor: '#f1f1f1' }}>
       <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 10 }}>Manage Bookings</Text>
 
@@ -179,27 +189,69 @@ const ManageBooking = () => {
         data={filteredBookings}
         keyExtractor={(item: Booking) => item._id}
         renderItem={({ item }) => (
-          <View style={{ padding: 10, backgroundColor: '#fff', marginBottom: 10, borderRadius: 8 }}>
-            <Text>{item.customerName}</Text>
-            <Text>{item.category}</Text>
-            <Text>{item.email}</Text>
-            <Text>{item.phoneNumber}</Text>
-            <Text>{item.address}, {item.district}, {item.ward}</Text>
-            <Text>{new Date(item.date).toLocaleDateString()}</Text>
-            <Text>{item.timeSlot}</Text>
+          <View
+            style={{
+              padding: 10,
+              backgroundColor: "#fff",
+              marginBottom: 10,
+              borderRadius: 8,
+            }}
+          >
+            <Text>
+              <Text style={{ color: "#007bff", fontWeight: "bold" }}>Name: </Text>
+              {item.customerName}
+            </Text>
+            <Text>
+              <Text style={{ color: "#007bff", fontWeight: "bold" }}>Service: </Text>
+              {item.category}
+            </Text>
+            <Text>
+              <Text style={{ color: "#007bff", fontWeight: "bold" }}>Email: </Text>
+              {item.email}
+            </Text>
+            <Text>
+              <Text style={{ color: "#007bff", fontWeight: "bold" }}>Phone: </Text>
+              {item.phoneNumber}
+            </Text>
+            <Text>
+              <Text style={{ color: "#007bff", fontWeight: "bold" }}>Address: </Text>
+              {item.address}, {item.district}, {item.ward}
+            </Text>
+            <Text>
+              <Text style={{ color: "#007bff", fontWeight: "bold" }}>Date: </Text>
+              {new Date(item.date).toLocaleDateString()}
+            </Text>
+            <Text>
+              <Text style={{ color: "#007bff", fontWeight: "bold" }}>Time Slot: </Text>
+              {item.timeSlot}
+            </Text>
             <View>
               {item.employeeDetails.map((employee) => (
-                <Text key={employee.employeeId}>{employee.name}</Text>
+                <Text key={employee.employeeId}>
+                  <Text style={{ color: "#007bff", fontWeight: "bold" }}>Employee: </Text>
+                  {employee.name}
+                </Text>
               ))}
             </View>
-            <Text>{item.status}</Text>
-            <Text>{item.totalPrice?.toLocaleString()} VND</Text>
+            <Text>
+              <Text style={{ color: "#007bff", fontWeight: "bold" }}>Status: </Text>
+              {item.status}
+            </Text>
+            <Text>
+              <Text style={{ color: "#007bff", fontWeight: "bold" }}>Price: </Text>
+              {item.totalPrice?.toLocaleString()} VND
+            </Text>
 
             <TouchableOpacity
-              style={{ backgroundColor: '#007bff', padding: 10, marginTop: 10, borderRadius: 5 }}
+              style={{
+                backgroundColor: "#007bff",
+                padding: 10,
+                marginTop: 10,
+                borderRadius: 5,
+              }}
               onPress={() => handleOpenModal(item._id)}
             >
-              <Text style={{ color: '#fff' }}>Update</Text>
+              <Text style={{ color: "#fff" }}>Update</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -208,58 +260,104 @@ const ManageBooking = () => {
       {/* Modal */}
       <Modal visible={openModal} onRequestClose={handleCloseModal}>
         <View style={{ padding: 20 }}>
-          <Text style={{ fontSize: 20 }}>Update Booking</Text>
-
           <View style={{ marginVertical: 10 }}>
-            <Text>Status</Text>
-            <Picker
-              selectedValue={selectedBooking?.status || ''}
-              onValueChange={(itemValue) =>
-                setSelectedBooking(prev => (prev ? { ...prev, status: itemValue } : prev))
-              }
-            >
-              <Picker.Item label="Pending" value="Pending" />
-              <Picker.Item label="Confirmed" value="Confirmed" />
-              <Picker.Item label="In-progress" value="In-progress" />
-              <Picker.Item label="Completed" value="Completed" />
-              <Picker.Item label="Canceled" value="Canceled" />
-            </Picker>
+            <Text style={{ fontSize: 20 }}>Status</Text>
+            <View style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 20, overflow: 'hidden', marginTop: 15 }}>
+              <Picker
+                selectedValue={selectedBooking?.status || ''}
+                onValueChange={(itemValue) =>
+                  setSelectedBooking((prev) => (prev ? { ...prev, status: itemValue } : prev))
+                }
+              >
+                <Picker.Item label="Pending" value="Pending" />
+                <Picker.Item label="Confirmed" value="Confirmed" />
+                <Picker.Item label="In-progress" value="In-progress" />
+                <Picker.Item label="Completed" value="Completed" />
+                <Picker.Item label="Canceled" value="Canceled" />
+              </Picker>
+            </View>
           </View>
 
           <View style={{ marginVertical: 10 }}>
-            <Text>Employee</Text>
-            <Picker
-              selectedValue={selectedBooking?.employeeDetails[0]?.employeeId || ''}
-              onValueChange={(itemValue) => {
-                const selectedEmployee = employees.find((e: Employee) => e._id === itemValue);
-                setSelectedBooking(prev => (prev ? {
-                  ...prev,
-                  employeeDetails: [{ employeeId: itemValue, name: selectedEmployee?.name || '' }]
-                } : prev));
-              }}
-            >
-              {employees.map((employee: Employee) => (
-                <Picker.Item key={employee._id} label={employee.name} value={employee._id} />
-              ))}
-            </Picker>
+            <Text style={{ fontSize: 20 }}>Employee</Text>
+            <View style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 20, overflow: 'hidden', marginTop: 15 }}>
+              <Picker
+                selectedValue={selectedBooking?.employeeDetails[0]?.employeeId || ''}
+                onValueChange={(itemValue) => {
+                  const selectedEmployee = employees.find((e: Employee) => e._id === itemValue);
+                  setSelectedBooking((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          employeeDetails: [
+                            { employeeId: itemValue, name: selectedEmployee?.name || '' },
+                          ],
+                        }
+                      : prev
+                  );
+                }}
+              >
+                {employees.map((employee: Employee) => (
+                  <Picker.Item key={employee._id} label={employee.name} value={employee._id} />
+                ))}
+              </Picker>
+            </View>
           </View>
 
           <View style={{ marginVertical: 10 }}>
-            <Text>Price: {selectedBooking?.price || 0} VND</Text>
+          <Text style={{ fontSize: 20 }}>
+            Price: {formatCurrency(selectedBooking?.price || 0)}
+          </Text>
+            <Text style={{ fontSize: 20, marginTop: 15 }}>Quantity</Text>
             <TextInput
+              style={{
+                borderWidth: 1,
+                borderColor: '#ccc',
+                borderRadius: 20,
+                paddingHorizontal: 10,
+                height: 40,
+                fontSize: 15,
+                marginTop: 15,
+              }}
               keyboardType="numeric"
               value={selectedBooking?.quantity?.toString() || ''}
               onChangeText={(text) =>
-                setSelectedBooking(prev => (prev ? { ...prev, quantity: parseInt(text) } : prev))
+                setSelectedBooking((prev) =>
+                  prev ? { ...prev, quantity: parseInt(text) } : prev
+                )
               }
             />
           </View>
 
-            <View style={{ justifyContent: 'space-between', padding: 20 }}>
-                <Button title="Save" onPress={handleSubmitUpdate} />
-                <View style={{ height: 15 }} />
-                <Button title="Close" onPress={handleCloseModal} />
-            </View>
+        <View style={{ justifyContent: 'space-between', padding: 20 }}>
+          {/* Nút Save */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#007bff', // Màu nền của nút
+              borderRadius: 10, // Bo góc
+              padding: 10,
+              alignItems: 'center',
+            }}
+            onPress={handleSubmitUpdate}
+          >
+            <Text style={{ color: 'white', fontSize: 16 }}>Save</Text>
+          </TouchableOpacity>
+
+          <View style={{ height: 15 }} />
+
+            {/* Nút Close */}
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#ff5733', 
+                borderRadius: 10, 
+                padding: 10,
+                alignItems: 'center',
+              }}
+              onPress={handleCloseModal}
+            >
+              <Text style={{ color: 'white', fontSize: 16 }}>Close</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
 
@@ -271,6 +369,7 @@ const ManageBooking = () => {
         </View>
       )}
     </View>
+    </ImageBackground>
   );
 };
 

@@ -86,7 +86,7 @@ const EmployeeList = () => {
       name,
       email,
       mobile,
-      baseSalary: Number(baseSalary),
+      baseSalary: Number(baseSalary.replace(/,/g, "")),
     };
 
     try {
@@ -126,7 +126,7 @@ const EmployeeList = () => {
             <Text style={styles.detailText}>District: {item.district}</Text>
             {item.baseSalary && (
               <Text style={styles.detailText}>
-                Base Salary: ${item.baseSalary}
+                Base Salary: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.baseSalary)}
               </Text>
             )}
             <TouchableOpacity onPress={() => handleEditEmployee(item)}>
@@ -183,8 +183,8 @@ const EmployeeList = () => {
           />
           <TextInput
             style={styles.input}
-            value={baseSalary}
-            onChangeText={setBaseSalary}
+            value={baseSalary.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} // Format number with commas
+            onChangeText={(text) => setBaseSalary(text.replace(/,/g, ""))} // Remove commas for raw input
             placeholder="Base Salary"
             keyboardType="numeric"
           />
