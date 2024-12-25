@@ -178,25 +178,6 @@ const CreateEmployee = () => {
     }
   };
 
-  const inputStyle = {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 12,
-    marginVertical: 8,
-    borderRadius: 8,
-    backgroundColor: "#f9f9f9",
-  };
-
-  const selectStyle = {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 12,
-    marginVertical: 8,
-    borderRadius: 8,
-    backgroundColor: "#f9f9f9",
-    height: 48,
-  };
-
   return (
     <ImageBackground
       source={houseCleaningTools} 
@@ -214,7 +195,7 @@ const CreateEmployee = () => {
           rules={{ required: "Name is required" }}
           render={({ field: { onChange, value } }) => (
             <TextInput
-              style={inputStyle} // Sử dụng inputStyle
+              style={styles.inputStyle} 
               placeholder="Name Employee"
               value={value}
               onChangeText={onChange}
@@ -229,7 +210,7 @@ const CreateEmployee = () => {
           rules={{ required: "Email is required" }}
           render={({ field: { onChange, value } }) => (
             <TextInput
-              style={inputStyle} // Sử dụng inputStyle
+              style={styles.inputStyle} 
               placeholder="Email Employee"
               keyboardType="email-address"
               value={value}
@@ -245,7 +226,7 @@ const CreateEmployee = () => {
           rules={{ required: "Mobile is required" }}
           render={({ field: { onChange, value } }) => (
             <TextInput
-              style={inputStyle} // Sử dụng inputStyle
+              style={styles.inputStyle} 
               placeholder="Mobile Employee"
               keyboardType="phone-pad"
               value={value}
@@ -261,7 +242,7 @@ const CreateEmployee = () => {
           rules={{ required: "Base Salary is required" }}
           render={({ field: { onChange, value } }) => (
             <TextInput
-              style={inputStyle}
+              style={styles.inputStyle}
               placeholder="Base Salary Employee"
               keyboardType="numeric"
               value={value ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(value.replace(/\D/g, ""))) : ""}
@@ -274,7 +255,7 @@ const CreateEmployee = () => {
         <Picker
           selectedValue={district}
           onValueChange={(itemValue: string) => setDistrict(itemValue)}
-          style={selectStyle} // Sử dụng selectStyle
+          style={styles.selectStyle} 
         >
           <Picker.Item label="Select District" value="" />
           {districts.map((dist) => (
@@ -286,7 +267,7 @@ const CreateEmployee = () => {
         <Picker
           selectedValue={job}
           onValueChange={(itemValue: string) => setJob(itemValue)}
-          style={selectStyle} // Sử dụng selectStyle
+          style={styles.selectStyle} 
         >
           <Picker.Item label="Select Job Category" value="" />
           {jobCategories.map((job) => (
@@ -339,6 +320,23 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#fff",
+  },
+  inputStyle : {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    padding: 12,
+    marginVertical: 8,
+    borderRadius: 8,
+    backgroundColor: "#f9f9f9",
+  },
+  selectStyle : {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    padding: 12,
+    marginVertical: 8,
+    borderRadius: 8,
+    backgroundColor: "#f9f9f9",
+    height: 48,
   },
 });
 
