@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { formatMoney } from "../../ultils/helper";
 import icons from "../../ultils/icons";
+import { useSnackbar } from "notistack";
 import {
   fetchDistricts,
   fetchWards,
@@ -26,6 +27,7 @@ const Frombooking = ({ handleCloseForm }) => {
   const [notification, setNotification] = useState("");
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
+  const { enqueueSnackbar } = useSnackbar();
 
   const [suggestions, setSuggestions] = useState([]);
   const [formData, setFormData] = useState({
@@ -41,7 +43,6 @@ const Frombooking = ({ handleCloseForm }) => {
     notes: "",
   });
 
-
   useEffect(() => {
     const fetchServiceDetails = async () => {
       try {
@@ -55,7 +56,6 @@ const Frombooking = ({ handleCloseForm }) => {
     fetchServiceDetails();
   }, [sid]);
 
- 
   useEffect(() => {
     const loadDistricts = async () => {
       try {
@@ -68,7 +68,6 @@ const Frombooking = ({ handleCloseForm }) => {
     loadDistricts();
   }, []);
 
-  
   const handleDistrictChange = async (e) => {
     const selectedDistrictId = e.target.value;
     const district = districts.find(
@@ -93,7 +92,6 @@ const Frombooking = ({ handleCloseForm }) => {
       const wards = await fetchWards(selectedDistrictId);
       setWards(wards);
 
-      
       const response = await gethotdistric(district.name);
       if (response.success) {
         const hotDistrict = response.data.find((d) => d.name === district.name);
@@ -144,19 +142,21 @@ const Frombooking = ({ handleCloseForm }) => {
     }
   }, [formData.quantity, servicePrice, isHotDistrict, percentage]);
 
- 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.district || !formData.ward) {
-      alert("Please select district and ward/commune.");
+      enqueueSnackbar("Please select district and ward/commune.", {
+        variant: "error",
+      });
       return;
     }
+
+    enqueueSnackbar("Sending Booking, Please wait...", { variant: "info" });
 
     try {
       const response = await createbooking({
@@ -166,39 +166,43 @@ const Frombooking = ({ handleCloseForm }) => {
       });
 
       if (response.success) {
-        alert("Booking success!");
-        handleCloseForm();
+        enqueueSnackbar("Booking Successfully!", { variant: "success" });
+        setTimeout(() => {
+          handleCloseForm();
+        }, 2000);
       } else {
-        alert("Booking failure: " + response.message);
+        enqueueSnackbar(`Booking failure: ${response.message}`, {
+          variant: "error",
+        });
       }
     } catch (error) {
       console.error("Error submitting booking:", error);
+      enqueueSnackbar("An error occurred during booking.", {
+        variant: "error",
+      });
     }
   };
 
   const getAvailableTimeSlots = () => {
-    if (!formData.date) return []; 
+    if (!formData.date) return [];
 
-    const selectedDate = new Date(formData.date); 
-    const currentDate = new Date(); 
-
+    const selectedDate = new Date(formData.date);
+    const currentDate = new Date();
 
     if (selectedDate.toDateString() === currentDate.toDateString()) {
       return timeSlots.filter((slot) => {
-        const [hours, minutes] = slot.value.split(":").map(Number); 
+        const [hours, minutes] = slot.value.split(":").map(Number);
         const slotTime = new Date();
         slotTime.setHours(hours, minutes, 0, 0);
 
-        return slotTime > currentDate; 
+        return slotTime > currentDate;
       });
     }
-
 
     if (selectedDate > currentDate) {
       return timeSlots;
     }
 
-    
     return [];
   };
 
@@ -216,13 +220,15 @@ const Frombooking = ({ handleCloseForm }) => {
           </div>
           <button
             className="text-[30px] font-extrabold"
-            onClick={handleCloseForm}>
+            onClick={handleCloseForm}
+          >
             <IoCloseOutline />
           </button>
         </div>
         <form
           className="flex flex-wrap justify-center gap-2"
-          onSubmit={handleSubmit}>
+          onSubmit={handleSubmit}
+        >
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Customer name
@@ -237,7 +243,7 @@ const Frombooking = ({ handleCloseForm }) => {
               placeholder="Customer name"
             />
           </div>
-     
+
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Email
@@ -280,9 +286,8 @@ const Frombooking = ({ handleCloseForm }) => {
               required
               placeholder="House number, street name"
             />
-            
           </div>
-      
+
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               District
@@ -290,7 +295,8 @@ const Frombooking = ({ handleCloseForm }) => {
             <select
               onChange={handleDistrictChange}
               className="w-full p-2 border border-gray-300 rounded"
-              required>
+              required
+            >
               <option value="">-- Select District --</option>
               {districts.map((district) => (
                 <option key={district.code} value={district.code}>
@@ -299,7 +305,7 @@ const Frombooking = ({ handleCloseForm }) => {
               ))}
             </select>
           </div>
-  
+
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Ward/Commune
@@ -309,7 +315,8 @@ const Frombooking = ({ handleCloseForm }) => {
                 setFormData((prev) => ({ ...prev, ward: e.target.value }))
               }
               className="w-full p-2 border border-gray-300 rounded"
-              required>
+              required
+            >
               <option value="">-- Select Ward/Commune --</option>
               {wards.map((ward) => (
                 <option key={ward.code} value={ward.name}>
@@ -318,7 +325,7 @@ const Frombooking = ({ handleCloseForm }) => {
               ))}
             </select>
           </div>
-      
+
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Date
@@ -334,7 +341,7 @@ const Frombooking = ({ handleCloseForm }) => {
               max={formattedMaxDate}
             />
           </div>
- 
+
           <div className="w-[45%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Time
@@ -344,7 +351,8 @@ const Frombooking = ({ handleCloseForm }) => {
               value={formData.timeSlot}
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
-              required>
+              required
+            >
               <option value="">-- Select time --</option>
               {getAvailableTimeSlots().map((slot) => (
                 <option key={slot.value} value={slot.value}>
@@ -368,7 +376,7 @@ const Frombooking = ({ handleCloseForm }) => {
               required
             />
           </div>
-         
+
           <div className="w-[90%]">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Note
@@ -380,7 +388,7 @@ const Frombooking = ({ handleCloseForm }) => {
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
-        
+
           <div className="w-[90%] flex items-center justify-between">
             <h3>Total price:</h3>
             <span>{`${formatMoney(totalPrice)} VNĐ`}</span>
@@ -390,7 +398,8 @@ const Frombooking = ({ handleCloseForm }) => {
           )}
           <button
             type="submit"
-            className="bg-[#FFC704] p-3 rounded w-[90%] font-medium mt-2">
+            className="bg-[#FFC704] p-3 rounded w-[90%] font-medium mt-2"
+          >
             Book Now
           </button>
         </form>
