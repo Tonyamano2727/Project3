@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Routes,
   Route,
   Navigate,
@@ -17,8 +17,8 @@ import Salary from "./page/supervisor/Salary";
 import Managebookingplan from "./page/supervisor/Managebookingplan";
 
 const PrivateRoute = ({ children }) => {
-  const accessToken  = localStorage.getItem("accessToken");
-  return accessToken  ? children : <Navigate to="/" />;
+  const accessToken = localStorage.getItem("accessToken");
+  return accessToken ? children : <Navigate to="/" />;
 };
 
 function App() {
@@ -33,12 +33,19 @@ function App() {
               <PrivateRoute>
                 <SupervisorLayout />
               </PrivateRoute>
-            }>
-               <Route path={path.SALARY} element={<Salary />} />
+            }
+          >
+            <Route path={path.SALARY} element={<Salary />} />
             <Route path={path.MANAGE_EMPLOYYEE} element={<Manageemployee />} />
-            <Route path={path.CREATED_EMPLOYYEE} element={<Createdemployee />} />
+            <Route
+              path={path.CREATED_EMPLOYYEE}
+              element={<Createdemployee />}
+            />
             <Route path={path.MANAGE_BOOKING} element={<Managebooking />} />
-            <Route path={path.MANAGE_BOOKINGPPLAN} element={<Managebookingplan />} />
+            <Route
+              path={path.MANAGE_BOOKINGPPLAN}
+              element={<Managebookingplan />}
+            />
             <Route path={path.OVER_VIEW} element={<Overview />} />
           </Route>
         </Routes>
