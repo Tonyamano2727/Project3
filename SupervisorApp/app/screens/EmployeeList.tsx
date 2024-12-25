@@ -44,6 +44,11 @@ const EmployeeList = () => {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [savingStatus, setSavingStatus] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string | null }>({
+    email: null,
+    mobile: null,
+    baseSalary: null,
+  });
 
   useEffect(() => {
     if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -125,6 +130,27 @@ const EmployeeList = () => {
 
   const handleUpdateEmployee = async () => {
     if (!currentEmployee) return;
+
+      // Validate email
+    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Validation Error", "Please enter a valid email address.");
+      return;
+    }
+
+    // Validate phone
+    const phoneRegex = /^\d{10,11}$/;
+    if (!phoneRegex.test(mobile)) {
+      Alert.alert("Validation Error", "Phone number must be 10 or 11 digits.");
+      return;
+    }
+
+    // Validate base salary
+    const salary = Number(baseSalary.replace(/,/g, ""));
+    if (isNaN(salary) || salary <= 0) {
+      Alert.alert("Validation Error", "Base salary must be a positive number.");
+      return;
+    }
   
     const formData = new FormData();
     formData.append('name', name);
@@ -145,7 +171,7 @@ const EmployeeList = () => {
       if (response.status === 200 && response.data.success) {
         fetchEmployees();
         setSavingStatus('Saved!');
-        setTimeout(() => setSavingStatus(null), 2000); // Xóa trạng thái sau 2 giây
+        setTimeout(() => setSavingStatus(null), 2000); 
         setModalVisible(false);
       } else {
         setSavingStatus(null);
@@ -251,23 +277,37 @@ const EmployeeList = () => {
           <TextInput
             style={styles.input}
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(text) => {
+              setEmail(text);
+              setErrors((prev) => ({ ...prev, email: null }));
+            }}
             placeholder="Email"
           />
+          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+
           <TextInput
             style={styles.input}
             value={mobile}
-            onChangeText={setMobile}
+            onChangeText={(text) => {
+              setMobile(text);
+              setErrors((prev) => ({ ...prev, mobile: null }));
+            }}
             placeholder="Mobile"
             keyboardType="phone-pad"
           />
+          {errors.mobile && <Text style={styles.errorText}>{errors.mobile}</Text>}
+
           <TextInput
             style={styles.input}
             value={baseSalary.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-            onChangeText={(text) => setBaseSalary(text.replace(/,/g, ""))}
+            onChangeText={(text) => {
+              setBaseSalary(text.replace(/,/g, ""));
+              setErrors((prev) => ({ ...prev, baseSalary: null }));
+            }}
             placeholder="Base Salary"
             keyboardType="numeric"
           />
+          {errors.baseSalary && <Text style={styles.errorText}>{errors.baseSalary}</Text>}
 
           {/* Nút Lưu */}
           <TouchableOpacity style={styles.saveButton} onPress={handleUpdateEmployee}>
@@ -416,6 +456,12 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     marginBottom: 10,
     fontWeight: 'bold',
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: -8,
+    marginBottom: 8,
   },
 });
 
