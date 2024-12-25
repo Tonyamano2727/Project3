@@ -25,6 +25,11 @@ const Manageemployee = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteEmployeeId, setDeleteEmployeeId] = useState(null);
+  const [errors, setErrors] = useState({
+    email: "",
+    mobile: "",
+    baseSalary: "",
+  });
 
   const fetchEmployees = async () => {
     try {
@@ -80,6 +85,29 @@ const Manageemployee = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    let error = "";
+
+    if (name === "email") {
+      const emailRegex =
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      error = !emailRegex.test(value) ? "Invalid email format" : "";
+    }
+
+    if (name === "mobile") {
+      const phoneRegex = /^\d{10,11}$/;
+      error = !phoneRegex.test(value) ? "Phone must be 10 or 11 digits" : "";
+    }
+
+    if (name === "baseSalary") {
+      error = Number(value) < 0 ? "Base Salary cannot be negative" : "";
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: error,
+    }));
+
     setSelectedEmployee({
       ...selectedEmployee,
       [name]: name === "baseSalary" ? Number(value) : value,
@@ -92,6 +120,11 @@ const Manageemployee = () => {
   };
 
   const handleSave = async () => {
+    if (errors.email || errors.mobile || errors.baseSalary) {
+      alert("Please fix validation errors before saving.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", selectedEmployee.name);
     formData.append("email", selectedEmployee.email);
@@ -252,8 +285,13 @@ const Manageemployee = () => {
                 name="email"
                 value={selectedEmployee?.email || ""}
                 onChange={handleInputChange}
-                className="h-8 border rounded-3xl px-4 w-full placeholder:text-gray-600  focus:outline-none focus:border focus:ring-0"
+                className={`h-8 border rounded-3xl px-4 w-full placeholder:text-gray-600 ${
+                  errors.email ? "border-red-500" : ""
+                } focus:outline-none focus:border focus:ring-0`}
               />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              )}
             </div>
 
             {/* Job Category */}
@@ -286,8 +324,13 @@ const Manageemployee = () => {
                 name="mobile"
                 value={selectedEmployee?.mobile || ""}
                 onChange={handleInputChange}
-                className="h-8 border rounded-3xl px-4 w-full placeholder:text-gray-600  focus:outline-none focus:border focus:ring-0"
+                className={`h-8 border rounded-3xl px-4 w-full placeholder:text-gray-600 ${
+                  errors.mobile ? "border-red-500" : ""
+                } focus:outline-none focus:border focus:ring-0`}
               />
+              {errors.mobile && (
+                <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>
+              )}
             </div>
 
             {/* Base Salary */}
@@ -300,10 +343,16 @@ const Manageemployee = () => {
                 name="baseSalary"
                 value={selectedEmployee?.baseSalary || ""}
                 onChange={handleInputChange}
-                className="h-8 border rounded-3xl px-4 w-full placeholder:text-gray-600  focus:outline-none focus:border focus:ring-0"
+                className={`h-8 border rounded-3xl px-4 w-full placeholder:text-gray-600 ${
+                  errors.baseSalary ? "border-red-500" : ""
+                } focus:outline-none focus:border focus:ring-0`}
               />
+              {errors.baseSalary && (
+                <p className="text-red-500 text-xs mt-1">{errors.baseSalary}</p>
+              )}
             </div>
 
+            {/* Avatar */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 p-1">
                 Avatar:
