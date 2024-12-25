@@ -148,8 +148,14 @@ const Createdemployee = () => {
           id="mobile"
           register={register}
           errors={errors}
-          validate={{ required: "Mobile is required" }}
           placeholder="Mobile Employee"
+          validate={{
+            required: "Mobile is required",
+            pattern: {
+              value: /^\d{10,11}$/, // Regex kiểm tra 10 hoặc 11 chữ số
+              message: "Mobile must be 10 or 11 digits",
+            },
+          }}
         />
         <InputForm
           label="Base Salary"
@@ -157,8 +163,14 @@ const Createdemployee = () => {
           id="baseSalary"
           register={register}
           errors={errors}
-          validate={{ required: "Base Salary is required" }}
           placeholder="Base Salary Employee"
+          validate={{
+            required: "Base Salary is required",
+            min: {
+              value: 1, // Số dương
+              message: "Base Salary must be greater than 0",
+            },
+          }}
         />
         <div className="mt-2">
           <h2 className="text-[13px]">District</h2>
