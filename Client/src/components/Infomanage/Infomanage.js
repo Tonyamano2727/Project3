@@ -29,13 +29,13 @@ const Infomanage = () => {
     const fetchUsers = async () => {
       try {
         const response = await fetch(
-          "https://project3-dq33.onrender.com/api/api/user/"
-        ); // Đường dẫn API của bạn
+          "https://project3-dq33.onrender.com/api/user/"
+        );
         const data = await response.json();
 
         if (data.success) {
           setUsers(data.users);
-          setUserCount(data.counts); // Lấy tổng số lượng users từ response
+          setUserCount(data.counts);
         } else {
           console.error("Failed to fetch users:", data.mes);
         }
