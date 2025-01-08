@@ -29,7 +29,7 @@ const Frombooking = ({ handleCloseForm }) => {
   const [wards, setWards] = useState([]);
   const { enqueueSnackbar } = useSnackbar();
 
-  const [suggestions, setSuggestions] = useState([]);
+  const [, setSuggestions] = useState([]);
   const [formData, setFormData] = useState({
     customerName: "",
     email: "",
@@ -149,6 +149,24 @@ const Frombooking = ({ handleCloseForm }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const emailRegex =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!emailRegex.test(formData.email)) {
+      enqueueSnackbar("Invalid email format.", {
+        variant: "error",
+      });
+      return;
+    }
+
+    const phoneRegex = /^\d{10,11}$/;
+    if (!phoneRegex.test(formData.phoneNumber)) {
+      enqueueSnackbar("Phone must be 10 or 11 digits.", {
+        variant: "error",
+      });
+      return;
+    }
+
     if (!formData.district || !formData.ward) {
       enqueueSnackbar("Please select district and ward/commune.", {
         variant: "error",
