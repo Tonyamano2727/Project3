@@ -74,11 +74,14 @@ const Managebooking = () => {
 
   const handleOpenModal = (bkid, editMode = false) => {
     fetchBookingDetails(bkid);
-    if (selectedBooking && selectedBooking.status === "Completed") {
-      enqueueSnackbar("Cannot edit a completed booking", {
+    if (
+      selectedBooking &&
+      (selectedBooking.status === "Completed" ||
+        selectedBooking.status === "Canceled")
+    ) {
+      enqueueSnackbar("Cannot edit a canceled or completed booking", {
         variant: "error",
       });
-
       return;
     } else {
       setStatusError(null);
@@ -267,10 +270,16 @@ const Managebooking = () => {
                 </button>
                 <button
                   onClick={() => {
-                    if (booking.status === "Completed") {
-                      enqueueSnackbar("Cannot edit a completed booking", {
-                        variant: "error",
-                      });
+                    if (
+                      booking.status === "Completed" ||
+                      booking.status === "Canceled"
+                    ) {
+                      enqueueSnackbar(
+                        "Cannot edit a completed or canceled booking",
+                        {
+                          variant: "error",
+                        }
+                      );
                     } else {
                       handleOpenModal(booking._id, true);
                     }
@@ -321,7 +330,10 @@ const Managebooking = () => {
                       selectedBooking?.employeeDetails[0]?.employeeId || ""
                     }
                     className="border border-gray-300 p-2 rounded w-full"
-                    disabled={selectedBooking?.status === "Completed"}
+                    disabled={
+                      selectedBooking?.status === "Completed" ||
+                      selectedBooking?.status === "Canceled"
+                    }
                   >
                     <option value="">Select Employee</option>
                     {employees.map((employee) => (
@@ -344,7 +356,10 @@ const Managebooking = () => {
                       }))
                     }
                     className="border border-gray-300 p-2 rounded w-full"
-                    disabled={selectedBooking?.status === "Completed"}
+                    disabled={
+                      selectedBooking?.status === "Completed" ||
+                      selectedBooking?.status === "Canceled"
+                    }
                   />
                 </div>
 
