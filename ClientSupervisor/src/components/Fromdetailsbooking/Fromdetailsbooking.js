@@ -51,7 +51,11 @@ const Fromdetailsbooking = ({ booking, onClose }) => {
       </p>
       <p>
         <strong>Employee:</strong>{" "}
-        {booking.employeeDetails?.map((e) => e.name).join(", ") || "N/A"}
+        {booking.employeeDetails
+          ? booking.employeeDetails.length > 0
+            ? booking.employeeDetails.map((e) => e.name).join(", ")
+            : "No employee assigned"
+          : "N/A"}
       </p>
       <p>
         <strong>Total Price:</strong>{" "}

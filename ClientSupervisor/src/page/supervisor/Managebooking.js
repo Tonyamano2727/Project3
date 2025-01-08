@@ -10,11 +10,11 @@ import Fromdetailsbooking from "../../components/Fromdetailsbooking/Fromdetailsb
 import { useSnackbar } from "notistack";
 
 const Managebooking = () => {
-  const [bookings, setBookings] = useState([]);
+  const [, setBookings] = useState([]);
   const [filteredBookings, setFilteredBookings] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [, setLoading] = useState(true);
+  const [, setError] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [updateError, setUpdateError] = useState(null);
@@ -39,29 +39,36 @@ const Managebooking = () => {
     }
   };
 
-  const fetchEmployees = async () => {
-    try {
-      const response = await apiGetemployee();
-      if (response.success) {
-        setEmployees(response.staff);
-      } else {
-        setError(response.message || "No employees found");
-      }
-    } catch (error) {
-      setError(error.message || "An error occurred while fetching employees.");
-    }
-  };
-
   const fetchBookingDetails = async (bkid) => {
     try {
       const response = await apigetdetailbooking(bkid);
       if (response.success) {
-        setSelectedBooking(response.data);
+        const booking = response.data;
+
+        if (booking.employeeDetails && employees.length > 0) {
+          const employeeDetailsWithNames = booking.employeeDetails.map(
+            (empDetail) => {
+              const employee = employees.find(
+                (emp) => emp._id === empDetail.employeeId
+              );
+              return {
+                ...empDetail,
+                employeeName: employee ? employee.name : "Unknown",
+              };
+            }
+          );
+
+          booking.employeeDetails = employeeDetailsWithNames;
+        }
+
+        setSelectedBooking(booking);
       } else {
         setError(response.message || "Failed to fetch booking details");
       }
     } catch (error) {
-      setError(error.message || "An error occurred while fetching booking details.");
+      setError(
+        error.message || "An error occurred while fetching booking details."
+      );
     }
   };
 
@@ -71,14 +78,14 @@ const Managebooking = () => {
       enqueueSnackbar("Cannot edit a completed booking", {
         variant: "error",
       });
-      
+
       return;
     } else {
       setStatusError(null);
     }
     setIsEditing(editMode);
     setOpenModal(true);
-    setShowDetails(false); // Reset details view when opening modal
+    setShowDetails(false);
   };
 
   const handleCloseModal = () => {
@@ -86,7 +93,7 @@ const Managebooking = () => {
     setSelectedBooking(null);
     setIsEditing(false);
     setUpdateError(null);
-    setShowDetails(false); // Reset details view when closing modal
+    setShowDetails(false);
   };
 
   const handleSubmitUpdate = async () => {
@@ -95,32 +102,128 @@ const Managebooking = () => {
         setUpdateError("Booking details are not available.");
         return;
       }
-      if (selectedBooking.status === "Completed") {
-        enqueueSnackbar("Cannot completed booking because date ", {
-          variant: "error",
-        });
+
+      const { date, timeSlot, status: newStatus } = selectedBooking;
+
+      if (!date || !timeSlot) {
+        setUpdateError("Date and Time Slot are required.");
         return;
       }
 
-      const updatedData = { ...selectedBooking };
-      const response = await apiupdatebooking(updatedData, selectedBooking._id);
+      if (!newStatus) {
+        setUpdateError("Status is required.");
+        return;
+      }
+
+      let hours, minutes;
+
+      // Xử lý định dạng thời gian
+      const isAMPMFormat = timeSlot.match(/(AM|PM)$/i); // Kiểm tra định dạng AM/PM
+      if (isAMPMFormat) {
+        // Định dạng 12 giờ (hh:mm AM/PM)
+        const timeParts = timeSlot.match(/(\d+):(\d+)\s*(AM|PM)/i);
+        if (!timeParts || timeParts.length !== 4) {
+          setUpdateError("Invalid time slot format. Use 'hh:mm AM/PM'.");
+          return;
+        }
+
+        hours = parseInt(timeParts[1], 10);
+        minutes = parseInt(timeParts[2], 10);
+        const period = timeParts[3].toUpperCase();
+
+        if (isNaN(hours) || isNaN(minutes)) {
+          setUpdateError("Invalid time slot values.");
+          return;
+        }
+
+        if (period === "PM" && hours !== 12) {
+          hours += 12; // Chuyển đổi giờ PM thành 24 giờ
+        } else if (period === "AM" && hours === 12) {
+          hours = 0; // Chuyển đổi 12 AM thành 0 giờ
+        }
+      } else {
+        // Định dạng 24 giờ (hh:mm)
+        const timeParts = timeSlot.split(":"); // Tách chuỗi thời gian
+        if (timeParts.length !== 2) {
+          setUpdateError("Invalid time slot format. Use 'hh:mm'.");
+          return;
+        }
+
+        hours = parseInt(timeParts[0], 10);
+        minutes = parseInt(timeParts[1], 10);
+
+        if (isNaN(hours) || isNaN(minutes)) {
+          setUpdateError("Invalid time slot values.");
+          return;
+        }
+      }
+
+      const bookingDate = new Date(date);
+      bookingDate.setHours(hours, minutes, 0, 0); // Cập nhật giờ cho ngày booking
+
+      const currentTime = new Date();
+
+      if (newStatus === "Completed") {
+        const timeDifference = currentTime - bookingDate;
+
+        if (timeDifference < 2 * 60 * 60 * 1000) {
+          setUpdateError(
+            "Cannot update status to 'Completed' before 2 hours have passed."
+          );
+          return;
+        }
+      }
+
+      // Tiến hành cập nhật
+      console.log("Validated booking update:", selectedBooking);
+
+      const response = await apiupdatebooking(
+        selectedBooking,
+        selectedBooking._id
+      );
+
       if (response.success) {
-        enqueueSnackbar("Update booking successfull ", {
-          variant: "success",
-        });
+        enqueueSnackbar("Update booking successful", { variant: "success" });
         setOpenModal(false);
         fetchBookings();
       } else {
         setUpdateError(response.message || "Failed to update booking");
       }
     } catch (error) {
-      setUpdateError(error.message || "An error occurred while updating the booking.");
+      setUpdateError(
+        error.message || "An error occurred while updating the booking."
+      );
     }
   };
 
   useEffect(() => {
-    fetchBookings();
-    fetchEmployees();
+    const fetchData = async () => {
+      try {
+        const [bookingsResponse, employeesResponse] = await Promise.all([
+          apiGetbooking(),
+          apiGetemployee(),
+        ]);
+
+        if (bookingsResponse.success) {
+          setBookings(bookingsResponse.bookings);
+          setFilteredBookings(bookingsResponse.bookings);
+        } else {
+          setError(bookingsResponse.message || "No bookings found");
+        }
+
+        if (employeesResponse.success) {
+          setEmployees(employeesResponse.staff);
+        } else {
+          setError(employeesResponse.message || "No employees found");
+        }
+      } catch (error) {
+        setError(error.message || "An error occurred while fetching data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (
@@ -156,7 +259,7 @@ const Managebooking = () => {
                 <button
                   onClick={() => {
                     handleOpenModal(booking._id, false);
-                    setShowDetails(!showDetails); 
+                    setShowDetails(!showDetails);
                   }}
                   className="text-blue-500 hover:underline"
                 >
@@ -191,20 +294,32 @@ const Managebooking = () => {
       {openModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6">
-            {updateError && <div className="text-red-500 mb-2">{updateError}</div>}
+            {updateError && (
+              <div className="text-red-500 mb-2">{updateError}</div>
+            )}
 
             {isEditing ? (
               <>
                 <div className="mb-4">
                   <label className="block font-medium mb-1">Employee</label>
                   <select
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      const selectedEmployee = employees.find(
+                        (employee) => employee._id === e.target.value
+                      );
                       setSelectedBooking((prev) => ({
                         ...prev,
-                        employeeId: e.target.value,
-                      }))
+                        employeeDetails: [
+                          {
+                            employeeId: selectedEmployee?._id || "",
+                            name: selectedEmployee?.name || "",
+                          },
+                        ],
+                      }));
+                    }}
+                    value={
+                      selectedBooking?.employeeDetails[0]?.employeeId || ""
                     }
-                    value={selectedBooking?.employeeId || ""}
                     className="border border-gray-300 p-2 rounded w-full"
                     disabled={selectedBooking?.status === "Completed"}
                   >
@@ -244,7 +359,6 @@ const Managebooking = () => {
                       }))
                     }
                     className="border border-gray-300 p-2 rounded w-full"
-                    disabled={selectedBooking?.status === "Completed"}
                   >
                     <option value="Pending">Pending</option>
                     <option value="Confirmed">Confirmed</option>
@@ -270,8 +384,10 @@ const Managebooking = () => {
                 </div>
               </>
             ) : (
-              <Fromdetailsbooking booking={selectedBooking} onClose={handleCloseModal} />
-
+              <Fromdetailsbooking
+                booking={selectedBooking}
+                onClose={handleCloseModal}
+              />
             )}
           </div>
         </div>

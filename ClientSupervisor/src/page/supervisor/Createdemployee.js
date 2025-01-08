@@ -144,8 +144,16 @@ const Createdemployee = () => {
           register={register}
           errors={errors}
           placeholder="Email Employee"
-          validate={{ required: "Email is required" }}
+          validate={{
+            required: "Email is required",
+            pattern: {
+              value:
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+              message: "Invalid email format",
+            },
+          }}
         />
+
         <InputForm
           label="Mobile"
           type="tel"
@@ -156,7 +164,7 @@ const Createdemployee = () => {
           validate={{
             required: "Mobile is required",
             pattern: {
-              value: /^\d{10,11}$/, // Regex kiểm tra 10 hoặc 11 chữ số
+              value: /^\d{10,11}$/,
               message: "Mobile must be 10 or 11 digits",
             },
           }}
