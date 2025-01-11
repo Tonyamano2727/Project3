@@ -18,6 +18,7 @@ const createBooking = async (req, res) => {
       date,
       timeSlot,
       notes,
+      address,
       ...rest
     } = req.body;
 
@@ -70,6 +71,7 @@ const createBooking = async (req, res) => {
       <ul>
         <li><strong>Dịch vụ:</strong> ${foundService.title}</li>
         <li><strong>Số lượng:</strong> ${quantity}</li>
+        <li><strong>Địa chỉ:</strong> ${address}</li>
         <li><strong>Quận:</strong> ${district}</li>
         <li><strong>Phường:</strong> ${ward}</li>
         <li><strong>Ngày:</strong> ${date}</li>
