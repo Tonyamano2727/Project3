@@ -8,8 +8,18 @@ const HotDistrict = require("../models/hotdistric");
 
 const createBooking = async (req, res) => {
   try {
-    const { service, customerName, email, quantity, district, ...rest } =
-      req.body;
+    const {
+      service,
+      customerName,
+      email,
+      quantity,
+      district,
+      ward,
+      date,
+      timeSlot,
+      notes,
+      ...rest
+    } = req.body;
 
     if (!email) {
       return res.status(400).json({
@@ -52,7 +62,7 @@ const createBooking = async (req, res) => {
       recipients.push(foundSupervisor.email);
     }
 
-    // Tạo nội dung email
+    // Nội dung email đã cập nhật
     const emailContent = `
       <h1>Xác nhận Đặt Dịch Vụ</h1>
       <p>Chào ${customerName},</p>
@@ -61,7 +71,21 @@ const createBooking = async (req, res) => {
         <li><strong>Dịch vụ:</strong> ${foundService.title}</li>
         <li><strong>Số lượng:</strong> ${quantity}</li>
         <li><strong>Quận:</strong> ${district}</li>
-        <li><strong>Tổng giá:</strong> ${totalPrice.toFixed(2)} VND</li>
+        <li><strong>Phường:</strong> ${ward}</li>
+        <li><strong>Ngày:</strong> ${date}</li>
+        <li><strong>Thời gian:</strong> ${timeSlot}</li>
+        <li><strong>Ghi chú:</strong> ${notes || "Không có"}</li>
+        <li><strong>Giá mỗi dịch vụ:</strong> ${foundService.price.toLocaleString(
+          "vi-VN",
+          {
+            style: "currency",
+            currency: "VND",
+          }
+        )}</li>
+        <li><strong>Tổng giá:</strong> ${totalPrice.toLocaleString("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        })}</li>
       </ul>
       <p>Chúng tôi sẽ liên hệ với bạn sớm nhất để xác nhận thêm.</p>
       <p>Trân trọng,</p>
