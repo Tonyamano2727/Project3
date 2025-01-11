@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const Blog = require("../models/blog");
 const asyncHandler = require("express-async-handler");
 
@@ -14,7 +14,10 @@ const createNewBlog = asyncHandler(async (req, res) => {
     description,
     category,
     thumb: req.files && req.files.thumb ? req.files.thumb[0].path : null,
-    images: req.files && req.files.images ? req.files.images.map(file => file.path) : [],
+    images:
+      req.files && req.files.images
+        ? req.files.images.map((file) => file.path)
+        : [],
   };
 
   try {
@@ -24,11 +27,11 @@ const createNewBlog = asyncHandler(async (req, res) => {
       createBlog: response,
     });
   } catch (error) {
-    console.error('Error creating blog:', error); 
+    console.error("Error creating blog:", error);
     return res.status(500).json({
       success: false,
-      message: 'Error creating blog',
-      error: error.message, 
+      message: "Error creating blog",
+      error: error.message,
     });
   }
 });
@@ -36,7 +39,10 @@ const createNewBlog = asyncHandler(async (req, res) => {
 const updateBlog = asyncHandler(async (req, res) => {
   const { bid } = req.params;
 
-  if (Object.keys(req.body).length === 0 && (!req.files || Object.keys(req.files).length === 0)) {
+  if (
+    Object.keys(req.body).length === 0 &&
+    (!req.files || Object.keys(req.files).length === 0)
+  ) {
     return res.status(400).json({
       success: false,
       mes: "Missing inputs",
@@ -60,7 +66,6 @@ const updateBlog = asyncHandler(async (req, res) => {
     updateBlog: response ? response : "Cannot update Blog",
   });
 });
-
 
 const getallBlog = asyncHandler(async (req, res) => {
   const queries = { ...req.query };
@@ -129,21 +134,24 @@ const getallBlog = asyncHandler(async (req, res) => {
   });
 });
 
-
 const addReview = asyncHandler(async (req, res) => {
   const { comment } = req.body;
   const { bid } = req.params;
   const userId = req.user._id;
 
   if (!comment) {
-    return res.status(400).json({ success: false, message: "Comment is required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Comment is required" });
   }
 
   try {
     const blog = await Blog.findById(bid);
 
     if (!blog) {
-      return res.status(404).json({ success: false, message: "Blog not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Blog not found" });
     }
 
     const existingReview = blog.reviews.find(
@@ -151,28 +159,29 @@ const addReview = asyncHandler(async (req, res) => {
     );
 
     const now = new Date();
-    const twentyMinutes = 20 * 60 * 1000; 
+    const twentyMinutes = 20 * 60 * 1000;
 
     if (existingReview) {
       const timeSinceLastUpdate = now - existingReview.updatedAt;
 
       if (timeSinceLastUpdate < twentyMinutes) {
+        const remainingTime = twentyMinutes - timeSinceLastUpdate;
+
         return res.status(400).json({
           success: false,
-          message: "You can only update your comment every 20 minutes."
+          message: "You can only update your comment every 20 minutes.",
+          remainingTime: Math.ceil(remainingTime / 1000),
         });
       }
 
-  
       existingReview.comment = comment;
       existingReview.updatedAt = now;
     } else {
-   
       const newReview = {
         user: userId,
         comment,
         createdAt: now,
-        updatedAt: now
+        updatedAt: now,
       };
       blog.reviews.push(newReview);
     }
@@ -181,16 +190,15 @@ const addReview = asyncHandler(async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: existingReview ? "Review updated successfully" : "Review added successfully",
+      message: existingReview
+        ? "Review updated successfully"
+        : "Review added successfully",
       reviews: blog.reviews,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 });
-
-
-
 
 // Khi người dùng like một bài blog thì :
 // 1. Check người dùng đó trước đó có dislike hay không
@@ -279,7 +287,7 @@ const dislikeBlog = asyncHandler(async (req, res) => {
 });
 
 const getBlog = asyncHandler(async (req, res) => {
-  const { bid } = req.params; 
+  const { bid } = req.params;
   try {
     const blog = await Blog.findByIdAndUpdate(
       bid,
@@ -288,7 +296,7 @@ const getBlog = asyncHandler(async (req, res) => {
     )
       .populate("likes", "firstname lastname")
       .populate("dislikes", "firstname lastname")
-      .populate("reviews.user", "firstname lastname avatar"); 
+      .populate("reviews.user", "firstname lastname avatar");
 
     if (!blog) {
       return res.status(404).json({
@@ -308,7 +316,6 @@ const getBlog = asyncHandler(async (req, res) => {
   }
 });
 
-
 const deleteBlog = asyncHandler(async (req, res) => {
   const { bid } = req.params;
   const blog = await Blog.findByIdAndDelete(bid);
@@ -317,7 +324,6 @@ const deleteBlog = asyncHandler(async (req, res) => {
     deletedBlog: blog || "Some thing went wrong",
   });
 });
-
 
 module.exports = {
   addReview,
