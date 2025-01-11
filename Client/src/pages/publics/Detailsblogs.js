@@ -10,6 +10,8 @@ import {
   dislikeBlog,
 } from "../../apis";
 import icons from "../../ultils/icons";
+import { Snackbar } from "@mui/material";
+import { Alert } from "@mui/material";
 const { BiSolidTimeFive, FaUserShield, BiLike, BiDislike, FaEye } = icons;
 
 const Detailsblogs = () => {
@@ -20,14 +22,11 @@ const Detailsblogs = () => {
   const [error, setError] = useState(null);
   const [comment, setComment] = useState("");
   const [submissionError, setSubmissionError] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(0);
 
   const [currentPage, setCurrentPage] = useState(1);
   const commentsPerPage = 4;
-
-  const startTimer = () => {
-    setTimeLeft(1200);
-  };
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const fetchBlogDetails = async () => {
     try {
@@ -67,7 +66,17 @@ const Detailsblogs = () => {
       if (response.success) {
         setComment("");
         fetchBlogDetails();
-        startTimer();
+      } else if (
+        response.message.includes("You can only update your comment")
+      ) {
+        const remainingTime = response.remainingTime;
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+        const formattedTime = `${minutes}:${
+          seconds < 10 ? "0" + seconds : seconds
+        }`;
+        setSnackbarMessage(`You can comment after ${formattedTime}`);
+        setOpenSnackbar(true);
       } else {
         setSubmissionError(response.message);
       }
@@ -106,40 +115,6 @@ const Detailsblogs = () => {
   useEffect(() => {
     fetchBlogDetails();
   }, [bid]);
-
-  useEffect(() => {
-    const storedTime = localStorage.getItem("commentTimer");
-    if (storedTime) {
-      const remainingTime = Math.max(
-        0,
-        parseInt(storedTime) - Math.floor(Date.now() / 1000)
-      );
-      setTimeLeft(remainingTime);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (timeLeft > 0) {
-      localStorage.setItem(
-        "commentTimer",
-        Math.floor(Date.now() / 1000) + timeLeft
-      );
-      const timerId = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-      return () => clearInterval(timerId);
-    } else {
-      localStorage.removeItem("commentTimer");
-    }
-  }, [timeLeft]);
-
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
-  };
 
   const indexOfLastComment = currentPage * commentsPerPage;
   const indexOfFirstComment = indexOfLastComment - commentsPerPage;
@@ -287,41 +262,42 @@ const Detailsblogs = () => {
                 </div>
               </div>
             )}
+
           <form
             onSubmit={handleCommentSubmit}
             className="mt-6 bg-[#f7f6ee] p-4 rounded-lg"
           >
-            <div className="flex justify-between items-center">
-              <h3 className="text-[#00197e] text-[20px] font-medium">
-                Comment
-              </h3>
-              {timeLeft > 0 && (
-                <p className="text-sm text-red-600">
-                  You can comment after {formatTime(timeLeft)}
-                </p>
-              )}
-            </div>
+            <h3 className="text-[#00197e] text-[20px] font-medium">Comment</h3>
             <textarea
               rows="4"
               className="w-full p-2 border border-gray-300 rounded-xl mt-2"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
               placeholder="Type your comment here..."
               required
-              disabled={timeLeft > 0}
             ></textarea>
             <button
               type="submit"
-              className={`mt-4 px-4 py-2 rounded-full w-full text-white ${
-                timeLeft > 0
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-[#e0a96a] to-[#e07c93]"
-              }`}
-              disabled={timeLeft > 0}
+              className="mt-4 bg-gradient-to-r from-[#e0a96a] to-[#e07c93] px-4 py-2 rounded-full w-full text-white"
             >
               Submit
             </button>
           </form>
         </div>
       </div>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <Alert severity="warning" onClose={() => setOpenSnackbar(false)}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
