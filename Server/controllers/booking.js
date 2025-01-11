@@ -1,6 +1,6 @@
 const Booking = require("../models/booking");
 const Service = require("../models/service");
-const Supervisor = require('../models/supervisor');
+const Supervisor = require("../models/supervisor");
 const Employee = require("../models/employee");
 const sendmail = require("../ultils/sendemail");
 const Salary = require("../models/salary");
@@ -8,50 +8,70 @@ const HotDistrict = require("../models/hotdistric");
 
 const createBooking = async (req, res) => {
   try {
-    const { service, customerName, email, quantity, district, ...rest } = req.body;
+    const { service, customerName, email, quantity, district, ...rest } =
+      req.body;
 
     if (!email) {
-      return res.status(400).json({ success: false, message: "Email của khách hàng không được xác định" });
+      return res.status(400).json({
+        success: false,
+        message: "Email của khách hàng không được xác định",
+      });
     }
 
     const foundService = await Service.findById(service);
     if (!foundService) {
-      return res.status(404).json({ success: false, message: "Dịch vụ không tồn tại" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Dịch vụ không tồn tại" });
     }
 
-    // Tìm Supervisor cho quận tương ứng
     const foundSupervisor = await Supervisor.findOne({ district });
     if (!foundSupervisor) {
       console.warn("Không tìm thấy Supervisor cho quận này");
     }
 
-    // Kiểm tra xem quận có phải là quận hot không
-    const hotDistrict = await HotDistrict.findOne({ name: district }); // Tìm hot district theo tên
-    const isHotDistrict = hotDistrict !== null; // true nếu tìm thấy
+    const hotDistrict = await HotDistrict.findOne({ name: district });
+    const isHotDistrict = hotDistrict !== null;
 
-    // Tính giá trị tổng
-    const totalPrice = isHotDistrict ? foundService.price * quantity * 1.1 : foundService.price * quantity; // Tăng 10% nếu là quận hot
+    const totalPrice = isHotDistrict
+      ? foundService.price * quantity * 1.1
+      : foundService.price * quantity;
 
-    // Lưu thông tin booking
     const booking = new Booking({
       ...req.body,
-      hotDistrict: isHotDistrict ? hotDistrict._id : null, // Gán hotDistrict ID nếu tìm thấy
-      totalPrice // Đính kèm totalPrice
+      hotDistrict: isHotDistrict ? hotDistrict._id : null,
+      totalPrice,
     });
 
     await booking.save();
 
-    const adminEmail = "toanb3074@gmail.com"; 
+    const adminEmail = "toanb3074@gmail.com";
     const recipients = [email, adminEmail];
-    
+
     if (foundSupervisor && foundSupervisor.email) {
       recipients.push(foundSupervisor.email);
     }
 
+    // Tạo nội dung email
+    const emailContent = `
+      <h1>Xác nhận Đặt Dịch Vụ</h1>
+      <p>Chào ${customerName},</p>
+      <p>Cảm ơn bạn đã đặt dịch vụ với chúng tôi. Dưới đây là thông tin chi tiết về booking của bạn:</p>
+      <ul>
+        <li><strong>Dịch vụ:</strong> ${foundService.title}</li>
+        <li><strong>Số lượng:</strong> ${quantity}</li>
+        <li><strong>Quận:</strong> ${district}</li>
+        <li><strong>Tổng giá:</strong> ${totalPrice.toFixed(2)} VND</li>
+      </ul>
+      <p>Chúng tôi sẽ liên hệ với bạn sớm nhất để xác nhận thêm.</p>
+      <p>Trân trọng,</p>
+      <p>Đội ngũ của chúng tôi</p>
+    `;
+
     const mailOptions = {
       to: recipients,
-      subject: "Booking Confirmation",
-      html: `...` // Giữ nguyên phần email
+      subject: "Xác nhận Đặt Dịch Vụ",
+      html: emailContent,
     };
 
     const info = await sendmail(mailOptions);
@@ -64,49 +84,51 @@ const createBooking = async (req, res) => {
   }
 };
 
-
 const updateBooking = async (req, res) => {
   try {
-    const { bkid } = req.params; 
+    const { bkid } = req.params;
     const updatedData = req.body;
 
-   
     const updatedBooking = await Booking.findById(bkid);
 
- 
     if (!updatedBooking) {
-      return res.status(404).json({ success: false, message: "Booking không tồn tại." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Booking không tồn tại." });
     }
 
-   
     if (updatedData.employeeId) {
-      const employees = await Employee.find({ _id: { $in: updatedData.employeeId } });
+      const employees = await Employee.find({
+        _id: { $in: updatedData.employeeId },
+      });
 
       if (employees.length === 0) {
-        return res.status(404).json({ success: false, message: "Không có nhân viên nào tồn tại." });
+        return res
+          .status(404)
+          .json({ success: false, message: "Không có nhân viên nào tồn tại." });
       }
 
-      updatedBooking.employeeDetails = employees.map(employee => ({
+      updatedBooking.employeeDetails = employees.map((employee) => ({
         employeeId: employee._id.toString(),
         name: employee.name,
       }));
     }
 
-    
     Object.assign(updatedBooking, updatedData);
 
-    
     if (updatedData.quantity || updatedData.service) {
       if (updatedData.service) {
         const service = await Service.findById(updatedData.service);
         if (service) {
           updatedBooking.category = service.category;
-          updatedBooking.totalPrice = service.price * (updatedData.quantity || updatedBooking.quantity);
+          updatedBooking.totalPrice =
+            service.price * (updatedData.quantity || updatedBooking.quantity);
         }
       } else {
         updatedBooking.totalPrice =
           updatedBooking.totalPrice ||
-          (updatedBooking.quantity * updatedBooking.totalPrice) / updatedBooking.quantity;
+          (updatedBooking.quantity * updatedBooking.totalPrice) /
+            updatedBooking.quantity;
       }
     }
 
@@ -114,7 +136,9 @@ const updateBooking = async (req, res) => {
 
     // Nếu trạng thái booking được cập nhật thành "Completed", tính lương cho nhân viên
     if (updatedBooking.status === "Completed") {
-      const employeeIds = updatedBooking.employeeDetails.map(detail => detail.employeeId);
+      const employeeIds = updatedBooking.employeeDetails.map(
+        (detail) => detail.employeeId
+      );
       const month = new Date().getMonth() + 1;
       const year = new Date().getFullYear();
 
@@ -125,25 +149,31 @@ const updateBooking = async (req, res) => {
         const completedBookings = await Booking.find({
           employeeDetails: { $elemMatch: { employeeId: employeeId } },
           status: "Completed",
-          createdAt: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) }
+          createdAt: {
+            $gte: new Date(year, month - 1, 1),
+            $lt: new Date(year, month, 1),
+          },
         });
 
         if (completedBookings.length > 0) {
-          const totalBookingValue = completedBookings.reduce((sum, booking) => sum + booking.totalPrice, 0);
-          const commission = totalBookingValue * 0.30;
+          const totalBookingValue = completedBookings.reduce(
+            (sum, booking) => sum + booking.totalPrice,
+            0
+          );
+          const commission = totalBookingValue * 0.3;
           const totalSalary = employee.baseSalary + commission;
 
-          const bookingDetails = completedBookings.map(booking => ({
+          const bookingDetails = completedBookings.map((booking) => ({
             bookingId: booking._id,
             totalPrice: booking.totalPrice,
-            createdAt: booking.createdAt
+            createdAt: booking.createdAt,
           }));
 
           // Kiểm tra xem bản ghi lương đã tồn tại chưa
           const existingSalaryRecord = await Salary.findOne({
             employee: employeeId,
             month: month,
-            year: year
+            year: year,
           });
 
           if (existingSalaryRecord) {
@@ -162,7 +192,7 @@ const updateBooking = async (req, res) => {
               baseSalary: employee.baseSalary,
               commission: commission,
               totalSalary: totalSalary,
-              bookings: bookingDetails 
+              bookings: bookingDetails,
             });
             await salaryRecord.save();
           }
@@ -170,22 +200,20 @@ const updateBooking = async (req, res) => {
       }
     }
 
-    return res.status(200).json({ 
-      success: true, 
-      data: { 
-        ...updatedBooking.toObject(), 
-      } 
+    return res.status(200).json({
+      success: true,
+      data: {
+        ...updatedBooking.toObject(),
+      },
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-
-
 const getBookings = async (req, res) => {
-  const { _id } = req.user; 
-  const supervisor = await Supervisor.findById(_id); 
+  const { _id } = req.user;
+  const supervisor = await Supervisor.findById(_id);
 
   if (!supervisor) {
     return res.status(404).json({
@@ -194,7 +222,7 @@ const getBookings = async (req, res) => {
     });
   }
 
-  const bookings = await Booking.find({ district: supervisor.district }); 
+  const bookings = await Booking.find({ district: supervisor.district });
 
   return res.status(200).json({
     success: true,
@@ -204,11 +232,10 @@ const getBookings = async (req, res) => {
 
 const getAllBookings = async (req, res) => {
   const queries = { ...req.query };
-  
+
   const excludeFields = ["limit", "sort", "page", "fields"];
   excludeFields.forEach((el) => delete queries[el]);
 
-  
   let queryString = JSON.stringify(queries);
   queryString = queryString.replace(
     /\b(gte|gt|lt|lte)\b/g,
@@ -228,11 +255,11 @@ const getAllBookings = async (req, res) => {
       { phone: { $regex: req.query.q, $options: "i" } },
       { status: { $regex: req.query.q, $options: "i" } },
       { category: { $regex: req.query.q, $options: "i" } },
-      { "service.title": { $regex: req.query.q, $options: "i" } }, 
+      { "service.title": { $regex: req.query.q, $options: "i" } },
     ];
   }
-  
-  let queryCommand = Booking.find(formatedQueries).populate('service', 'title');
+
+  let queryCommand = Booking.find(formatedQueries).populate("service", "title");
 
   // Sorting
   if (req.query.sort) {
@@ -269,11 +296,16 @@ const getBookingDetail = async (req, res) => {
     const { bkid } = req.params; // Lấy ID booking từ request parameters
 
     // Tìm kiếm booking theo ID
-    const booking = await Booking.findById(bkid).populate('service', 'title employeeDetails'); // Giả sử bạn muốn lấy thông tin dịch vụ và chi tiết nhân viên
+    const booking = await Booking.findById(bkid).populate(
+      "service",
+      "title employeeDetails"
+    ); // Giả sử bạn muốn lấy thông tin dịch vụ và chi tiết nhân viên
 
     // Kiểm tra xem booking có tồn tại không
     if (!booking) {
-      return res.status(404).json({ success: false, message: "Booking không tồn tại." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Booking không tồn tại." });
     }
 
     return res.status(200).json({ success: true, data: booking }); // Trả về thông tin booking
@@ -282,10 +314,10 @@ const getBookingDetail = async (req, res) => {
   }
 };
 
-
 module.exports = {
   createBooking,
   updateBooking,
   getBookings,
-  getAllBookings,getBookingDetail
+  getAllBookings,
+  getBookingDetail,
 };

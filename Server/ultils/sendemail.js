@@ -1,56 +1,23 @@
 const nodemailer = require("nodemailer");
 const asyncHandler = require("express-async-handler");
 
-const sendmail = asyncHandler(
-  async ({
-    to,
-    customerName,
-    serviceName,
-    date,
-    timeSlot,
-    quantity,
-    notes,
-    totalPrice,
-  }) => {
-    let transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_NAME,
-        pass: process.env.EMAIL_APP_PASSWORD,
-      },
-    });
+const sendmail = asyncHandler(async ({ to, html }) => {
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
 
-    const formattedTotalPrice = new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(totalPrice);
+    auth: {
+      user: process.env.EMAIL_NAME,
+      pass: process.env.EMAIL_APP_PASSWORD,
+    },
+  });
 
-    const htmlContent = `
-    <h2>Booking a successful service</h2>
-    <p>Hello ${customerName},</p>
-    <p>We have received a booking request: ${serviceName}.</p>
-    <h3>Order Information</h3>
-    <ul>
-      <li><strong>Customer Name:</strong> ${customerName}</li>
-      <li><strong>Service:</strong> ${serviceName}</li>
-      <li><strong>Day:</strong> ${date}</li>
-      <li><strong>Hour:</strong> ${timeSlot}</li>
-      <li><strong>Amount:</strong> ${quantity}</li>
-      <li><strong>Notes:</strong> ${notes}</li>
-      <li><strong>Total Price of Service:</strong> ${formattedTotalPrice}</li>
-    </ul>
-    <p>Thank you for using our service!</p>
-  `;
-
-    let info = await transporter.sendMail({
-      from: '"Cleanhouse" <no-reply@Cleanhouse.com>',
-      to: to.join(","),
-      subject: "Cleanhouse booking service",
-      html: htmlContent,
-    });
-
-    return info;
-  }
-);
+  let info = await transporter.sendMail({
+    from: '"Cleanhouse" <no-relply@Cleanhouse.com>',
+    to: to.join(","),
+    subject: "Cleanhouse booking service",
+    html: html,
+  });
+  return info;
+});
 
 module.exports = sendmail;
