@@ -20,9 +20,14 @@ const Detailsblogs = () => {
   const [error, setError] = useState(null);
   const [comment, setComment] = useState("");
   const [submissionError, setSubmissionError] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(0);
 
   const [currentPage, setCurrentPage] = useState(1);
   const commentsPerPage = 4;
+
+  const startTimer = () => {
+    setTimeLeft(1200);
+  };
 
   const fetchBlogDetails = async () => {
     try {
@@ -62,6 +67,7 @@ const Detailsblogs = () => {
       if (response.success) {
         setComment("");
         fetchBlogDetails();
+        startTimer();
       } else {
         setSubmissionError(response.message);
       }
@@ -101,6 +107,40 @@ const Detailsblogs = () => {
     fetchBlogDetails();
   }, [bid]);
 
+  useEffect(() => {
+    const storedTime = localStorage.getItem("commentTimer");
+    if (storedTime) {
+      const remainingTime = Math.max(
+        0,
+        parseInt(storedTime) - Math.floor(Date.now() / 1000)
+      );
+      setTimeLeft(remainingTime);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (timeLeft > 0) {
+      localStorage.setItem(
+        "commentTimer",
+        Math.floor(Date.now() / 1000) + timeLeft
+      );
+      const timerId = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timerId);
+    } else {
+      localStorage.removeItem("commentTimer");
+    }
+  }, [timeLeft]);
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
   const indexOfLastComment = currentPage * commentsPerPage;
   const indexOfFirstComment = indexOfLastComment - commentsPerPage;
   const currentComments =
@@ -119,7 +159,9 @@ const Detailsblogs = () => {
             Detailsblogs
           </h2>
           <Breadcrumb title={blogDetails?.title} />
-          <h1 className="text-[20px] md:text-[28px] font-bold tracking-wide hidden xl:block">{blogDetails?.title}</h1>
+          <h1 className="text-[20px] md:text-[28px] font-bold tracking-wide hidden xl:block">
+            {blogDetails?.title}
+          </h1>
         </div>
       </div>
       <div className="flex justify-center w-full xl:w-[90%] flex-wrap gap-4 mt-10 p-0 xl:p-5">
@@ -145,12 +187,14 @@ const Detailsblogs = () => {
                 <div className="flex items-center justify-center gap-4">
                   <button
                     className="text-sm flex justify-center items-center gap-1 text-blue-600"
-                    onClick={handleLike}>
+                    onClick={handleLike}
+                  >
                     <BiLike /> {blogDetails.likes.length}
                   </button>
                   <button
                     className="text-sm flex justify-center items-center gap-1 text-red-600"
-                    onClick={handleDislike}>
+                    onClick={handleDislike}
+                  >
                     <BiDislike />
                     {blogDetails.dislikes.length}
                   </button>
@@ -160,7 +204,8 @@ const Detailsblogs = () => {
               {blogDetails.description.map((desc, index) => (
                 <p
                   key={index}
-                  className="mb-5 text-[16px] text-[#3A4268] font-normal leading-[26px] mt-5">
+                  className="mb-5 text-[16px] text-[#3A4268] font-normal leading-[26px] mt-5"
+                >
                   {desc}
                 </p>
               ))}
@@ -187,7 +232,8 @@ const Detailsblogs = () => {
               <Link
                 key={blog._id}
                 to={`/blogs/${blog._id}/${blog.title}`}
-                className="text-[#575f66] font-normal hover:text-[#00197e] transition-colors duration-300 mt-4 mb-4">
+                className="text-[#575f66] font-normal hover:text-[#00197e] transition-colors duration-300 mt-4 mb-4"
+              >
                 {blog.title}
               </Link>
             ))}
@@ -205,7 +251,8 @@ const Detailsblogs = () => {
                   return (
                     <div
                       key={index}
-                      className="border p-4 mb-4 rounded-md shadow bg-gradient-to-r from-[#e0b88a] to-[#e07c93]">
+                      className="border p-4 mb-4 rounded-md shadow bg-gradient-to-r from-[#e0b88a] to-[#e07c93]"
+                    >
                       <div className="flex justify-between">
                         <p className="font-extralight">{`${firstName} ${lastName}`}</p>
                         <p className="text-xs text-white">
@@ -231,7 +278,8 @@ const Detailsblogs = () => {
                           currentPage === i + 1
                             ? "bg-blue-500 text-white"
                             : "bg-gray-300 text-black"
-                        }`}>
+                        }`}
+                      >
                         {i + 1}
                       </button>
                     )
@@ -239,21 +287,36 @@ const Detailsblogs = () => {
                 </div>
               </div>
             )}
-
           <form
             onSubmit={handleCommentSubmit}
-            className="mt-6 bg-[#f7f6ee] p-4 rounded-lg">
-            <h3 className="text-[#00197e] text-[20px] font-medium">Comment</h3>
+            className="mt-6 bg-[#f7f6ee] p-4 rounded-lg"
+          >
+            <div className="flex justify-between items-center">
+              <h3 className="text-[#00197e] text-[20px] font-medium">
+                Comment
+              </h3>
+              {timeLeft > 0 && (
+                <p className="text-sm text-red-600">
+                  You can comment after {formatTime(timeLeft)}
+                </p>
+              )}
+            </div>
             <textarea
               rows="4"
               className="w-full p-2 border border-gray-300 rounded-xl mt-2"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
               placeholder="Type your comment here..."
-              required></textarea>
+              required
+              disabled={timeLeft > 0}
+            ></textarea>
             <button
               type="submit"
-              className="mt-4 bg-gradient-to-r from-[#e0a96a] to-[#e07c93] px-4 py-2 rounded-full w-full text-white">
+              className={`mt-4 px-4 py-2 rounded-full w-full text-white ${
+                timeLeft > 0
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-[#e0a96a] to-[#e07c93]"
+              }`}
+              disabled={timeLeft > 0}
+            >
               Submit
             </button>
           </form>
