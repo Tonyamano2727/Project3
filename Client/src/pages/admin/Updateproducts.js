@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Button, InputForm, Markdoweditor, Select } from "../../components";
+import { Button, InputForm, Select } from "../../components";
 import { useForm } from "react-hook-form";
 import { validate, getBase64 } from "../../ultils/helper";
-import { useSnackbar } from "notistack"; 
+import { useSnackbar } from "notistack";
 import icons from "../../ultils/icons";
 import { apiUpdateproduct } from "../../apis";
 import { useSelector } from "react-redux";
@@ -10,8 +10,7 @@ import { useSelector } from "react-redux";
 const { IoTrashBin } = icons;
 
 const Updateproducts = ({ editproduct, render, seteditproduct }) => {
-  const { enqueueSnackbar } = useSnackbar(); 
-  const [isfousdescription, setisfousdescription] = useState(null);
+  const { enqueueSnackbar } = useSnackbar();
   const { categories } = useSelector((state) => state.app);
   const {
     register,
@@ -90,45 +89,42 @@ const Updateproducts = ({ editproduct, render, seteditproduct }) => {
     const invalids = validate(payload, setInvalidFields);
     if (invalids === 0) {
       if (data.category)
-        data.category = categories.find((el) => el.title === data.category)?.title;
-  
+        data.category = categories.find(
+          (el) => el.title === data.category
+        )?.title;
+
       const finalPayload = { ...data, ...payload };
-    
-  
+
       const formData = new FormData();
       for (let [key, value] of Object.entries(finalPayload)) {
         formData.append(key, value);
       }
-  
-   
+
       if (watch("thumb")?.[0]) {
-        console.log('Appending thumb:', watch("thumb")[0]);
+        console.log("Appending thumb:", watch("thumb")[0]);
         formData.append("thumb", watch("thumb")[0]);
       } else {
-        console.log('Using previous thumb:', preview.thumb);
+        console.log("Using previous thumb:", preview.thumb);
         formData.append("thumb", preview.thumb);
       }
-  
-      
+
       if (watch("images")?.length > 0) {
         for (let file of watch("images")) {
-         
           formData.append("images", file);
         }
       } else {
         preview.images.forEach((image, index) => {
-        
           formData.append("images", image);
         });
       }
-  
+
       try {
-        
         const response = await apiUpdateproduct(formData, editproduct._id);
-        
-  
+
         if (response.success) {
-          enqueueSnackbar("Product updated successfully!", { variant: "success" });
+          enqueueSnackbar("Product updated successfully!", {
+            variant: "success",
+          });
           render();
           seteditproduct(null);
         } else {
@@ -142,30 +138,37 @@ const Updateproducts = ({ editproduct, render, seteditproduct }) => {
   };
 
   const handleRemoveImage = (index) => {
-    const newImages = [...preview.images]; 
-    newImages.splice(index, 1); 
+    const newImages = [...preview.images];
+    newImages.splice(index, 1);
     setpreview((prev) => ({
       ...prev,
-      images: newImages, 
+      images: newImages,
     }));
 
     const currentImages = watch("images") || [];
     const newFiles = [...currentImages].filter((_, i) => i !== index);
     reset({
-      images: newFiles, 
+      images: newFiles,
     });
   };
 
   return (
-    <div className="w-full flex flex-col gap-4 text-start absolute z-50 bg-white p-10 rounded-3xl">
+    <div
+      className="w-full flex flex-col gap-4 text-start absolute z-50 bg-white p-10 rounded-3xl"
+      style={{
+        maxHeight: "90vh",
+        overflowY: "auto",
+      }}
+    >
       <div className="w-full flex justify-between items-center">
         <span
           className="cursor-pointer text-main flex justify-end text-end w-full"
-          onClick={() => seteditproduct(null)}>
+          onClick={() => seteditproduct(null)}
+        >
           Cancel
         </span>
       </div>
-      <div className="">
+      <div className="form-container">
         <form onSubmit={handleSubmit(handleUpdateProduct)}>
           <InputForm
             label="Name product"
@@ -233,7 +236,7 @@ const Updateproducts = ({ editproduct, render, seteditproduct }) => {
               label="Brand"
               options={categories
                 ?.find((el) => el.title === watch("category"))
-                ?.brand?.map((el) => ({ code: el, value: el }))} 
+                ?.brand?.map((el) => ({ code: el, value: el }))}
               register={register}
               id="brand"
               validate={{ required: "Need to fill this field" }}
@@ -241,22 +244,38 @@ const Updateproducts = ({ editproduct, render, seteditproduct }) => {
               errors={errors}
             />
           </div>
-          <Markdoweditor
-            name="description"
-            changevalue={changeValue}
-            label="Description"
-            invalidFields={invalidFields}
-            setinvalidFields={setInvalidFields}
-            value={payload.description}
-            setisfousdescription={setisfousdescription}
-          />
+          <div className="my-6">
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Description
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={payload.description}
+              onChange={(e) => changeValue({ description: e.target.value })}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              placeholder="Enter product description"
+              style={{
+                minHeight: "100px",
+                maxHeight: "400px",
+                resize: "vertical",
+              }}
+            />
+            {invalidFields.some((field) => field === "description") && (
+              <small className="text-red-500">Description is required</small>
+            )}
+          </div>
           <div className="flex justify-around w-full">
             <div className="flex flex-col w-[40%] text-center mt-10 items-center">
               <label
-                  htmlFor="thumb"
-                  className="border  rounded-3xl px-4 py-2 cursor-pointer text-center mb-2 sm:mb-0">
-                  Upload thumb
-                </label>
+                htmlFor="thumb"
+                className="border rounded-3xl px-4 py-2 cursor-pointer text-center mb-2 sm:mb-0"
+              >
+                Upload thumb
+              </label>
               <input
                 type="file"
                 id="thumb"
@@ -278,19 +297,21 @@ const Updateproducts = ({ editproduct, render, seteditproduct }) => {
                 </div>
               )}
             </div>
-
             <div className="flex flex-col mt-8 w-[40%]">
               <div className="flex items-center mt-2 flex-col text-center w-full">
                 <label
                   htmlFor="images"
-                  className="border  rounded-3xl px-4 py-2 cursor-pointer text-center mb-2 sm:mb-0">
+                  className="border rounded-3xl px-4 py-2 cursor-pointer text-center mb-2 sm:mb-0"
+                >
                   Upload Images
                 </label>
                 <input
                   type="file"
                   id="images"
                   multiple
-                  {...register("images", { required: "Update New Thumb Pleas" })}
+                  {...register("images", {
+                    required: "Update New Thumb Pleas",
+                  })}
                   className="hidden"
                 />
                 {errors["images"] && (
@@ -308,8 +329,9 @@ const Updateproducts = ({ editproduct, render, seteditproduct }) => {
                           className="object-cover h-32 w-[150px]"
                         />
                         <span
-                          onClick={() => handleRemoveImage(index)} 
-                          className="absolute top-0 right-0 cursor-pointer">
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute top-0 right-0 cursor-pointer"
+                        >
                           <IoTrashBin className="text-2xl text-red-500" />
                         </span>
                       </div>
