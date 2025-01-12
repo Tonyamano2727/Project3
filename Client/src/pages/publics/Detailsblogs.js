@@ -18,10 +18,10 @@ const Detailsblogs = () => {
   const { bid } = useParams();
   const [blogDetails, setBlogDetails] = useState(null);
   const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [, setLoading] = useState(true);
+  const [, setError] = useState(null);
   const [comment, setComment] = useState("");
-  const [submissionError, setSubmissionError] = useState(null);
+  const [, setSubmissionError] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const commentsPerPage = 4;

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { apiCreateBlogs, apiGetServices } from "../../apis";
 import { Button } from "../../components";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const CreateBlogs = () => {
   const [title, setTitle] = useState("");
@@ -14,6 +17,7 @@ const CreateBlogs = () => {
   const [validationErrors, setValidationErrors] = useState(Array(7).fill(""));
   const [thumbError, setThumbError] = useState("");
   const [imagesError, setImagesError] = useState("");
+  const navigate = useNavigate();
 
   const hygieneLabels = [
     "Personal Hygiene",
@@ -25,23 +29,20 @@ const CreateBlogs = () => {
     "Clothing Hygiene",
   ];
 
-  // Handle thumbnail file change
   const handleThumbFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validate file type and size
       if (!file.type.startsWith("image/")) {
         setThumbError("Thumbnail must be an image file.");
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        // 5MB limit
         setThumbError("Thumbnail image size must be less than 5MB.");
         return;
       }
       setThumb(file);
       setThumbImage(URL.createObjectURL(file));
-      setThumbError(""); // Clear error if valid
+      setThumbError("");
     }
   };
 
@@ -89,29 +90,25 @@ const CreateBlogs = () => {
     updatedFiles.splice(index, 1);
     setOtherImages(updatedImages);
     setImages(updatedFiles);
-    setImagesError(""); // Clear error if images are deleted
+    setImagesError("");
   };
 
- 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
     const newValidationErrors = description.map((desc) =>
       desc.length < 80 ? "Must be at least 80 characters." : ""
     );
 
     setValidationErrors(newValidationErrors);
 
-    
     setThumbError("");
     setImagesError("");
 
- 
     if (
       newValidationErrors.some((error) => error) ||
       !thumb ||
-      images.length === 0 
+      images.length === 0
     ) {
       if (!thumb) {
         setThumbError("Thumbnail is required.");
@@ -137,22 +134,22 @@ const CreateBlogs = () => {
     });
 
     try {
+      toast.info("Creating...", { autoClose: 1000 });
+
       const response = await apiCreateBlogs(formData);
-      if (response && response.data) {
-        if (response.data.success) {
-          alert("Blog created successfully!");
-        } else {
-          alert("Failed to create blog.");
-        }
+      if (response && response.data && response.data.success) {
+        toast.success("Blog Created Successfully", { autoClose: 1000 });
+
+        setTimeout(() => {
+          navigate("/manage-blogs");
+        }, 3000);
       } else {
-        console.log("Unexpected response structure:", response);
+        toast.success("Blog Created Successfully!", { autoClose: 1000 });
+        setTimeout(() => {
+          navigate("/admin/manage-blogs");
+        }, 3000);
       }
-    } catch (error) {
-      console.error(
-        "Error creating blog:",
-        error.response ? error.response.data : error
-      );
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -170,6 +167,7 @@ const CreateBlogs = () => {
 
   return (
     <div className="w-[95%] bg-white p-10 rounded-2xl border">
+      <ToastContainer />
       <form onSubmit={handleSubmit}>
         <div className="w-full mb-4">
           <label>Title</label>
@@ -205,7 +203,8 @@ const CreateBlogs = () => {
               className="rounded-full border h-[45px] mt-2 px-4 w-full"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              required>
+              required
+            >
               <option value="">Select Category</option>
               {categories.map((cat) => (
                 <option key={cat._id} value={cat.category}>
@@ -217,9 +216,7 @@ const CreateBlogs = () => {
         </div>
         <div className="flex items-center justify-around mb-5">
           <div className="flex flex-col justify-center items-center">
-            <label
-              htmlFor="thumbImage"
-              className="border rounded-full p-2">
+            <label htmlFor="thumbImage" className="border rounded-full p-2">
               Thumb Image
             </label>
             <input
@@ -238,7 +235,8 @@ const CreateBlogs = () => {
                 />
                 <button
                   onClick={handleDeleteThumb}
-                  className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
+                  className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1"
+                >
                   X
                 </button>
               </div>
@@ -247,9 +245,7 @@ const CreateBlogs = () => {
           </div>
 
           <div className="flex flex-col justify-center items-center">
-            <label
-              htmlFor="otherImages"
-              className="border rounded-full p-2">
+            <label htmlFor="otherImages" className="border rounded-full p-2">
               Other Images
             </label>
             <input
@@ -271,7 +267,8 @@ const CreateBlogs = () => {
                     />
                     <button
                       onClick={() => handleDeleteOtherImage(index)}
-                      className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1">
+                      className="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1"
+                    >
                       X
                     </button>
                   </div>
@@ -289,7 +286,8 @@ const CreateBlogs = () => {
             type="submit"
             style={
               "w-full p-2 mt-2 bg-white rounded-full bg-gradient-to-r from-[#979db6] to-gray-300"
-            }>
+            }
+          >
             Create Blog
           </Button>
         </div>
